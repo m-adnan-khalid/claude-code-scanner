@@ -1,0 +1,154 @@
+{
+  "permissions": {
+    "defaultMode": "default",
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git checkout -b *)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(sudo *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard)"
+    ]
+  },
+  "env": {},
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/session-start.js"
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/drift-detector.js",
+            "statusMessage": "Checking for environment drift..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/protect-files.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/validate-bash.js"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-edit-format.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/track-file-changes.js"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/tool-failure-tracker.js",
+            "statusMessage": "Logging tool failure..."
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/pre-compact-save.js",
+            "statusMessage": "Saving critical state before compaction..."
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-compact-recovery.js",
+            "statusMessage": "Recovering workflow state..."
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/notify-approval.js"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/execution-report.js",
+            "statusMessage": "Collecting execution metrics..."
+          },
+          {
+            "type": "prompt",
+            "prompt": "MANDATORY POST-EXECUTION REPORT: Before confirming completion, you MUST generate an execution report. Do the following:\n\n1. Check if task is complete (tests pass, no lint errors, no type errors)\n2. Read the latest execution snapshot from .claude/reports/executions/\n3. Generate a summary report with:\n   - SUCCESS SCORE (0-100): completeness + quality + efficiency\n   - TOKEN/CONTEXT USAGE: estimate tokens used, peak context %\n   - AGENT COMMUNICATION: which agents ran, handoff count, loop iterations\n   - HALLUCINATION CHECK: verify all file:line refs exist, function names are real, patterns match project conventions\n   - REGRESSION IMPACT: run test suite, check coverage delta, flag new failures\n4. Save the report to .claude/reports/executions/\n5. Return {\"ok\": true/false, \"score\": N, \"hallucination\": 0-3, \"regression\": 0-3, \"summary\": \"one-line\"}\n\nIf score < 50 or hallucination >= 2 or regression >= 2, set ok=false with reason.",
+            "model": "haiku"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "matcher": "rate_limit|authentication_failed|billing_error|invalid_request|server_error|max_output_tokens",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/stop-failure-handler.js",
+            "statusMessage": "Preserving state after failure..."
+          }
+        ]
+      }
+    ]
+  }
+}
