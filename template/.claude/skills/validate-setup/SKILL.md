@@ -17,7 +17,7 @@ allowed-tools: Read, Bash, Grep, Glob
 6. **Hooks** — Node.js scripts exist and are valid, all hooks in settings.json point to existing files
 7. **Templates** — extracted from real code (not generic)
 8. **.gitignore** — includes settings.local.json, tasks/, reports/
-9. **Commands work** — build, test, lint commands actually execute
+9. **Commands work** — parse `Quick Commands` from CLAUDE.md, check dependencies are installed (node_modules, .dart_tool, poetry.lock), smoke-test lint/type-check commands. Skip if deps not installed (WARN, not SKIP)
 10. **Context budget** — total always-loaded under 200 lines, run `/context`
 11. **Handoff protocol** — workflow skill includes structured HANDOFF format
 12. **Loop tracking** — task record schema includes Loop State section

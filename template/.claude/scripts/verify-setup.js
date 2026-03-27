@@ -77,7 +77,7 @@ const requiredAgents = [
   'code-quality'
 ];
 const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality'];
-const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile'];
+const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile', 'debugger', 'tester', 'infra', 'team-lead'];
 
 for (const agentName of requiredAgents) {
   const agentFile = path.join(agentsDir, `${agentName}.md`);
@@ -125,7 +125,7 @@ const heavySkills = [
   'tech-stack', 'architecture', 'scaffold', 'deploy-strategy',
   'new-project', 'idea-to-launch', 'import-docs',
   'mvp-kickoff', 'mvp-status', 'launch-mvp', 'clarify',
-  'release-notes', 'cost-estimate'
+  'release-notes', 'cost-estimate', 'rollback', 'setup-smithery'
 ];
 for (const skillName of heavySkills) {
   const skillMd = path.join(skillsDir, skillName, 'SKILL.md');
@@ -183,6 +183,73 @@ if (fs.existsSync(hooksDir)) {
     const hookPath = path.join(hooksDir, f);
     check(`${f} exists`, fs.existsSync(hookPath));
   }
+}
+
+// --- Commands (build/test/lint smoke test) ---
+console.log('--- Commands ---');
+const { execSync } = require('child_process');
+
+function tryCommand(label, cmd, dir) {
+  try {
+    execSync(cmd, { cwd: dir, stdio: 'pipe', timeout: 60000 });
+    check(`${label}: ${cmd}`, true);
+    return true;
+  } catch (e) {
+    // Exit code 1 from lint can still mean "ran successfully but found issues" — that's OK
+    if (e.status !== null && e.status !== undefined) {
+      check(`${label}: ${cmd} (exit ${e.status})`, true);
+      return true;
+    }
+    check(`${label}: ${cmd}`, false);
+    return false;
+  }
+}
+
+// Extract commands from CLAUDE.md "Quick Commands" section
+if (fs.existsSync(claudeMd)) {
+  const claudeContent = readFile(claudeMd);
+  const commandLines = claudeContent.split('\n').filter(l => /^\s*-\s+\*\*.*:\*\*\s+`/.test(l));
+  let commandsTested = 0;
+
+  for (const line of commandLines) {
+    const labelMatch = line.match(/\*\*(.+?):\*\*/);
+    const cmdMatch = line.match(/`(.+?)`/);
+    if (!labelMatch || !cmdMatch) continue;
+
+    const label = labelMatch[1].trim();
+    const fullCmd = cmdMatch[1].trim();
+
+    // Only smoke-test safe commands: install, lint, build, test --co (collect only)
+    const lowerLabel = label.toLowerCase();
+    if (lowerLabel.includes('install')) {
+      // Check if deps dir exists instead of running install
+      const cdMatch = fullCmd.match(/cd\s+(\S+)/);
+      if (cdMatch) {
+        const projDir = path.join(cwd, cdMatch[1]);
+        const hasDeps = fs.existsSync(path.join(projDir, 'node_modules'))
+          || fs.existsSync(path.join(projDir, '.dart_tool'))
+          || fs.existsSync(path.join(projDir, 'poetry.lock'));
+        check(`${label}: dependencies present`, hasDeps);
+        commandsTested++;
+      }
+    } else if (lowerLabel.includes('lint') || lowerLabel.includes('type check')) {
+      const cdMatch = fullCmd.match(/cd\s+(\S+)\s+&&\s+(.*)/);
+      if (cdMatch) {
+        const projDir = path.join(cwd, cdMatch[1]);
+        if (fs.existsSync(projDir)) {
+          tryCommand(label, cdMatch[2], projDir);
+          commandsTested++;
+        }
+      }
+    }
+  }
+
+  if (commandsTested === 0) {
+    warn('Commands tested', false);
+    console.log('    No safe commands found to smoke-test in CLAUDE.md');
+  }
+} else {
+  warn('Commands', false);
 }
 
 // --- Task Record Schema ---

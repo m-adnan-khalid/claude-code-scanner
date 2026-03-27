@@ -1,6 +1,6 @@
 {
   "name": "claude-code-scanner",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Scan any codebase and generate a complete Claude Code environment — agents, skills, hooks, rules, templates, and SDLC workflow",
   "author": "adnan-prompts",
   "license": "MIT",
