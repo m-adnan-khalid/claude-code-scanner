@@ -18,6 +18,7 @@ permissionMode: plan
 maxTurns: 20
 effort: high
 memory: project
+isolation: worktree
 ---
 
 # @ux-designer — User Experience Specialist

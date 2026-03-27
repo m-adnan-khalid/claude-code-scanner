@@ -113,8 +113,14 @@ function init() {
 
   const claudeMdSrc = path.join(templateDir, 'CLAUDE.md');
   const claudeMdDest = path.join(cwd, 'CLAUDE.md');
-  fs.copyFileSync(claudeMdSrc, claudeMdDest);
-  success('CLAUDE.md');
+  try {
+    fs.copyFileSync(claudeMdSrc, claudeMdDest);
+    success('CLAUDE.md');
+  } catch (err) {
+    error(`Failed to copy CLAUDE.md: ${err.message}`);
+    error('Check directory permissions and try again.');
+    process.exit(1);
+  }
 
   // Copy .claude/ directory structure
   const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles', 'project'];
@@ -128,25 +134,31 @@ function init() {
   }
 
   // Copy settings files
-  const settingsSrc = path.join(templateDir, '.claude', 'settings.json');
-  const settingsDest = path.join(cwd, '.claude', 'settings.json');
-  if (fs.existsSync(settingsSrc) && (!fs.existsSync(settingsDest) || force)) {
-    fs.copyFileSync(settingsSrc, settingsDest);
-    success('.claude/settings.json');
-  }
+  try {
+    const settingsSrc = path.join(templateDir, '.claude', 'settings.json');
+    const settingsDest = path.join(cwd, '.claude', 'settings.json');
+    if (fs.existsSync(settingsSrc) && (!fs.existsSync(settingsDest) || force)) {
+      fs.copyFileSync(settingsSrc, settingsDest);
+      success('.claude/settings.json');
+    }
 
-  const localSettingsDest = path.join(cwd, '.claude', 'settings.local.json');
-  if (!fs.existsSync(localSettingsDest)) {
-    fs.writeFileSync(localSettingsDest, JSON.stringify({ env: {} }, null, 2));
-    success('.claude/settings.local.json (template)');
-  }
+    const localSettingsDest = path.join(cwd, '.claude', 'settings.local.json');
+    if (!fs.existsSync(localSettingsDest)) {
+      fs.writeFileSync(localSettingsDest, JSON.stringify({ env: {} }, null, 2));
+      success('.claude/settings.local.json (template)');
+    }
 
-  // Copy manifest.json for drift detection
-  const manifestSrc = path.join(templateDir, '.claude', 'manifest.json');
-  const manifestDest = path.join(cwd, '.claude', 'manifest.json');
-  if (fs.existsSync(manifestSrc) && (!fs.existsSync(manifestDest) || force)) {
-    fs.copyFileSync(manifestSrc, manifestDest);
-    success('.claude/manifest.json (drift tracking)');
+    // Copy manifest.json for drift detection
+    const manifestSrc = path.join(templateDir, '.claude', 'manifest.json');
+    const manifestDest = path.join(cwd, '.claude', 'manifest.json');
+    if (fs.existsSync(manifestSrc) && (!fs.existsSync(manifestDest) || force)) {
+      fs.copyFileSync(manifestSrc, manifestDest);
+      success('.claude/manifest.json (drift tracking)');
+    }
+  } catch (err) {
+    error(`Failed to write config files: ${err.message}`);
+    error('Check directory permissions and try again.');
+    process.exit(1);
   }
 
   // Create task/report/execution directories
@@ -179,15 +191,19 @@ function init() {
     '.claude/reports/',
   ];
 
-  let gitignoreContent = fs.existsSync(gitignorePath)
-    ? fs.readFileSync(gitignorePath, 'utf-8')
-    : '';
+  try {
+    let gitignoreContent = fs.existsSync(gitignorePath)
+      ? fs.readFileSync(gitignorePath, 'utf-8')
+      : '';
 
-  const newEntries = gitignoreEntries.filter(e => !gitignoreContent.includes(e));
-  if (newEntries.length > 0) {
-    gitignoreContent += '\n# Claude Code local files\n' + newEntries.join('\n') + '\n';
-    fs.writeFileSync(gitignorePath, gitignoreContent);
-    success(`.gitignore updated (${newEntries.length} entries)`);
+    const newEntries = gitignoreEntries.filter(e => !gitignoreContent.includes(e));
+    if (newEntries.length > 0) {
+      gitignoreContent += '\n# Claude Code local files\n' + newEntries.join('\n') + '\n';
+      fs.writeFileSync(gitignorePath, gitignoreContent);
+      success(`.gitignore updated (${newEntries.length} entries)`);
+    }
+  } catch (err) {
+    warn(`Could not update .gitignore: ${err.message}`);
   }
 
   // Summary
