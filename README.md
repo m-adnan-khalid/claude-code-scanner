@@ -43,18 +43,18 @@ npx claude-code-scanner init
 ### Method 2: One-line install (macOS/Linux)
 ```bash
 cd /path/to/your-project
-curl -fsSL https://raw.githubusercontent.com/adnan-prompts/claude-code-scanner/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/main/install.sh | bash
 ```
 
 ### Method 2b: One-line install (Windows PowerShell)
 ```powershell
 cd C:\path\to\your-project
-irm https://raw.githubusercontent.com/adnan-prompts/claude-code-scanner/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/main/install.ps1 | iex
 ```
 
 ### Method 3: Git clone
 ```bash
-git clone https://github.com/adnan-prompts/claude-code-scanner.git /tmp/scanner
+git clone https://github.com/m-adnan-khalid/claude-code-scanner.git /tmp/scanner
 cp /tmp/scanner/template/CLAUDE.md ./CLAUDE.md
 cp -r /tmp/scanner/template/.claude ./.claude
 rm -rf /tmp/scanner

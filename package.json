@@ -1,16 +1,16 @@
 {
   "name": "claude-code-scanner",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Scan any codebase and generate a complete Claude Code environment — agents, skills, hooks, rules, templates, and SDLC workflow",
   "author": "adnan-prompts",
   "license": "MIT",
-  "homepage": "https://github.com/adnan-prompts/claude-code-scanner#readme",
+  "homepage": "https://github.com/m-adnan-khalid/claude-code-scanner#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adnan-prompts/claude-code-scanner.git"
+    "url": "https://github.com/m-adnan-khalid/claude-code-scanner.git"
   },
   "bugs": {
-    "url": "https://github.com/adnan-prompts/claude-code-scanner/issues"
+    "url": "https://github.com/m-adnan-khalid/claude-code-scanner/issues"
   },
   "bin": {
     "claude-code-scanner": "./bin/cli.js"

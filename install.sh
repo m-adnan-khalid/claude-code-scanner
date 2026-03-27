@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code Scanner — Quick Install
-# Usage: curl -fsSL https://raw.githubusercontent.com/adnan-prompts/claude-code-scanner/main/install.sh | bash
+# Usage: git clone https://github.com/m-adnan-khalid/claude-code-scanner.git
 # Or:    bash install.sh
 
 set -e
@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-REPO="claude-code-scanner"
+REPO="m-adnan-khalid/claude-code-scanner"
 BRANCH="main"
 
 echo -e "\n${BOLD}${CYAN}Claude Code Scanner — Installing...${NC}\n"

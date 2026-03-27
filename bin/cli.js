@@ -361,7 +361,7 @@ function newProject() {
   // Create placeholder README
   const readmePath = path.join(targetDir, 'README.md');
   if (!fs.existsSync(readmePath)) {
-    const readmeContent = `# ${projectName || 'New Project'}\n\n> Created with [Claude Code Scanner](https://github.com/adnan-prompts/claude-code-scanner)\n\nThis project was set up using the idea-to-launch pipeline. Run \`claude\` and then \`/new-project "your idea"\` to begin.\n`;
+    const readmeContent = `# ${projectName || 'New Project'}\n\n> Created with [Claude Code Scanner](https://github.com/m-adnan-khalid/claude-code-scanner)\n\nThis project was set up using the idea-to-launch pipeline. Run \`claude\` and then \`/new-project "your idea"\` to begin.\n`;
     fs.writeFileSync(readmePath, readmeContent);
     success('README.md');
   }
