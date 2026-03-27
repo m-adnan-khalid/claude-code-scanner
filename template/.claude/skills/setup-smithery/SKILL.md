@@ -4,6 +4,7 @@ description: Install Smithery skills and MCP servers matching the project tech s
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read, Bash, Grep
+context: fork
 ---
 
 # Setup Smithery: $ARGUMENTS

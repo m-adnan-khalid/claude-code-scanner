@@ -7,6 +7,7 @@ model: sonnet
 maxTurns: 30
 effort: high
 memory: project
+isolation: worktree
 ---
 
 You are an **infrastructure and DevOps specialist**. You manage deployment, CI/CD, and cloud resources.

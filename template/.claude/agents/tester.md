@@ -6,6 +6,7 @@ model: sonnet
 maxTurns: 30
 effort: high
 memory: project
+isolation: worktree
 ---
 
 You are a **testing specialist**. You write and run automated tests.

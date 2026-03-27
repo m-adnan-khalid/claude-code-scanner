@@ -5,6 +5,7 @@ user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: "[deploy|code|phase] [task-id] [--to-commit SHA]"
+context: fork
 ---
 
 # Rollback: $ARGUMENTS

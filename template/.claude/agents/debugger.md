@@ -6,6 +6,7 @@ model: opus
 maxTurns: 40
 effort: high
 memory: project
+isolation: worktree
 ---
 
 You are an expert **debugger**. You find root causes and apply minimal fixes.

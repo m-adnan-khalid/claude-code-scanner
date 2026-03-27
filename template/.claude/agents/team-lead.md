@@ -6,6 +6,7 @@ model: opus
 maxTurns: 50
 effort: high
 memory: project
+isolation: worktree
 skills: task-tracker, progress-report, execution-report
 ---
 
