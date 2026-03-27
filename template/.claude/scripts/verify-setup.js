@@ -295,12 +295,31 @@ check('New project guide exists', fs.existsSync(newProjectGuide));
 // --- Context Budget ---
 console.log('--- Context Budget ---');
 const clLines = fs.existsSync(claudeMd) ? lineCount(claudeMd) : 999;
-let rlLines = 0;
+
+// Only count always-loaded rules: those with paths: **/* or referenced via @ in CLAUDE.md
+const claudeContent = fs.existsSync(claudeMd) ? readFile(claudeMd) : '';
+const atRefs = (claudeContent.match(/@\.claude\/rules\/(\S+)/g) || []).map(r => path.basename(r));
+
+let alwaysLoadedLines = 0;
+const alwaysLoadedNames = [];
 for (const f of globDir(rulesDir, '.md')) {
-  rlLines += lineCount(f);
+  const name = path.basename(f);
+  const content = readFile(f);
+  const isGlobalPath = /paths:\s*\[?"?\*\*\/?\*"?\]?/m.test(content) || /paths:[\s\S]*?- "\*\*\/?\*"/m.test(content);
+  const isAtRef = atRefs.includes(name);
+  if (isGlobalPath || isAtRef) {
+    const lines = lineCount(f);
+    alwaysLoadedLines += lines;
+    alwaysLoadedNames.push(`${name} (${lines})`);
+  }
 }
-console.log(`  CLAUDE.md: ${clLines} lines | Rules: ${rlLines} lines | Total: ${clLines + rlLines}`);
-check('Combined under 200 lines', (clLines + rlLines) <= 200);
+
+const allRulesLines = globDir(rulesDir, '.md').reduce((sum, f) => sum + lineCount(f), 0);
+console.log(`  CLAUDE.md: ${clLines} lines`);
+console.log(`  Always-loaded rules: ${alwaysLoadedNames.join(', ')} = ${alwaysLoadedLines} lines`);
+console.log(`  Path-scoped rules (load on demand): ${allRulesLines - alwaysLoadedLines} lines`);
+console.log(`  Startup context: ${clLines + alwaysLoadedLines} lines (limit 200)`);
+check('Startup context under 200 lines', (clLines + alwaysLoadedLines) <= 200);
 
 // --- Summary ---
 console.log(`\n=== PASS: ${PASS} | FAIL: ${FAIL} | WARN: ${WARN} ===`);
