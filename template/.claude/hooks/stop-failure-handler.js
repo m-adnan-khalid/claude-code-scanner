@@ -5,6 +5,12 @@
 const fs = require('fs');
 const path = require('path');
 
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
 function getRecoveryAction(errorType) {
   const actions = {
     'rate_limit': 'Wait 60 seconds, then resume: claude --continue',
@@ -24,7 +30,7 @@ function processInput(raw) {
     const errorType = data.stop_failure_error_type || data.error_type || 'unknown';
 
     // Log the failure
-    const reportsDir = path.join(process.cwd(), '.claude', 'reports');
+    const reportsDir = path.join(_projectRoot, '.claude', 'reports');
     if (!fs.existsSync(reportsDir)) {
       fs.mkdirSync(reportsDir, { recursive: true });
     }
@@ -34,7 +40,7 @@ function processInput(raw) {
     fs.appendFileSync(logPath, `| ${timestamp} | ${errorType} | ${JSON.stringify(data).substring(0, 500)} |\n`);
 
     // Save task state snapshot for recovery
-    const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
+    const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (fs.existsSync(tasksDir)) {
       const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
       for (const tf of taskFiles) {

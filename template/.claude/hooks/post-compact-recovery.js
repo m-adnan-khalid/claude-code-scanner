@@ -5,7 +5,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
+const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
 if (!fs.existsSync(tasksDir)) process.exit(0);
 
 const files = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));

@@ -3,8 +3,14 @@
 const fs = require('fs');
 const path = require('path');
 
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
 // --- Check new project pre-dev status ---
-const projectMd = path.join(process.cwd(), '.claude', 'project', 'PROJECT.md');
+const projectMd = path.join(_projectRoot, '.claude', 'project', 'PROJECT.md');
 if (fs.existsSync(projectMd)) {
   const projectContent = fs.readFileSync(projectMd, 'utf-8');
   const statusMatch = projectContent.match(/^## Status:\s*(.+)$/m);
@@ -20,7 +26,7 @@ if (fs.existsSync(projectMd)) {
       console.log('Continue with: /new-project --resume');
     } else if (status === 'READY_FOR_DEV') {
       // Check if there are MVP features to build
-      const backlogPath = path.join(process.cwd(), '.claude', 'project', 'BACKLOG.md');
+      const backlogPath = path.join(_projectRoot, '.claude', 'project', 'BACKLOG.md');
       if (fs.existsSync(backlogPath)) {
         const backlog = fs.readFileSync(backlogPath, 'utf-8');
         const pendingFeatures = (backlog.match(/\| PENDING \|/g) || []).length;
@@ -32,7 +38,7 @@ if (fs.existsSync(projectMd)) {
   }
 }
 
-const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
+const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
 if (!fs.existsSync(tasksDir)) process.exit(0);
 
 const files = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));

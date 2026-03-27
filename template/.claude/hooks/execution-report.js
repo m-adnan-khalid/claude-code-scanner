@@ -5,8 +5,14 @@
 const fs = require('fs');
 const path = require('path');
 
-const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
-const reportsDir = path.join(process.cwd(), '.claude', 'reports', 'executions');
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
+const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
+const reportsDir = path.join(_projectRoot, '.claude', 'reports', 'executions');
 
 // Find active task
 let activeTask = null;

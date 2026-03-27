@@ -3,6 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
 // ── Processing logic ────────────────────────────────────────────────
 function processInput(raw) {
   try {
@@ -10,7 +16,7 @@ function processInput(raw) {
     const file = (data.tool_input && data.tool_input.file_path) || '';
     if (!file) return;
 
-    const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
+    const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (!fs.existsSync(tasksDir)) return;
 
     const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));

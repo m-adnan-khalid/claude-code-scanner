@@ -4,6 +4,12 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
 // ── Formatting logic ────────────────────────────────────────────────
 function format(raw) {
   try {
@@ -12,7 +18,7 @@ function format(raw) {
     if (!file || !fs.existsSync(file)) return;
 
     const resolved = path.resolve(file);
-    if (!resolved.startsWith(process.cwd())) return;
+    if (!resolved.startsWith(_projectRoot)) return;
 
     const ext = path.extname(file).toLowerCase();
     const formatters = {

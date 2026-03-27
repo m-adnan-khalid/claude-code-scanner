@@ -5,6 +5,12 @@
 const fs = require('fs');
 const path = require('path');
 
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
 // ── Processing logic ────────────────────────────────────────────────
 function processInput(raw) {
   try {
@@ -14,7 +20,7 @@ function processInput(raw) {
     const toolInput = data.tool_input || {};
 
     // Log to failure tracking file
-    const reportsDir = path.join(process.cwd(), '.claude', 'reports');
+    const reportsDir = path.join(_projectRoot, '.claude', 'reports');
     if (!fs.existsSync(reportsDir)) {
       fs.mkdirSync(reportsDir, { recursive: true });
     }
@@ -26,7 +32,7 @@ function processInput(raw) {
     fs.appendFileSync(logPath, entry);
 
     // Also log to active task's changes log if one exists
-    const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
+    const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (fs.existsSync(tasksDir)) {
       const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
       for (const tf of taskFiles) {

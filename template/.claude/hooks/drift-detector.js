@@ -6,7 +6,13 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const claudeDir = path.join(process.cwd(), '.claude');
+// Resolve project root (walk up to find .claude/hooks/)
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
+
+const claudeDir = path.join(_projectRoot, '.claude');
 const manifestPath = path.join(claudeDir, 'manifest.json');
 
 // Only run if .claude/ exists (environment is set up)
@@ -40,7 +46,7 @@ if (fs.existsSync(manifestPath)) {
 
 // --- 2. Quick agent count check ---
 const agentsDir = path.join(claudeDir, 'agents');
-const claudeMdPath = path.join(process.cwd(), 'CLAUDE.md');
+const claudeMdPath = path.join(_projectRoot, 'CLAUDE.md');
 
 if (fs.existsSync(agentsDir) && fs.existsSync(claudeMdPath)) {
   const agentFiles = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
@@ -62,7 +68,7 @@ if (fs.existsSync(agentsDir) && fs.existsSync(claudeMdPath)) {
 const depFiles = ['package.json', 'go.mod', 'Cargo.toml', 'requirements.txt', 'pyproject.toml', 'Gemfile', 'pom.xml'];
 if (manifest && manifest.tech_stack) {
   for (const depFile of depFiles) {
-    const depPath = path.join(process.cwd(), depFile);
+    const depPath = path.join(_projectRoot, depFile);
     if (fs.existsSync(depPath)) {
       const currentHash = crypto.createHash('sha256')
         .update(fs.readFileSync(depPath))
