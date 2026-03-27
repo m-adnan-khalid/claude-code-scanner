@@ -41,6 +41,7 @@ checkPrerequisites();
 
 const COMMANDS = {
   init: 'Initialize Claude Code environment in current directory',
+  new: 'Create a new project from idea to launch',
   status: 'Check if Claude Code environment is set up',
   verify: 'Run verification checks on existing setup',
   update: 'Update scanner skills/agents to latest version',
@@ -116,7 +117,7 @@ function init() {
   success('CLAUDE.md');
 
   // Copy .claude/ directory structure
-  const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles'];
+  const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles', 'project'];
   for (const dir of dirs) {
     const src = path.join(templateDir, '.claude', dir);
     const dest = path.join(cwd, '.claude', dir);
@@ -206,6 +207,188 @@ function init() {
   log('');
 }
 
+function newProject() {
+  const { execSync } = require('child_process');
+  const templateDir = path.join(__dirname, '..', 'template');
+  const force = flags.includes('--force') || flags.includes('-f');
+  const here = flags.includes('--here');
+
+  // Get project name from flags (first non-flag argument)
+  // Skip values that follow --from-docs or --template flags
+  const skipNextValue = new Set();
+  flags.forEach((f, i) => {
+    if (f === '--from-docs' || f === '--template') skipNextValue.add(i + 1);
+  });
+  const projectName = flags.find((f, i) => !f.startsWith('-') && !skipNextValue.has(i));
+
+  header('Claude Code Scanner — New Project Setup');
+
+  // Validate project name
+  if (projectName) {
+    const invalidChars = /[<>:"/\\|?*\x00-\x1f]/;
+    if (invalidChars.test(projectName)) {
+      error(`Invalid project name "${projectName}". Avoid special characters: < > : " / \\ | ? *`);
+      process.exit(1);
+    }
+    if (projectName.length > 100) {
+      error('Project name too long (max 100 characters).');
+      process.exit(1);
+    }
+  }
+
+  let targetDir;
+  if (here) {
+    targetDir = process.cwd();
+    log(`Creating new project in current directory: ${targetDir}\n`);
+  } else if (projectName) {
+    targetDir = path.join(process.cwd(), projectName);
+    log(`Creating new project: ${projectName}\n`);
+  } else {
+    error('Please provide a project name: npx claude-code-scanner new <project-name>');
+    log('  Or use --here to initialize in the current directory');
+    process.exit(1);
+  }
+
+  // Check for existing pre-dev progress before --force overwrite
+  if (!here) {
+    if (fs.existsSync(targetDir)) {
+      const existingProject = path.join(targetDir, '.claude', 'project', 'PROJECT.md');
+      if (fs.existsSync(existingProject) && !force) {
+        const content = fs.readFileSync(existingProject, 'utf-8');
+        const statusMatch = content.match(/^## Status:\s*(.+)$/m);
+        if (statusMatch && statusMatch[1].trim() !== 'IDEATING') {
+          warn(`Project "${projectName}" has pre-dev progress (status: ${statusMatch[1].trim()}).`);
+          log('  Use --force to overwrite, or cd into it and run: claude → /new-project --resume');
+          process.exit(1);
+        }
+      }
+      if (!force) {
+        error(`Directory "${projectName}" already exists. Use --force to overwrite.`);
+        process.exit(1);
+      }
+    }
+    fs.mkdirSync(targetDir, { recursive: true });
+    success(`Created directory: ${projectName}/`);
+  }
+
+  // Initialize git
+  try {
+    if (!fs.existsSync(path.join(targetDir, '.git'))) {
+      execSync('git init', { cwd: targetDir, stdio: 'pipe' });
+      success('Initialized git repository');
+    } else {
+      warn('Git repository already exists');
+    }
+  } catch (e) {
+    warn('Could not initialize git (git not found or error)');
+  }
+
+  // Copy CLAUDE.md
+  fs.copyFileSync(path.join(templateDir, 'CLAUDE.md'), path.join(targetDir, 'CLAUDE.md'));
+  success('CLAUDE.md');
+
+  // Copy .claude/ directory structure (same as init)
+  const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles', 'project'];
+  for (const dir of dirs) {
+    const src = path.join(templateDir, '.claude', dir);
+    const dest = path.join(targetDir, '.claude', dir);
+    if (fs.existsSync(src)) {
+      const result = copyDir(src, dest, force);
+      success(`.claude/${dir}/ (${result.copied} files${result.skipped ? `, ${result.skipped} skipped` : ''})`);
+    }
+  }
+
+  // Copy settings + manifest
+  const settingsSrc = path.join(templateDir, '.claude', 'settings.json');
+  const settingsDest = path.join(targetDir, '.claude', 'settings.json');
+  if (fs.existsSync(settingsSrc)) {
+    fs.copyFileSync(settingsSrc, settingsDest);
+    success('.claude/settings.json');
+  }
+
+  const localSettingsDest = path.join(targetDir, '.claude', 'settings.local.json');
+  if (!fs.existsSync(localSettingsDest)) {
+    fs.writeFileSync(localSettingsDest, JSON.stringify({ env: {} }, null, 2));
+    success('.claude/settings.local.json (template)');
+  }
+
+  const manifestSrc = path.join(templateDir, '.claude', 'manifest.json');
+  const manifestDest = path.join(targetDir, '.claude', 'manifest.json');
+  if (fs.existsSync(manifestSrc)) {
+    fs.copyFileSync(manifestSrc, manifestDest);
+    success('.claude/manifest.json');
+  }
+
+  // Create runtime directories
+  fs.mkdirSync(path.join(targetDir, '.claude', 'tasks'), { recursive: true });
+  fs.mkdirSync(path.join(targetDir, '.claude', 'reports', 'daily'), { recursive: true });
+  fs.mkdirSync(path.join(targetDir, '.claude', 'reports', 'executions'), { recursive: true });
+  success('.claude/tasks/, .claude/reports/');
+
+  // Make hooks executable
+  const hooksDir = path.join(targetDir, '.claude', 'hooks');
+  if (fs.existsSync(hooksDir)) {
+    for (const file of fs.readdirSync(hooksDir)) {
+      if (file.endsWith('.sh') || file.endsWith('.js')) {
+        try { fs.chmodSync(path.join(hooksDir, file), 0o755); } catch (e) { /* Windows */ }
+      }
+    }
+    success('Hook scripts ready');
+  }
+
+  // Create .gitignore
+  const gitignorePath = path.join(targetDir, '.gitignore');
+  const gitignoreContent = [
+    '# Dependencies',
+    'node_modules/',
+    '',
+    '# Environment',
+    '.env',
+    '.env.local',
+    '',
+    '# Claude Code local files',
+    '.claude/settings.local.json',
+    '.claude/agent-memory-local/',
+    '.claude/tasks/',
+    '.claude/reports/',
+    '',
+  ].join('\n');
+  if (!fs.existsSync(gitignorePath)) {
+    fs.writeFileSync(gitignorePath, gitignoreContent);
+    success('.gitignore');
+  }
+
+  // Create placeholder README
+  const readmePath = path.join(targetDir, 'README.md');
+  if (!fs.existsSync(readmePath)) {
+    const readmeContent = `# ${projectName || 'New Project'}\n\n> Created with [Claude Code Scanner](https://github.com/adnan-prompts/claude-code-scanner)\n\nThis project was set up using the idea-to-launch pipeline. Run \`claude\` and then \`/new-project "your idea"\` to begin.\n`;
+    fs.writeFileSync(readmePath, readmeContent);
+    success('README.md');
+  }
+
+  // Summary
+  header('New Project Ready!\n');
+  log('Next steps:\n');
+  if (!here) {
+    log(`  ${BOLD}1.${RESET} cd ${projectName}`);
+  }
+  log(`  ${BOLD}${here ? '1' : '2'}.${RESET} claude`);
+  log(`  ${BOLD}${here ? '2' : '3'}.${RESET} /new-project "describe your idea"  ${CYAN}# Full pre-dev pipeline${RESET}`);
+  log('');
+  log(`${CYAN}Or run individual phases:${RESET}`);
+  log(`  /brainstorm "idea"        ${CYAN}# Brainstorm the idea${RESET}`);
+  log(`  /product-spec             ${CYAN}# Create product specification${RESET}`);
+  log(`  /feature-map              ${CYAN}# Prioritize features (MoSCoW)${RESET}`);
+  log(`  /tech-stack               ${CYAN}# Choose technology stack${RESET}`);
+  log(`  /architecture             ${CYAN}# Design system architecture${RESET}`);
+  log(`  /scaffold                 ${CYAN}# Generate project files${RESET}`);
+  log(`  /deploy-strategy          ${CYAN}# Plan deployment & launch${RESET}`);
+  log('');
+  log(`${CYAN}Or go fully automated:${RESET}`);
+  log(`  /idea-to-launch "idea"    ${CYAN}# Idea to deployed product${RESET}`);
+  log('');
+}
+
 function status() {
   const cwd = process.cwd();
   header('Claude Code Environment Status\n');
@@ -278,19 +461,26 @@ function help() {
   }
   log(`\n${BOLD}Options:${RESET}`);
   log(`  ${CYAN}--force, -f${RESET}      Overwrite existing files`);
+  log(`  ${CYAN}--here${RESET}           Initialize new project in current directory`);
   log(`  ${CYAN}--no-smithery${RESET}    Skip Smithery setup step in instructions`);
-  log(`\n${BOLD}Quick Start:${RESET}`);
+  log(`\n${BOLD}Quick Start (existing project):${RESET}`);
   log('  cd /path/to/your-project');
   log('  npx claude-code-scanner init');
   log('  claude');
   log('  /scan-codebase');
   log('  /generate-environment');
+  log(`\n${BOLD}Quick Start (new project):${RESET}`);
+  log('  npx claude-code-scanner new my-project');
+  log('  cd my-project');
+  log('  claude');
+  log('  /new-project "your idea"');
   log('');
 }
 
 // Route command
 switch (command) {
   case 'init': init(); break;
+  case 'new': newProject(); break;
   case 'status': status(); break;
   case 'verify': verify(); break;
   case 'update': update(); break;

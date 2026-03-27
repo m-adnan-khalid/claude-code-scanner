@@ -17,9 +17,9 @@
 - Progressive disclosure: ~100 token description at startup, ~5k full load
 
 ## Agents (Role-Based Team)
-- 12 agents required: 4 SDLC roles + 5 core + 3 dev (conditional)
+- 18 agents required: 4 SDLC roles + 6 core + 4 dev (frontend, api-builder, infra, mobile) + 4 pre-dev (ideator, strategist, scaffolder, ux-designer)
 - SDLC roles: team-lead, architect, product-owner, qa-lead
-- Core: explorer, reviewer, security, debugger, tester
+- Core: explorer, reviewer, security, debugger, tester, code-quality
 - Dev (conditional): frontend, api-builder, infra
 - `permissionMode: plan` for read-only agents
 - `disallowedTools: Edit, Write` on read-only agents (belt-and-suspenders)

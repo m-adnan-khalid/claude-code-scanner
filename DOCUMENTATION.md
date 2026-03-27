@@ -1,6 +1,6 @@
 # Claude Code Scanner — Complete Documentation
 
-> Scan any codebase and generate a production-ready AI-powered development environment with 12 role-based agents, 13 workflow skills, 12 automation hooks, and a full 13-phase SDLC pipeline.
+> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 18 role-based agents, 31 workflow skills, 12 automation hooks, and full lifecycle support from idea to deployment.
 
 ---
 
@@ -10,8 +10,9 @@
 2. [Quick Start (5 Minutes)](#2-quick-start)
 3. [Installation Methods](#3-installation-methods)
 4. [How It Works (4-Phase Setup)](#4-how-it-works)
-5. [The Agent Team (12 Roles)](#5-the-agent-team)
-6. [Skills Reference (13 Commands)](#6-skills-reference)
+4b. [New Project Mode (Idea to Launch)](#4b-new-project-mode)
+5. [The Agent Team (18 Roles)](#5-the-agent-team)
+6. [Skills Reference (31 Skills)](#6-skills-reference)
 7. [The Workflow Engine (13 Phases)](#7-the-workflow-engine)
 8. [Loop Flows & Circuit Breakers](#8-loop-flows--circuit-breakers)
 9. [Hooks & Automation (12 Hooks)](#9-hooks--automation)
@@ -29,12 +30,13 @@
 
 ## 1. What Is This?
 
-Claude Code Scanner is a tool that scans your existing codebase and generates a complete Claude Code development environment tailored to your project. Instead of manually configuring agents, skills, and rules, the scanner reads your actual code and creates everything automatically.
+Claude Code Scanner is a tool that scans your existing codebase **or helps you start from scratch** and generates a complete Claude Code development environment tailored to your project. Instead of manually configuring agents, skills, and rules, the scanner reads your actual code (or helps you design it from an idea) and creates everything automatically.
 
 **What you get:**
-- 12 AI agents organized as a development team (tech lead, architect, QA lead, developers, etc.)
-- 13 slash commands for common workflows
+- 18 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
+- 31 workflow skills for common workflows (including 9 pre-development and 8 utility skills)
 - 12 automation hooks that run behind the scenes
+- **NEW:** 8-phase pre-development pipeline (idea → product spec → features → tech stack → architecture → scaffolding → environment → launch plan)
 - A 13-phase SDLC workflow from task intake to production deployment
 - Execution analytics with success scoring and hallucination detection
 - Automatic drift detection that keeps your environment in sync with your codebase
@@ -69,6 +71,30 @@ claude
 ```
 
 That's it. Your project now has a complete AI development team.
+
+### Quick Start — New Project (from idea)
+```bash
+# Step 1: Create a new project
+npx claude-code-scanner new my-awesome-app
+
+# Step 2: Enter the project
+cd my-awesome-app
+
+# Step 3: Start Claude Code
+claude
+
+# Step 4: Run the pre-development pipeline
+/new-project "Build a SaaS invoicing tool for freelancers"
+
+# The pipeline guides you through:
+# 1. Brainstorming → 2. Product Spec → 3. Features → 4. Tech Stack
+# 5. Architecture → 6. Scaffolding → 7. Environment → 8. Launch Plan
+
+# Step 5: Build MVP features
+/workflow new "User authentication with email/password"
+```
+
+Or go fully automated: `/idea-to-launch "your idea"`
 
 ---
 
@@ -152,7 +178,7 @@ Takes the scan results and generates project-specific files:
 
 Runs 170+ automated checks:
 - CLAUDE.md under 200 lines, no placeholders
-- All 12 agents compliant (frontmatter, HANDOFF, limitations)
+- All 18 agents compliant (frontmatter, HANDOFF, limitations)
 - All skills have proper frontmatter (context:fork, argument-hint)
 - Settings.json valid, all hooks registered
 - Context budget under limits
@@ -164,11 +190,59 @@ Optionally installs community skills and MCP servers matching your tech stack (R
 
 ---
 
+## 4b. New Project Mode (Idea to Launch)
+
+For brand-new projects with no existing code, use `npx claude-code-scanner new <name>` followed by `/new-project "idea"`.
+
+### The 8 Pre-Development Phases
+
+| # | Phase | Agent(s) | Output | User Gate |
+|---|-------|----------|--------|-----------|
+| 1 | Ideation | @ideator | IDEA_CANVAS.md | Yes |
+| 2 | Product Spec | @strategist + @ux-designer | PRODUCT_SPEC.md | Yes |
+| 3 | Feature Map | @strategist | BACKLOG.md | Yes |
+| 4 | Tech Selection | @architect | TECH_STACK.md | Yes |
+| 5 | Architecture | @architect + @ux-designer | ARCHITECTURE.md | Yes |
+| 6 | Scaffolding | @scaffolder + @infra | Project files | No |
+| 7 | Environment | auto (scan/generate/validate) | .claude/ config | No |
+| 8 | Launch Planning | @infra | DEPLOY_STRATEGY.md | No |
+
+### How It Connects to SDLC
+
+After pre-development completes, the project is `READY_FOR_DEV`. Each Must-Have feature from the backlog becomes a `/workflow new` task that runs through the existing 13-phase SDLC. The SDLC phases automatically reference pre-dev documents:
+
+- **Phase 1 (Intake):** Pre-populates scope from BACKLOG.md
+- **Phase 3 (Architecture):** References ARCHITECTURE.md instead of designing from scratch
+- **Phase 4 (Business):** References PRODUCT_SPEC.md for acceptance criteria
+- **Phase 11 (Deploy):** References DEPLOY_STRATEGY.md for deployment approach
+
+### Variants
+
+- `/new-project "idea" --fast` — Combines phases 1+2+3 into single pass
+- `/new-project "idea" --skip-brainstorm` — Starts at phase 2
+- `/new-project --resume` — Resumes from last completed phase
+- `/idea-to-launch "idea"` — Full automation: pre-dev + SDLC for all MVP features
+
+### Project State Files
+
+All pre-dev state persists in `.claude/project/`:
+- `PROJECT.md` — master tracker with phase progress
+- `IDEA_CANVAS.md` — brainstorming output
+- `PRODUCT_SPEC.md` — product specification
+- `BACKLOG.md` — prioritized feature list
+- `TECH_STACK.md` — technology decisions
+- `ARCHITECTURE.md` — system design
+- `DEPLOY_STRATEGY.md` — deployment plan
+
+See `.claude/docs/pre-dev-flow-engine.md` for detailed phase documentation and `.claude/docs/new-project-guide.md` for usage guide.
+
+---
+
 ## 5. The Agent Team
 
 ### Understanding Agent Roles
 
-The scanner creates a 12-agent team organized like a real development organization. Each agent has:
+The scanner creates an 18-agent team organized like a real development organization. Each agent has:
 
 - **Specific tools** — what it can read/write/execute
 - **Permission mode** — read-only agents can't modify code
@@ -376,6 +450,106 @@ Manages Docker, CI/CD, deployment, cloud resources. Never hardcodes secrets.
 
 **Output includes:** Infrastructure changes, new env vars, rollback plan.
 
+### Pre-Development Agents (New Project Lifecycle)
+
+#### @ideator (Brainstorming Specialist)
+```
+Model: opus | Access: Read-only | MaxTurns: 25
+```
+Creative brainstorming specialist. Explores problem spaces, identifies audiences, articulates value propositions through structured questioning.
+
+**When to use:** Starting a new project, exploring an idea, evaluating viability.
+
+**Example:**
+```
+@ideator help me think through this idea for a freelancer invoicing tool
+```
+
+**Output includes:** Idea Canvas with Problem Statement, Target Audience, Value Proposition, SWOT, Risks, Viability Assessment.
+
+#### @strategist (Product Strategy Specialist)
+```
+Model: opus | Access: Read/Write (project docs only) | MaxTurns: 30
+```
+Converts ideas into concrete product specs with MVP scope, user journeys, and prioritized feature backlogs using MoSCoW method.
+
+**When to use:** Defining MVP scope, writing user stories, prioritizing features.
+
+**Example:**
+```
+@strategist define the MVP for this invoicing tool
+@strategist prioritize the feature backlog using MoSCoW
+```
+
+**Output includes:** Product Spec, Feature Backlog with MoSCoW categories, sized features, implementation order.
+
+#### @scaffolder (Project Generation Specialist)
+```
+Model: sonnet | Access: Read/Write + Bash | MaxTurns: 40
+```
+Generates real project directory structures, configs, and boilerplate from architecture decisions. Uses official generators when available.
+
+**When to use:** Setting up a new project from approved architecture.
+
+**Example:**
+```
+@scaffolder generate the project structure from ARCHITECTURE.md
+```
+
+**Output includes:** Scaffolding Report with files created, dependencies installed, verification results.
+
+#### @ux-designer (UX Design Specialist)
+```
+Model: opus | Access: Read-only | MaxTurns: 20
+```
+Creates user flows (Mermaid), wireframe descriptions, information architecture, and interaction patterns.
+
+**When to use:** Designing user experiences, mapping user flows, planning screens.
+
+**Example:**
+```
+@ux-designer create user flows for the invoicing workflow
+@ux-designer design the dashboard screen layout
+```
+
+**Output includes:** User Flows (Mermaid), Page Hierarchy, Wireframe Descriptions, Accessibility Notes.
+
+#### @code-quality (Principal Engineer & Code Quality Guardian)
+```
+Model: opus | Access: Read-only | MaxTurns: 40
+```
+30+ years of experience building planet-scale systems. Enforces design patterns (SOLID, GoF), detects code duplication, runs SonarQube-style static analysis, and recommends optimal architecture for scalability. Works in two modes: **pre-implementation** (pattern selection & quality gates) and **post-implementation** (audit & scoring).
+
+**When to use:** Before starting implementation (choose the right patterns), after implementation (verify quality), when refactoring, when evaluating scalability.
+
+**Example:**
+```
+@code-quality review this use case and recommend design patterns
+@code-quality audit src/services/ for SOLID violations and duplication
+@code-quality is this architecture ready for 100x scale?
+```
+
+**Output includes:** Design Pattern Recommendations, SOLID Compliance Score (0-100), Code Duplication Report, Complexity Hotspots, Scalability Risks, Technical Debt Estimate.
+
+#### @mobile (Mobile Development Specialist)
+```
+Model: opus | Access: Read/Write + worktree | MaxTurns: 35
+```
+Senior mobile engineer covering all major platforms: iOS (Swift/SwiftUI), Android (Kotlin/Jetpack Compose), React Native, Flutter, and Kotlin Multiplatform. Handles screens, navigation, state management, offline-first, push notifications, deep linking, platform APIs, and app store submission.
+
+**When to use:** Building mobile screens/features, mobile-specific architecture decisions, platform integration (camera, notifications, biometrics), app store preparation.
+
+**Example:**
+```
+@mobile build the login screen with biometric auth support
+@mobile set up push notifications for iOS and Android
+@mobile implement offline-first data sync for the orders feature
+```
+
+**Output includes:** Implementation Summary, Platform, Architecture Pattern, Offline Support, Accessibility Notes, Platform-Specific Notes.
+
+**Related skill:** `/mobile-audit` — comprehensive mobile quality audit (performance, UX, accessibility, store readiness, security).
+
 ### Agent Communication
 
 Agents communicate through structured **HANDOFF** blocks:
@@ -452,7 +626,7 @@ Installs community Smithery skills and MCP servers matching your tech stack. Opt
 /workflow review TASK-001                    # Jump to review phase
 /workflow deploy TASK-001                    # Jump to deployment phase
 ```
-The main orchestrator. Coordinates all 12 agents through 13 phases. Includes automatic drift detection at Phase 1, context budget checks between phases, and execution reports after each phase.
+The main orchestrator. Coordinates all 18 agents through 13 phases. Includes automatic drift detection at Phase 1, context budget checks between phases, and execution reports after each phase.
 
 #### /task-tracker
 ```
@@ -1029,7 +1203,7 @@ your-project/
 │   ├── manifest.json                      # Drift tracking state
 │   ├── settings.json                      # Permissions + hooks
 │   ├── settings.local.json                # Personal env vars (gitignored)
-│   ├── agents/                            # 12 agent definitions
+│   ├── agents/                            # 18 agent definitions
 │   │   ├── team-lead.md                   # SDLC: orchestrator
 │   │   ├── architect.md                   # SDLC: design
 │   │   ├── product-owner.md               # SDLC: business
@@ -1041,8 +1215,23 @@ your-project/
 │   │   ├── tester.md                      # Core: test writing
 │   │   ├── api-builder.md                 # Dev: backend
 │   │   ├── frontend.md                    # Dev: UI
-│   │   └── infra.md                       # Dev: DevOps
-│   ├── skills/                            # 13 slash commands
+│   │   ├── infra.md                       # Dev: DevOps
+│   │   ├── ideator.md                     # Pre-dev: brainstorming
+│   │   ├── strategist.md                  # Pre-dev: product strategy
+│   │   ├── scaffolder.md                  # Pre-dev: project generation
+│   │   ├── ux-designer.md                 # Pre-dev: user experience
+│   │   ├── code-quality.md                # Core: design patterns & SOLID
+│   │   └── mobile.md                      # Dev: mobile apps
+│   ├── project/                           # Pre-development artifacts
+│   │   ├── PROJECT.md                     # Master project status
+│   │   ├── IDEA_CANVAS.md                 # Idea brainstorming
+│   │   ├── PRODUCT_SPEC.md                # Product specification
+│   │   ├── BACKLOG.md                     # Feature backlog (MoSCoW)
+│   │   ├── DOMAIN_MODEL.md                # Domain entities & rules
+│   │   ├── TECH_STACK.md                  # Technology decisions
+│   │   ├── ARCHITECTURE.md                # System architecture
+│   │   └── DEPLOY_STRATEGY.md             # Deployment strategy
+│   ├── skills/                            # 31 workflow skills
 │   │   ├── workflow/SKILL.md
 │   │   ├── scan-codebase/SKILL.md
 │   │   ├── generate-environment/SKILL.md
@@ -1055,10 +1244,28 @@ your-project/
 │   │   ├── impact-analysis/SKILL.md
 │   │   ├── context-check/SKILL.md
 │   │   ├── rollback/SKILL.md
-│   │   └── sync/SKILL.md
+│   │   ├── sync/SKILL.md
+│   │   ├── new-project/SKILL.md
+│   │   ├── brainstorm/SKILL.md
+│   │   ├── product-spec/SKILL.md
+│   │   ├── feature-map/SKILL.md
+│   │   ├── domain-model/SKILL.md
+│   │   ├── tech-stack/SKILL.md
+│   │   ├── architecture/SKILL.md
+│   │   ├── scaffold/SKILL.md
+│   │   ├── deploy-strategy/SKILL.md
+│   │   ├── idea-to-launch/SKILL.md
+│   │   ├── mvp-kickoff/SKILL.md
+│   │   ├── mvp-status/SKILL.md
+│   │   ├── launch-mvp/SKILL.md
+│   │   ├── clarify/SKILL.md
+│   │   ├── import-docs/SKILL.md
+│   │   ├── cost-estimate/SKILL.md
+│   │   ├── release-notes/SKILL.md
+│   │   └── mobile-audit/SKILL.md
 │   ├── hooks/                             # 12 automation scripts
 │   ├── rules/                             # Path-scoped coding rules
-│   ├── docs/                              # 9 reference documents
+│   ├── docs/                              # 11 reference documents
 │   ├── profiles/                          # Role-based developer guides
 │   ├── templates/                         # Code scaffolding templates
 │   ├── scripts/                           # Verification scripts

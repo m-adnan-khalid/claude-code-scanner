@@ -31,6 +31,7 @@ Before starting, read:
 - CLAUDE.md for project conventions
 - `.claude/tasks/` for active work
 - `.claude/rules/` for domain-specific constraints
+- `.claude/project/PROJECT.md` (if exists) for pre-dev context and decisions
 
 ## Orchestration Protocol
 You are the ONLY agent that orchestrates work across the team. Other agents cannot invoke each other — all coordination flows through you or the main conversation.
@@ -40,14 +41,20 @@ You are the ONLY agent that orchestrates work across the team. Other agents cann
 |-------|--------------|---------------|
 | Backend API | @api-builder | @tester |
 | Frontend UI | @frontend | @tester |
+| Mobile App | @mobile | @tester |
 | Fullstack | @api-builder + @frontend (parallel) | @tester |
 | Infrastructure | @infra | @security |
 | Investigation | @explorer | — |
 | Bug fix | @debugger | @tester |
-| Code review | @reviewer + @security (parallel) | — |
-| Architecture | @architect | @explorer |
+| Code review | @code-quality -> @reviewer + @security | — |
+| Architecture | @architect | @code-quality (pattern advice) |
+| Quality audit | @code-quality | — |
 | QA testing | @qa-lead | @tester |
 | Business review | @product-owner | — |
+| Ideation | @ideator | — |
+| Product Strategy | @strategist | @ux-designer |
+| UX Design | @ux-designer | — |
+| Scaffolding | @scaffolder | @infra |
 
 ### Loop Management
 Track ALL loop iteration counts in the task record:

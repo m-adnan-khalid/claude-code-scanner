@@ -28,7 +28,15 @@
     "sdlc",
     "cli",
     "generator",
-    "developer-tools"
+    "developer-tools",
+    "anthropic",
+    "code-review",
+    "ai-agents",
+    "workflow",
+    "scaffold",
+    "design-patterns",
+    "mobile",
+    "devtools"
   ],
   "files": [
     "bin/",

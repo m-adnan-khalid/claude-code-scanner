@@ -114,7 +114,46 @@ if (fs.existsSync(hooksDir) && fs.existsSync(settingsPath)) {
   }
 }
 
-// --- 5. Quick skill directory check ---
+// --- 5. New project file integrity check ---
+const projectDir = path.join(claudeDir, 'project');
+const projectMdPath = path.join(projectDir, 'PROJECT.md');
+
+if (fs.existsSync(projectDir) && fs.existsSync(projectMdPath)) {
+  try {
+    const projectContent = fs.readFileSync(projectMdPath, 'utf-8');
+    const statusMatch = projectContent.match(/^## Status:\s*(.+)$/m);
+    const status = statusMatch ? statusMatch[1].trim() : 'UNKNOWN';
+
+    // Check that files matching completed phases exist
+    const phaseFileMap = {
+      'IDEA_CANVAS.md': ['SPECIFYING', 'MAPPING', 'MODELING', 'SELECTING', 'ARCHITECTING', 'SCAFFOLDING', 'SETTING_UP', 'PLANNING', 'READY_FOR_DEV'],
+      'PRODUCT_SPEC.md': ['MAPPING', 'MODELING', 'SELECTING', 'ARCHITECTING', 'SCAFFOLDING', 'SETTING_UP', 'PLANNING', 'READY_FOR_DEV'],
+      'BACKLOG.md': ['MODELING', 'SELECTING', 'ARCHITECTING', 'SCAFFOLDING', 'SETTING_UP', 'PLANNING', 'READY_FOR_DEV'],
+      'TECH_STACK.md': ['ARCHITECTING', 'SCAFFOLDING', 'SETTING_UP', 'PLANNING', 'READY_FOR_DEV'],
+      'ARCHITECTURE.md': ['SCAFFOLDING', 'SETTING_UP', 'PLANNING', 'READY_FOR_DEV'],
+      'DEPLOY_STRATEGY.md': ['READY_FOR_DEV'],
+    };
+
+    for (const [file, requiredAfterStates] of Object.entries(phaseFileMap)) {
+      if (requiredAfterStates.includes(status)) {
+        const filePath = path.join(projectDir, file);
+        if (!fs.existsSync(filePath)) {
+          warnings.push(`DRIFT: ${file} missing but project is at ${status}. Run /new-project --resume`);
+        } else {
+          // Check if file still has only template placeholders (never populated)
+          const content = fs.readFileSync(filePath, 'utf-8');
+          if (content.includes('{project-name}') || content.includes('{ISO timestamp}')) {
+            warnings.push(`DRIFT: ${file} still has placeholders. Phase may not have completed properly`);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    warnings.push('DRIFT: PROJECT.md is unreadable. Check .claude/project/');
+  }
+}
+
+// --- 6. Quick skill directory check ---
 const skillsDir = path.join(claudeDir, 'skills');
 if (fs.existsSync(skillsDir)) {
   const skillDirs = fs.readdirSync(skillsDir, { withFileTypes: true })

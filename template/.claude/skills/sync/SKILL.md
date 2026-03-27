@@ -99,6 +99,20 @@ Compare directory structure against what was scanned:
 - New test directories not in testing rules
 - New config files not in infrastructure rules
 
+### 2i: Pre-Dev Project Document Drift
+If `.claude/project/PROJECT.md` exists, check pre-dev document integrity:
+- **Status consistency:** PROJECT.md status vs actual phase file existence
+  - e.g., status = READY_FOR_DEV but ARCHITECTURE.md missing → DRIFT
+- **Template detection:** project files still containing `{placeholder}` values → incomplete phase
+- **Cross-document consistency:**
+  - BACKLOG.md Must-Have features should map to PRODUCT_SPEC.md user journeys
+  - ARCHITECTURE.md entities should cover DOMAIN_MODEL.md entities
+  - TECH_STACK.md choices should be compatible with ARCHITECTURE.md directory structure
+- **Feature status sync:** BACKLOG.md feature status vs .claude/tasks/ TASK records
+  - Feature marked IN_PROGRESS but TASK record is CLOSED → stale
+  - Feature marked PENDING but TASK record exists → sync needed
+- **Decision Log currency:** PROJECT.md Decision Log should have entries for completed phases
+
 ---
 
 ## Step 3: Generate Drift Report

@@ -1,0 +1,20 @@
+# Dev/project files (not needed by end users)
+.claude/
+scripts/
+.github/
+.git/
+.gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local/test files
+*.log
+.env
+.env.local
+node_modules/
+
+# Install scripts (alternative install methods, README links to them on GitHub)
+install.sh
+install.ps1

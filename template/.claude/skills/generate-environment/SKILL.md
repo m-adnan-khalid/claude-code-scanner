@@ -52,9 +52,11 @@ Only for monorepo packages or distinct modules.
 - Generate additional rules ONLY if codebase demands them.
 
 ### 4. .claude/agents/ (see agents/ directory and domain-agents.md for templates)
-**Always generate (SDLC roles):** team-lead, architect, product-owner, qa-lead
-**Always generate (core):** explorer, reviewer, debugger, tester
-**Generate if layer exists:** frontend, api-builder, infra + domain-specific
+**Always generate (SDLC roles — 4):** team-lead, architect, product-owner, qa-lead
+**Always generate (core — 6):** explorer, reviewer, security, debugger, tester, code-quality
+**Always generate (pre-dev — 4):** ideator, strategist, scaffolder, ux-designer
+**Generate if layer exists (dev — 4):** frontend, api-builder, infra, mobile
+**Total: 18 agents (14 always + 4 conditional)**
 
 All agents MUST include:
 - `memory: project` for cross-session persistence
@@ -69,7 +71,11 @@ All agents MUST include:
 - Scope `mcpServers:` per agent
 
 ### 5. .claude/skills/ (see skills/ directory for templates)
-Generate: workflow, onboard, add-feature, add-endpoint, add-component, add-page, fix-bug, review-pr, qa-plan, signoff, deploy, rollback, migrate, task-tracker, progress-report, metrics, standup, impact-analysis, design-review, discover-skills, architecture, execution-report, context-check, sync.
+**Always generate (SDLC — 13):** workflow, task-tracker, progress-report, metrics, execution-report, context-check, sync, impact-analysis, rollback, validate-setup, generate-environment, scan-codebase, setup-smithery
+**Always generate (pre-dev — 11):** brainstorm, product-spec, feature-map, domain-model, tech-stack, architecture, scaffold, deploy-strategy, new-project, idea-to-launch, import-docs
+**Always generate (MVP — 4):** mvp-kickoff, mvp-status, launch-mvp, clarify
+**Always generate (post-launch — 2):** release-notes, cost-estimate
+**Generate based on stack:** add-feature, add-endpoint, add-component, add-page, fix-bug, review-pr, qa-plan, signoff, deploy, migrate, onboard, standup, design-review, discover-skills
 - Heavy skills: `context: fork`
 - Side-effect skills: `disable-model-invocation: true`
 

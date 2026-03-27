@@ -3,6 +3,35 @@
 const fs = require('fs');
 const path = require('path');
 
+// --- Check new project pre-dev status ---
+const projectMd = path.join(process.cwd(), '.claude', 'project', 'PROJECT.md');
+if (fs.existsSync(projectMd)) {
+  const projectContent = fs.readFileSync(projectMd, 'utf-8');
+  const statusMatch = projectContent.match(/^## Status:\s*(.+)$/m);
+  if (statusMatch) {
+    const status = statusMatch[1].trim();
+    const activeStates = ['IDEATING', 'SPECIFYING', 'MAPPING', 'MODELING', 'SELECTING', 'ARCHITECTING', 'SCAFFOLDING', 'SETTING_UP', 'PLANNING'];
+    if (activeStates.includes(status)) {
+      // Count completed phases
+      const phaseRows = projectContent.match(/\| \d[b]?\s*\|[^|]+\|\s*[^|]+\|\s*(COMPLETE|PENDING|SKIPPED)/g) || [];
+      const completed = phaseRows.filter(r => r.includes('COMPLETE')).length;
+      const total = phaseRows.length;
+      console.log(`NEW PROJECT IN PROGRESS: Phase "${status}" | ${completed}/${total} phases complete`);
+      console.log('Continue with: /new-project --resume');
+    } else if (status === 'READY_FOR_DEV') {
+      // Check if there are MVP features to build
+      const backlogPath = path.join(process.cwd(), '.claude', 'project', 'BACKLOG.md');
+      if (fs.existsSync(backlogPath)) {
+        const backlog = fs.readFileSync(backlogPath, 'utf-8');
+        const pendingFeatures = (backlog.match(/\| PENDING \|/g) || []).length;
+        if (pendingFeatures > 0) {
+          console.log(`PROJECT READY: ${pendingFeatures} MVP features pending. Start with: /workflow new "feature"`);
+        }
+      }
+    }
+  }
+}
+
 const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
 if (!fs.existsSync(tasksDir)) process.exit(0);
 

@@ -6,7 +6,10 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git branch *)",
-      "Bash(git checkout -b *)"
+      "Bash(git checkout -b *)",
+      "Bash(npm init *)",
+      "Bash(npx create-* *)",
+      "Bash(mkdir -p *)"
     ],
     "deny": [
       "Bash(rm -rf /)",

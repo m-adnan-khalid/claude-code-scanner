@@ -18,6 +18,16 @@ Generate this as `.claude/docs/commands.md` with actual values.
 `/help`, `/clear`, `/compact`, `/compact "focus"`, `/context`, `/cost`, `/model`, `/fast`, `/rewind`, `/rename "name"`, `/mcp`, `/config`, `/agents`, `Shift+Tab` (permission mode), `Alt+T` (thinking), `Esc` (stop)
 
 ## 3. Slash Skills
+
+### New Project (Idea to Launch)
+Pre-Dev: `/brainstorm "idea"`, `/product-spec`, `/feature-map`, `/domain-model`, `/tech-stack`, `/architecture`, `/scaffold`, `/deploy-strategy`
+Import: `/import-docs "path/to/docs" [--type prd|requirements|spec] [--merge]`
+Orchestrators: `/new-project "idea" [--fast] [--skip-brainstorm] [--from-docs "path"] [--resume]`, `/idea-to-launch "idea" [--fast] [--resume]`
+MVP: `/mvp-kickoff next|"feature"|--all|--status`, `/mvp-status [--full|--deps|--quality|--launch-ready]`, `/launch-mvp [--check|--force|--post-mvp]`
+Q&A: `/clarify [--full|--quick|--feature "name"|--before-dev|--before-launch|--existing]`
+Post-Launch: `/release-notes [version] [--format user|technical|full]`, `/cost-estimate [--current|--projected|--optimize]`
+
+### Existing Project (SDLC)
 Workflow: `/workflow new|status|plan|dev|review|qa|deploy`, `--hotfix`, `--spike`
 Tracking: `/task-tracker create|status|update|report|dashboard|history|blockers|metrics`
 Development: `/add-feature`, `/add-endpoint`, `/add-component`, `/add-page`, `/fix-bug`, `/migrate`, `/onboard`, `/architecture`
@@ -53,6 +63,14 @@ Smithery: `/discover-skills`
 | `@api-builder` | Backend Dev | Read/Write + worktree | Endpoints, services |
 | `@frontend` | Frontend Dev | Read/Write + worktree | Components, pages |
 | `@infra` | DevOps | Read/Write | Docker, CI/CD, deployment |
+
+### Pre-Dev Agents (new project lifecycle)
+| Agent | Role | Access | Responsibility |
+|-------|------|--------|---------------|
+| `@ideator` | Brainstorming | Read-only | Problem space, audience, value proposition |
+| `@strategist` | Product Strategy | Read/Write (project docs) | Product spec, MVP scope, features |
+| `@scaffolder` | Scaffolding | Read/Write + Bash | Project structure, boilerplate, configs |
+| `@ux-designer` | UX Design | Read-only | User flows, wireframes, IA |
 
 ## 5. Project Commands (fill from TECH_MANIFEST)
 Dev: `{install}`, `{dev}`, `{build}`

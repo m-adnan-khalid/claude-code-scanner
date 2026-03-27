@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase and generate a complete Claude Code environment — 12 role-based agents, 13 skills, 12 hooks, rules, templates, full SDLC workflow with execution analytics.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 18 role-based agents, 31 skills, 12 hooks, rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -73,15 +73,36 @@ Works on **Windows**, **macOS**, and **Linux**. All hooks and scripts use Node.j
 
 ## Usage
 
-After installing, 3 commands set up everything:
-
+### Existing Project (scan and enhance)
 ```bash
-claude                      # Start Claude Code session
+cd /path/to/your-project
+npx claude-code-scanner init
+claude
 /scan-codebase              # Scan your tech stack (2-5 min)
 /generate-environment       # Generate all Claude Code files
 ```
 
-That's it. Your project now has a complete AI-powered development environment.
+### New Project (idea to launch)
+```bash
+npx claude-code-scanner new my-project
+cd my-project
+claude
+/new-project "Build a SaaS invoicing tool for freelancers"
+```
+
+The new project pipeline runs 8 pre-development phases:
+1. **Brainstorm** — problem, audience, value proposition (`/brainstorm`)
+2. **Product Spec** — MVP scope, user journeys (`/product-spec`)
+3. **Feature Map** — MoSCoW prioritization (`/feature-map`)
+4. **Tech Stack** — language, framework, DB recommendations (`/tech-stack`)
+5. **Architecture** — data model, API design, components (`/architecture`)
+6. **Scaffolding** — generate project files and configs (`/scaffold`)
+7. **Environment** — auto-scan and generate Claude Code environment
+8. **Launch Plan** — CI/CD, hosting, monitoring (`/deploy-strategy`)
+
+Then build each MVP feature: `/workflow new "feature description"`
+
+Or go fully automated: `/idea-to-launch "your idea"`
 
 ## What It Creates
 
@@ -92,7 +113,7 @@ your-project/
 │   ├── settings.json             <- Permissions + 10 hook events
 │   ├── settings.local.json       <- Your env vars (gitignored)
 │   ├── rules/                    <- Path-specific coding rules
-│   ├── agents/                   <- 12 role-based AI agents
+│   ├── agents/                   <- 18 role-based AI agents
 │   │   ├── team-lead.md          <- Orchestrator, assigns work, tech sign-off
 │   │   ├── architect.md          <- Architecture design & review
 │   │   ├── product-owner.md      <- Acceptance criteria, business sign-off
@@ -104,8 +125,14 @@ your-project/
 │   │   ├── tester.md             <- Test writing & coverage
 │   │   ├── frontend.md           <- UI component development
 │   │   ├── api-builder.md        <- API endpoint development
-│   │   └── infra.md              <- Docker, CI/CD, deployment
-│   ├── skills/                   <- 13 slash commands
+│   │   ├── infra.md              <- Docker, CI/CD, deployment
+│   │   ├── ideator.md            <- Brainstorming & idea refinement
+│   │   ├── strategist.md         <- Product strategy & features
+│   │   ├── scaffolder.md         <- Project generation & boilerplate
+│   │   ├── ux-designer.md        <- User flows & wireframes
+│   │   ├── code-quality.md      <- Design patterns, SOLID, static analysis
+│   │   └── mobile.md            <- iOS, Android, React Native, Flutter, KMP
+│   ├── skills/                   <- 31 workflow skills
 │   │   ├── workflow/             <- /workflow — Full 13-phase SDLC
 │   │   ├── scan-codebase/        <- /scan-codebase
 │   │   ├── generate-environment/ <- /generate-environment
@@ -118,11 +145,31 @@ your-project/
 │   │   ├── rollback/             <- /rollback — Deploy/code/phase rollback
 │   │   ├── sync/                 <- /sync — Drift detection & repair
 │   │   ├── setup-smithery/       <- /setup-smithery
-│   │   └── validate-setup/       <- /validate-setup
+│   │   ├── validate-setup/       <- /validate-setup
+│   │   ├── new-project/          <- /new-project — Full pre-dev pipeline
+│   │   ├── brainstorm/           <- /brainstorm — Idea exploration
+│   │   ├── product-spec/         <- /product-spec — MVP scope & journeys
+│   │   ├── feature-map/          <- /feature-map — MoSCoW prioritization
+│   │   ├── domain-model/         <- /domain-model — Entity modeling
+│   │   ├── tech-stack/           <- /tech-stack — Technology selection
+│   │   ├── architecture/         <- /architecture — System design
+│   │   ├── scaffold/             <- /scaffold — Project generation
+│   │   ├── deploy-strategy/      <- /deploy-strategy — CI/CD & hosting
+│   │   ├── idea-to-launch/       <- /idea-to-launch — Full automation
+│   │   ├── mvp-kickoff/          <- /mvp-kickoff — Feature workflow bridge
+│   │   ├── mvp-status/           <- /mvp-status — Progress dashboard
+│   │   ├── launch-mvp/           <- /launch-mvp — Launch orchestrator
+│   │   ├── clarify/              <- /clarify — Requirement Q&A
+│   │   ├── import-docs/          <- /import-docs — Document parsing
+│   │   ├── cost-estimate/        <- /cost-estimate — Infrastructure costs
+│   │   ├── release-notes/        <- /release-notes — Release documentation
+│   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
+│   │   └── ...                   <- + more utility skills
 │   ├── hooks/                    <- 12 automation scripts (10 events)
+│   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
-│   ├── docs/                     <- 9 reference documents
+│   ├── docs/                     <- 11 reference documents
 │   ├── scripts/                  <- Verification scripts
 │   ├── tasks/                    <- Task tracking (gitignored)
 │   └── reports/                  <- Progress & execution reports (gitignored)
@@ -146,6 +193,7 @@ your-project/
 | `@security` | Vulnerability & OWASP review | Read-only | opus |
 | `@debugger` | Root cause analysis & bug fixes | Read/Write | opus |
 | `@tester` | Automated test writing & coverage | Read/Write | sonnet |
+| `@code-quality` | Design patterns, SOLID, duplication detection, static analysis | Read-only | opus |
 
 ### Dev Agents
 | Agent | Role | Access | Model |
@@ -153,12 +201,42 @@ your-project/
 | `@api-builder` | Backend endpoints & services | Read/Write + worktree | sonnet |
 | `@frontend` | UI components & pages | Read/Write + worktree | sonnet |
 | `@infra` | Docker, CI/CD, deployment | Read/Write | sonnet |
+| `@mobile` | Mobile apps — iOS, Android, React Native, Flutter, KMP | Read/Write + worktree | opus |
+
+### Pre-Dev Agents (New Project Lifecycle)
+| Agent | Role | Access | Model |
+|-------|------|--------|-------|
+| `@ideator` | Brainstorming — problem space, audience, value proposition | Read-only | opus |
+| `@strategist` | Product strategy — MVP scope, features, prioritization | Read/Write (project docs) | opus |
+| `@scaffolder` | Project generation — directory structure, configs, boilerplate | Read/Write + Bash | sonnet |
+| `@ux-designer` | UX design — user flows, wireframes, information architecture | Read-only | opus |
 
 All agents include: structured handoff protocol with execution metrics, explicit limitations, cross-session memory, and self-check for hallucinations and regressions.
 
 ## Commands After Setup
 
-### Built-in Skills
+### New Project Skills (Idea to Launch)
+```bash
+/new-project "your idea"                   # Full 8-phase pre-dev pipeline
+/idea-to-launch "your idea"                # Pre-dev + SDLC for all features
+/brainstorm "your idea"                    # Brainstorm problem & audience
+/product-spec                              # Generate product specification
+/feature-map                               # MoSCoW feature prioritization
+/tech-stack                                # Technology stack recommendation
+/architecture                              # System architecture design
+/scaffold                                  # Generate project files
+/deploy-strategy                           # Deployment & launch planning
+/domain-model                              # Domain entities, glossary, bounded contexts
+/import-docs "path/to/docs"                # Import existing PRDs/requirements/specs
+/clarify                                   # Q&A to clear requirement doubts & gaps
+/clarify --before-dev                      # Pre-development checkpoint
+/clarify --existing                        # Scan existing codebase for gaps
+/mvp-kickoff next                          # Start next MVP feature (auto-order)
+/mvp-status                                # MVP progress dashboard
+/launch-mvp                                # Final launch pipeline
+```
+
+### Existing Project Skills
 ```bash
 /scan-codebase                             # Scan your tech stack
 /generate-environment                      # Generate all Claude Code files
@@ -265,7 +343,8 @@ The environment tracks its own state via `.claude/manifest.json`. When the codeb
 ## CLI Commands
 
 ```bash
-npx claude-code-scanner init       # Initialize in current directory
+npx claude-code-scanner init       # Initialize in existing project
+npx claude-code-scanner new <name> # Create new project from scratch
 npx claude-code-scanner status     # Check setup status
 npx claude-code-scanner verify     # Run verification checks (170+ checks)
 npx claude-code-scanner update     # Update to latest version
@@ -274,6 +353,7 @@ npx claude-code-scanner help       # Show help
 # Flags
 npx claude-code-scanner init --force         # Overwrite existing files
 npx claude-code-scanner init --no-smithery   # Skip Smithery instructions
+npx claude-code-scanner new my-app --here    # New project in current directory
 ```
 
 ## How It Works
@@ -289,7 +369,7 @@ npx claude-code-scanner init --no-smithery   # Skip Smithery instructions
 2. **`/generate-environment`** uses scan results to create project-specific:
    - CLAUDE.md with your exact commands, paths, and conventions
    - Rules that enforce YOUR codebase patterns
-   - 12 agents configured for YOUR tech stack
+   - 18 agents configured for YOUR tech stack
    - Skills with YOUR project's commands and file paths
    - Templates extracted from YOUR existing code
    - Profiles for backend, frontend, and devops roles

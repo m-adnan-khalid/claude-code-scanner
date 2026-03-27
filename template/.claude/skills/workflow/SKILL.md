@@ -22,6 +22,8 @@ Orchestrate the full development lifecycle. No phase advances until exit criteri
 - `/workflow cancel TASK-id` — Cancel task with cleanup
 - `/workflow plan|dev|review|qa|deploy TASK-id` — Jump to phase
 
+**Tip:** Run `/clarify --feature "description"` before `/workflow new` to validate requirements are clear for the feature. Or `/clarify --existing` to scan the full codebase for gaps.
+
 ## Concurrency Rule
 **ONE active workflow at a time.** Before starting `/workflow new`, check `.claude/tasks/` for any task in an active state (DEVELOPING, DEV_TESTING, REVIEWING, etc.). If found:
 - Prompt user: "TASK-{id} is active. Options: (1) pause it to ON_HOLD, (2) cancel it, (3) abort new workflow"
@@ -44,9 +46,52 @@ Orchestrate the full development lifecycle. No phase advances until exit criteri
 | Testing | @tester | Write and run automated tests |
 | Debugging | @debugger | Root cause analysis, bug fixes |
 | Code Review | @reviewer | Quality, conventions |
+| Code Quality | @code-quality | Design patterns, SOLID, duplication, static analysis |
 | Security | @security | Vulnerability review |
 | Investigation | @explorer | Codebase exploration, impact mapping |
 | Infrastructure | @infra | Docker, CI/CD, deployment |
+
+## Pre-Development Context
+If `.claude/project/PROJECT.md` exists and has status `READY_FOR_DEV`, read these project docs before starting Phase 1:
+- `.claude/project/PRODUCT_SPEC.md` — use for acceptance criteria baseline in Phase 4
+- `.claude/project/ARCHITECTURE.md` — reference in Phase 3 instead of designing from scratch
+- `.claude/project/BACKLOG.md` — pre-populate scope/complexity in Phase 1 if feature matches a backlog entry
+- `.claude/project/DEPLOY_STRATEGY.md` — reference in Phase 11 for deployment approach
+- `.claude/project/TECH_STACK.md` — reference for technology constraints
+
+This enriches the workflow with decisions already made during pre-development. If these files don't exist, the workflow proceeds normally (backward compatible).
+
+**Validation (only when PROJECT.md status = READY_FOR_DEV):**
+If project docs exist but contain only template placeholders (e.g., `{project-name}`), warn:
+"Project documents appear incomplete. Run `/clarify --before-dev` to validate requirements."
+This is a warning, not a blocker — user can proceed or fix first.
+
+## Cross-Feature Context
+When starting a new workflow and completed features exist (previous TASK-{id} files with status CLOSED):
+- Read each completed task's Phase 5 details for: files created, API patterns, component patterns, shared code
+- Inject a "Previous Features Summary" into Phase 1 context:
+  - API conventions established (error format, pagination, auth patterns)
+  - Shared components/services created
+  - Test patterns used
+  - Key file paths to reference (not redesign)
+- This ensures consistency across features built in sequence.
+
+## Backlog Synchronization
+When a workflow reaches Phase 13 (CLOSED) and `.claude/project/BACKLOG.md` exists:
+
+**Trigger:** The workflow orchestrator itself performs this sync as its FINAL action in Phase 13,
+BEFORE generating the execution report. This is NOT a hook — it runs inline in the workflow.
+
+**Steps:**
+1. Find the feature entry in BACKLOG.md that matches this task's title (fuzzy match)
+2. Update its status: `IN_PROGRESS` → `COMPLETE`
+3. Update PROJECT.md "Features In Development" table with TASK-id + completion date
+4. Check if all Must-Have features are now COMPLETE:
+   - If YES → output: "All MVP features complete! Run /launch-mvp to finalize."
+   - If NO → output: "Feature complete. N/M MVP features done. Run /mvp-kickoff next."
+
+**If no match found:** Warn: "Could not find matching feature in BACKLOG.md. Update manually."
+**If BACKLOG.md missing:** Skip silently (backward compatible with non-pre-dev projects).
 
 ## Handoff Protocol
 Every agent transition MUST include a structured handoff:
@@ -86,7 +131,7 @@ Phase 1 (Intake: type=hotfix) -> Phase 2 (Impact, abbreviated)
   -> SKIP Phase 3 (Architecture) and Phase 4 (Business)
   -> Phase 5 (Dev: @debugger as primary, not @api-builder)
   -> Phase 6 (Dev-Test: max 3 iterations, not 5)
-  -> Phase 7 (Review: @reviewer + @security, max 2 iterations)
+  -> Phase 7 (Review: @code-quality audit -> @reviewer + @security, max 2 iterations)
   -> Phase 8 (PR + CI: max 2 attempts)
   -> Phase 9 (QA: verify-only — @qa-lead confirms fix, no full test plan)
   -> Phase 10 (Tech sign-off ONLY — skip QA formal + business sign-off)
@@ -147,7 +192,7 @@ Run @explorer + @security in PARALLEL (spike: @explorer only).
 ## Phase 3: Architecture Review
 **Skip condition (automatic):** Skip if ALL of: complexity == small AND risk == LOW AND type != refactor.
 If skipped, log in task record: "Phase 3 skipped: small + LOW risk."
-If NOT skipped: @architect designs solution. User approves before proceeding.
+If NOT skipped: @architect designs solution. Then @code-quality reviews the design — recommends design patterns (SOLID, GoF), defines quality gates, and flags scalability concerns. User approves before proceeding.
 
 **State: DESIGNING -> APPROVED (on user approval)**
 
@@ -195,14 +240,16 @@ Track: `dev-test-loop: N/5`, `coverage-baseline`, `coverage-current`, `fix-agent
 **State: DEV_TESTING**
 
 ## Phase 7: Code Review
-@reviewer + @security in PARALLEL. Stricter verdict wins if split.
+@code-quality audits FIRST (SOLID violations, duplication, complexity, design pattern compliance, scalability).
+Then @reviewer + @security run in PARALLEL. Stricter verdict wins if split.
 **Loop (max 3 iterations):**
-1. BOTH APPROVE -> EXIT to Phase 8
-2. SPLIT DECISION -> only re-review with rejecting agent
-3. REQUEST_CHANGES -> route fixes by category to appropriate dev agent
-4. Partial re-review (only the agent(s) that requested changes)
-5. **Agent timeout:** Reviewer timeout = count as iteration, re-invoke
-6. Iteration 3 -> CIRCUIT BREAKER
+1. ALL APPROVE (code-quality score >= 75, reviewer approves, security approves) -> EXIT to Phase 8
+2. @code-quality score < 75 -> route SOLID/pattern fixes to dev agent before reviewer sees code
+3. SPLIT DECISION -> only re-review with rejecting agent
+4. REQUEST_CHANGES -> route fixes by category to appropriate dev agent
+5. Partial re-review (only the agent(s) that requested changes)
+6. **Agent timeout:** Reviewer timeout = count as iteration, re-invoke
+7. Iteration 3 -> CIRCUIT BREAKER
 
 Track: `review-loop: N/3`, `reviewer-status`, `security-status`, `open-comments`
 

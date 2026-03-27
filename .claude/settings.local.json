@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"C:/adnan/cluade projects/claude-code-scanner/template/.claude/agents/\"*.md)",
+      "Bash(ls -d \"C:/adnan/cluade projects/claude-code-scanner/template/.claude/skills/\"*/)",
+      "Bash(ls \"C:/adnan/cluade projects/claude-code-scanner/template/.claude/project/\"*.md)",
+      "Bash(ls \"C:/adnan/cluade projects/claude-code-scanner/template/.claude/docs/\"*.md)",
+      "Bash(node -e \"try { JSON.parse\\(require\\(''fs''\\).readFileSync\\(''C:/adnan/cluade projects/claude-code-scanner/template/.claude/settings.json'', ''utf8''\\)\\); console.log\\(''settings.json: VALID JSON''\\); } catch\\(e\\) { console.log\\(''settings.json: INVALID - '' + e.message\\); }\")",
+      "Bash(node -e \"try { JSON.parse\\(require\\(''fs''\\).readFileSync\\(''C:/adnan/cluade projects/claude-code-scanner/template/.claude/manifest.json'', ''utf8''\\)\\); console.log\\(''manifest.json: VALID JSON''\\); } catch\\(e\\) { console.log\\(''manifest.json: INVALID - '' + e.message\\); }\")",
+      "Read(//c/tmp/**)",
+      "Bash(node \"C:/adnan/cluade projects/claude-code-scanner/bin/cli.js\" new test-verify-project)",
+      "Bash(xargs grep:*)",
+      "Bash(rm -rf test-verify-final)",
+      "Bash(node \"C:/adnan/cluade projects/claude-code-scanner/bin/cli.js\" new test-verify-final)",
+      "Bash(node -e \"try { JSON.parse\\(require\\(''fs''\\).readFileSync\\(''C:/adnan/cluade projects/claude-code-scanner/template/.claude/settings.json''\\)\\); console.log\\(''settings.json: OK''\\); } catch\\(e\\) { console.log\\(''FAIL: '' + e.message\\); }\")",
+      "Bash(node -e \"try { JSON.parse\\(require\\(''fs''\\).readFileSync\\(''C:/adnan/cluade projects/claude-code-scanner/template/.claude/manifest.json''\\)\\); console.log\\(''manifest.json: OK''\\); } catch\\(e\\) { console.log\\(''FAIL: '' + e.message\\); }\")",
+      "Bash(node \"C:/adnan/cluade projects/claude-code-scanner/bin/cli.js\" new test-final)",
+      "Bash(node .claude/scripts/verify-setup.js)",
+      "Bash(rm -rf final-test)",
+      "Bash(node \"C:/adnan/cluade projects/claude-code-scanner/bin/cli.js\" new final-test)",
+      "Bash(grep -r \"MISSING\\\\|TODO\\\\|FIXME\\\\|HACK\" 'C:/adnan/cluade projects/claude-code-scanner/template/.claude/skills/' --include=*.md)"
+    ]
+  }
+}

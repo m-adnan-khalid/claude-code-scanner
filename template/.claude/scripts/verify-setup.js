@@ -66,16 +66,18 @@ for (const f of globDir(rulesDir, '.md')) {
   check(`${name} has paths:`, fileContains(f, 'paths:'));
 }
 
-// --- Agents (12 required) ---
+// --- Agents (18 required) ---
 console.log('--- Agents ---');
 const agentsDir = path.join(cwd, '.claude', 'agents');
 const requiredAgents = [
   'team-lead', 'architect', 'product-owner', 'qa-lead',
   'explorer', 'reviewer', 'security', 'debugger', 'tester',
-  'frontend', 'api-builder', 'infra'
+  'frontend', 'api-builder', 'infra', 'mobile',
+  'ideator', 'strategist', 'scaffolder', 'ux-designer',
+  'code-quality'
 ];
-const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead'];
-const worktreeAgents = ['frontend', 'api-builder'];
+const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality'];
+const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile'];
 
 for (const agentName of requiredAgents) {
   const agentFile = path.join(agentsDir, `${agentName}.md`);
@@ -116,7 +118,15 @@ if (fs.existsSync(skillsDir)) {
 }
 
 // Check heavy skills have context: fork
-const heavySkills = ['scan-codebase', 'generate-environment', 'workflow', 'task-tracker', 'impact-analysis', 'metrics', 'progress-report', 'execution-report'];
+const heavySkills = [
+  'scan-codebase', 'generate-environment', 'workflow', 'task-tracker',
+  'impact-analysis', 'metrics', 'progress-report', 'execution-report',
+  'brainstorm', 'product-spec', 'feature-map', 'domain-model',
+  'tech-stack', 'architecture', 'scaffold', 'deploy-strategy',
+  'new-project', 'idea-to-launch', 'import-docs',
+  'mvp-kickoff', 'mvp-status', 'launch-mvp', 'clarify',
+  'release-notes', 'cost-estimate'
+];
 for (const skillName of heavySkills) {
   const skillMd = path.join(skillsDir, skillName, 'SKILL.md');
   if (fs.existsSync(skillMd)) {
@@ -189,6 +199,31 @@ if (fs.existsSync(flowEngine)) {
   check('Flow engine has Orchestration Model', fileContains(flowEngine, 'Orchestration Model'));
   check('Flow engine documents subagent limitation', fileContains(flowEngine, 'cannot spawn other subagents'));
 }
+
+// --- Pre-Dev Project Templates ---
+console.log('--- Pre-Dev Project Templates ---');
+const projectDir = path.join(cwd, '.claude', 'project');
+check('Project directory exists', fs.existsSync(projectDir));
+const requiredProjectFiles = [
+  'PROJECT.md', 'IDEA_CANVAS.md', 'PRODUCT_SPEC.md', 'BACKLOG.md',
+  'DOMAIN_MODEL.md', 'TECH_STACK.md', 'ARCHITECTURE.md', 'DEPLOY_STRATEGY.md'
+];
+for (const pf of requiredProjectFiles) {
+  const pfPath = path.join(projectDir, pf);
+  check(`${pf} exists`, fs.existsSync(pfPath));
+}
+
+// --- Pre-Dev Flow Engine ---
+console.log('--- Pre-Dev Docs ---');
+const preDevFlowEngine = path.join(cwd, '.claude', 'docs', 'pre-dev-flow-engine.md');
+if (fs.existsSync(preDevFlowEngine)) {
+  check('Pre-dev flow engine has state machine', fileContains(preDevFlowEngine, 'State Machine'));
+  check('Pre-dev flow engine has phase details', fileContains(preDevFlowEngine, 'Pre-Phase 1'));
+  check('Pre-dev flow engine has domain modeling', fileContains(preDevFlowEngine, 'DOMAIN MODELING'));
+  check('Pre-dev flow engine has document import', fileContains(preDevFlowEngine, 'Document Import'));
+}
+const newProjectGuide = path.join(cwd, '.claude', 'docs', 'new-project-guide.md');
+check('New project guide exists', fs.existsSync(newProjectGuide));
 
 // --- Context Budget ---
 console.log('--- Context Budget ---');

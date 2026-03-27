@@ -11,7 +11,7 @@ allowed-tools: Read, Bash, Grep, Glob
 ## Checks
 1. **CLAUDE.md** — exists, under 150 lines (recommended under 200), no `{placeholder}` values
 2. **Rules** — each under 50 lines, has `paths:` frontmatter for scoped rules
-3. **Agents (12 required)** — each has name/description/tools, SDLC role agents present (team-lead, architect, product-owner, qa-lead), read-only agents have `permissionMode: plan` and `disallowedTools`, dev agents have `isolation: worktree`, all have `memory: project`, all have structured output format and HANDOFF block and Limitations section
+3. **Agents (18 required)** — SDLC roles (team-lead, architect, product-owner, qa-lead), core (explorer, reviewer, security, debugger, tester, code-quality), pre-dev (ideator, strategist, scaffolder, ux-designer), dev (frontend, api-builder, infra, mobile). Each has name/description/tools, read-only agents have `permissionMode: plan` and `disallowedTools`, dev agents have `isolation: worktree`, all have `memory: project`, structured output with HANDOFF block and Limitations section
 4. **Skills** — each has name/description, heavy ones have `context: fork`, user-facing have `argument-hint`, dangerous ones have `disable-model-invocation: true`
 5. **Settings** — valid JSON, has `permissions.defaultMode`, `permissions.allow`, `permissions.deny`, `env`, all hooks registered
 6. **Hooks** — Node.js scripts exist and are valid, all hooks in settings.json point to existing files
