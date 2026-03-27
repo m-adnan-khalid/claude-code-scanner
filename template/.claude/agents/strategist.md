@@ -17,6 +17,7 @@ model: opus
 maxTurns: 30
 effort: high
 memory: project
+isolation: worktree
 ---
 
 # @strategist — Product Strategy Specialist

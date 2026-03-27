@@ -2,6 +2,7 @@
 name: context-check
 description: Check current context usage and enforce the 60% working budget. Use between workflow phases, after heavy operations, or when context feels slow. Recommends compaction if over budget.
 user-invocable: true
+context: fork
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: "[--compact] [--force]"
 ---

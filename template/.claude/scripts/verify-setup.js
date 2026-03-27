@@ -77,7 +77,7 @@ const requiredAgents = [
   'code-quality'
 ];
 const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality'];
-const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile', 'debugger', 'tester', 'infra', 'team-lead'];
+const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile', 'debugger', 'tester', 'infra', 'team-lead', 'strategist'];
 
 for (const agentName of requiredAgents) {
   const agentFile = path.join(agentsDir, `${agentName}.md`);

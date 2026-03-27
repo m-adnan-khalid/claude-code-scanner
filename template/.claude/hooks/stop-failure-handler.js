@@ -5,15 +5,22 @@
 const fs = require('fs');
 const path = require('path');
 
-// Timeout: exit if stdin hangs
-setTimeout(() => process.exit(0), 10000);
+function getRecoveryAction(errorType) {
+  const actions = {
+    'rate_limit': 'Wait 60 seconds, then resume: claude --continue',
+    'authentication_failed': 'Re-authenticate: check API key or run claude auth login',
+    'billing_error': 'Check billing at console.anthropic.com, then resume',
+    'invalid_request': 'Review last action — may need to reduce context. Resume with /compact first',
+    'server_error': 'Transient error — retry: claude --continue',
+    'max_output_tokens': 'Output was truncated. Resume to continue generation: claude --continue'
+  };
+  return actions[errorType] || 'Resume session: claude --continue';
+}
 
-let input = '';
-process.stdin.setEncoding('utf-8');
-process.stdin.on('data', chunk => { input += chunk; });
-process.stdin.on('end', () => {
+// ── Processing logic ────────────────────────────────────────────────
+function processInput(raw) {
   try {
-    const data = JSON.parse(input);
+    const data = JSON.parse(raw);
     const errorType = data.stop_failure_error_type || data.error_type || 'unknown';
 
     // Log the failure
@@ -34,7 +41,6 @@ process.stdin.on('end', () => {
         const taskPath = path.join(tasksDir, tf);
         const content = fs.readFileSync(taskPath, 'utf-8');
         if (/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING)/.test(content)) {
-          // Mark task as interrupted
           const id = (content.match(/^id:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
           const snapshotDir = path.join(reportsDir, 'executions');
           if (!fs.existsSync(snapshotDir)) {
@@ -61,17 +67,38 @@ process.stdin.on('end', () => {
   } catch (e) {
     console.log('Session ended unexpectedly. Resume with: claude --continue');
   }
-  process.exit(0);
-});
-
-function getRecoveryAction(errorType) {
-  const actions = {
-    'rate_limit': 'Wait 60 seconds, then resume: claude --continue',
-    'authentication_failed': 'Re-authenticate: check API key or run claude auth login',
-    'billing_error': 'Check billing at console.anthropic.com, then resume',
-    'invalid_request': 'Review last action — may need to reduce context. Resume with /compact first',
-    'server_error': 'Transient error — retry: claude --continue',
-    'max_output_tokens': 'Output was truncated. Resume to continue generation: claude --continue'
-  };
-  return actions[errorType] || 'Resume session: claude --continue';
 }
+
+// ── Robust stdin reader (4-layer) ───────────────────────────────────
+let done = false;
+let buf = '';
+
+function finish() {
+  if (done) return;
+  done = true;
+  process.exit(0);
+}
+
+setTimeout(() => finish(), 5000).unref();
+
+const graceTimer = setTimeout(() => {
+  if (!buf) finish();
+}, 300);
+
+process.stdin.setEncoding('utf-8');
+process.stdin.on('data', chunk => {
+  clearTimeout(graceTimer);
+  buf += chunk;
+  try {
+    JSON.parse(buf);
+    processInput(buf);
+    finish();
+  } catch {}
+});
+process.stdin.on('end', () => {
+  clearTimeout(graceTimer);
+  if (buf) processInput(buf);
+  finish();
+});
+process.stdin.on('error', () => finish());
+process.stdin.resume();

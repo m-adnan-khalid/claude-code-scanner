@@ -12,7 +12,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 REPO="m-adnan-khalid/claude-code-scanner"
-BRANCH="main"
+BRANCH="master"
 
 echo -e "\n${BOLD}${CYAN}Claude Code Scanner — Installing...${NC}\n"
 
@@ -40,7 +40,7 @@ cp "$SRC/CLAUDE.md" ./CLAUDE.md
 echo -e "${GREEN}✓${NC} CLAUDE.md"
 
 # Copy .claude/ directories
-for dir in rules agents skills hooks scripts docs templates profiles; do
+for dir in rules agents skills hooks scripts docs templates profiles project; do
   if [ -d "$SRC/.claude/$dir" ]; then
     mkdir -p ".claude/$dir"
     cp -r "$SRC/.claude/$dir/"* ".claude/$dir/" 2>/dev/null || true

@@ -4,6 +4,7 @@ description: Validate the generated Claude Code environment meets all standards.
 user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob
+argument-hint: "[--fix] [--verbose]"
 ---
 
 # Validate Setup

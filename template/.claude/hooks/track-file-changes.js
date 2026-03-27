@@ -3,20 +3,15 @@
 const fs = require('fs');
 const path = require('path');
 
-// Timeout: exit if stdin hangs
-setTimeout(() => process.exit(0), 10000);
-
-let input = '';
-process.stdin.setEncoding('utf-8');
-process.stdin.on('data', chunk => { input += chunk; });
-process.stdin.on('end', () => {
+// ── Processing logic ────────────────────────────────────────────────
+function processInput(raw) {
   try {
-    const data = JSON.parse(input);
+    const data = JSON.parse(raw);
     const file = (data.tool_input && data.tool_input.file_path) || '';
-    if (!file) process.exit(0);
+    if (!file) return;
 
     const tasksDir = path.join(process.cwd(), '.claude', 'tasks');
-    if (!fs.existsSync(tasksDir)) process.exit(0);
+    if (!fs.existsSync(tasksDir)) return;
 
     const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
     for (const tf of taskFiles) {
@@ -30,5 +25,38 @@ process.stdin.on('end', () => {
       }
     }
   } catch {}
+}
+
+// ── Robust stdin reader (4-layer) ───────────────────────────────────
+let done = false;
+let buf = '';
+
+function finish() {
+  if (done) return;
+  done = true;
   process.exit(0);
+}
+
+setTimeout(() => finish(), 5000).unref();
+
+const graceTimer = setTimeout(() => {
+  if (!buf) finish();
+}, 300);
+
+process.stdin.setEncoding('utf-8');
+process.stdin.on('data', chunk => {
+  clearTimeout(graceTimer);
+  buf += chunk;
+  try {
+    JSON.parse(buf);
+    processInput(buf);
+    finish();
+  } catch {}
 });
+process.stdin.on('end', () => {
+  clearTimeout(graceTimer);
+  if (buf) processInput(buf);
+  finish();
+});
+process.stdin.on('error', () => finish());
+process.stdin.resume();
