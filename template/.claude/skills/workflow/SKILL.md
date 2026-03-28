@@ -17,10 +17,32 @@ Orchestrate the full development lifecycle. No phase advances until exit criteri
 - `/workflow new "description"` — Full flow from Phase 1
 - `/workflow new --hotfix "issue"` — Skip design/biz, fast-track to deploy
 - `/workflow new --spike "question"` — Research only, no code (ends at CLOSED)
-- `/workflow status` — All active tasks
+- `/workflow status [TASK-id]` — All active tasks (or specific task with subtask details)
+- `/workflow advance TASK-id` — Check all subtasks for current phase, advance if all DONE
+- `/workflow done TASK-id subtask-N "evidence"` — Mark subtask complete with proof
+- `/workflow block TASK-id subtask-N "reason"` — Mark subtask blocked
+- `/workflow subtasks TASK-id` — Show full subtask decomposition and progress
 - `/workflow resume TASK-id` — Resume ON_HOLD or interrupted task
 - `/workflow cancel TASK-id` — Cancel task with cleanup
 - `/workflow plan|dev|review|qa|deploy TASK-id` — Jump to phase
+
+### Phase Advancement Protocol
+Phases do NOT advance automatically. To move to the next phase:
+1. Run `/workflow subtasks TASK-{id}` to see what's pending
+2. Complete all subtasks for the current phase
+3. Mark each done: `/workflow done TASK-{id} subtask-{N} "evidence: tests pass"`
+4. Advance: `/workflow advance TASK-{id}`
+5. If any subtask not DONE → advancement blocked, shows what's missing
+
+### Subtask Lifecycle
+```
+PENDING → IN_PROGRESS → DONE → VERIFIED
+                ↓
+             BLOCKED → (unblock) → IN_PROGRESS
+```
+- Every subtask completion is saved to the task file, changes.log, and timeline
+- Nothing is lost between sessions — task file is the source of truth
+- `/workflow status` always shows current state from the task file
 
 **Tip:** Run `/clarify --feature "description"` before `/workflow new` to validate requirements are clear for the feature. Or `/clarify --existing` to scan the full codebase for gaps.
 

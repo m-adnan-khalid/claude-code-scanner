@@ -24,6 +24,53 @@ updated: {ISO timestamp}
 ### Current Status Section
 - Phase, state, progress %, last activity, next action, blocked Y/N
 
+### Subtask Decomposition (MANDATORY before Phase 5)
+Every task must be broken into subtasks with clear owners:
+```markdown
+## Subtasks
+| # | Subtask | Owner | Status | Phase | Completed | Evidence |
+|---|---------|-------|--------|-------|-----------|----------|
+| 1 | Design API schema | @architect | DONE | 3 | {timestamp} | ARCHITECTURE.md updated |
+| 2 | Implement endpoint | @api-builder | DONE | 5 | {timestamp} | app/api/v1/users.py |
+| 3 | Write unit tests | @tester | DONE | 6 | {timestamp} | 12 tests, 95% coverage |
+| 4 | Write integration tests | @tester | DONE | 6 | {timestamp} | 5 tests, all pass |
+| 5 | Code review | @reviewer | DONE | 7 | {timestamp} | 0 critical, 2 suggestions |
+| 6 | Security review | @security | DONE | 7 | {timestamp} | no findings |
+| 7 | QA automation | @qa-automation | IN_PROGRESS | 9 | — | — |
+| 8 | QA sign-off | @qa-lead | PENDING | 10 | — | — |
+| 9 | Business sign-off | @product-owner | PENDING | 10 | — | — |
+| 10 | Tech sign-off | @team-lead | PENDING | 10 | — | — |
+| 11 | Deploy to staging | @infra | PENDING | 11 | — | — |
+| 12 | Update documentation | @docs-writer | PENDING | 12 | — | — |
+```
+
+**Status values:** PENDING → IN_PROGRESS → DONE → VERIFIED (or BLOCKED, SKIPPED)
+
+**Rules:**
+- A phase cannot advance until ALL subtasks assigned to that phase are DONE
+- Mark subtask done: `/workflow done TASK-{id} subtask-{N} "evidence"`
+- Advance phase: `/workflow advance TASK-{id}` (auto-checks all subtasks)
+- If subtask blocked: `/workflow block TASK-{id} subtask-{N} "reason"`
+
+### Subtask Auto-Generation
+When @team-lead decomposes a task, these subtasks are auto-created based on scope:
+
+**Backend scope:**
+1. Design (Phase 3) → @architect
+2. Implement (Phase 5) → @api-builder
+3. Database migration (Phase 5) → @database (if schema change)
+4. Unit tests (Phase 6) → @tester
+5. Integration tests (Phase 6) → @tester
+6. Code review (Phase 7) → @reviewer + @security
+7. QA automation (Phase 9) → @qa-automation
+8. Sign-offs (Phase 10) → @qa-lead + @product-owner + @team-lead
+9. Deploy (Phase 11) → @infra
+10. Docs (Phase 12) → @docs-writer
+
+**Frontend scope:** same but @frontend instead of @api-builder, add component tests
+**Mobile scope:** same but @mobile, add device testing subtask
+**Fullstack:** backend + frontend subtasks combined, parallel where independent
+
 ### Loop State Section
 Track all active correspondence loops to survive compaction:
 ```markdown
