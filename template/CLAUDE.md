@@ -90,3 +90,4 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 - See `.claude/docs/commands.md` for complete reference
 
 @.claude/rules/context-budget.md
+@.claude/rules/request-validation.md
