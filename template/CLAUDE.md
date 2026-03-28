@@ -84,8 +84,12 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 - `/sync --full-rescan` — re-scan and regenerate everything
 - Drift detector runs automatically on every session start
 
+## Methodology
+- `/methodology` — choose SDLC model (Scrum, Kanban, Waterfall, XP, DevOps, Lean, Spiral, RAD)
+- Configures agents, workflows, quality gates, and ceremonies to match your chosen model
+
 ## Workflow After Setup
-- `/workflow new "task"` — full SDLC (intake -> impact -> design -> dev -> test -> review -> QA -> signoff -> deploy)
+- `/workflow new "task"` — full SDLC adapted to your chosen methodology
 - `/parallel-dev --analyze` — find independent tasks that can run simultaneously
 - `/parallel-dev --start TASK-X TASK-Y` — launch parallel dev agents (each in isolated worktree)
 - `/parallel-dev --merge` — merge completed parallel work back with test verification
