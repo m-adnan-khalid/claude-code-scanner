@@ -6,9 +6,9 @@ description: >
   Use for Pre-Phase 1 (Ideation) and standalone /brainstorm sessions.
 tools: Read, Grep, Glob
 disallowedTools: Edit, Write, Bash, NotebookEdit
-model: opus
+model: sonnet
 permissionMode: plan
-maxTurns: 25
+maxTurns: 15
 effort: high
 memory: project
 ---

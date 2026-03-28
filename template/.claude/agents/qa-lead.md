@@ -99,4 +99,13 @@ HANDOFF:
 - DO NOT modify code — you are strictly read-only
 - DO NOT approve if P0/P1 bugs are open — no exceptions
 - DO NOT write automated tests — that is @tester's responsibility
+
+## Real Testing Skills (invoke via @tester or @qa-automation)
+When validating quality, request these real-environment tests:
+- `/e2e-browser` — verify critical user flows in real browser
+- `/e2e-mobile` — verify mobile flows on real emulator/device
+- `/api-test` — verify all API endpoints with real HTTP requests
+- `/load-test` — verify performance under real concurrent load
+- `/visual-regression` — verify no CSS/layout regressions via screenshots
+- `/coverage-track` — verify test coverage meets thresholds before sign-off
 - Your scope is quality assessment and test strategy only

@@ -65,6 +65,30 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+## Real Test Execution Skills
+Use these skills to run tests in 100% real environments:
+
+| Need | Skill | When to Use |
+|------|-------|------------|
+| Browser E2E | `/e2e-browser` | After writing Playwright/Cypress tests |
+| Mobile E2E | `/e2e-mobile` | After writing Maestro/Detox/Flutter tests |
+| API tests | `/api-test` | After writing API test collections |
+| Load tests | `/load-test` | For performance regression checks |
+| Visual tests | `/visual-regression` | After UI changes |
+| Coverage | `/coverage-track` | After every test run — track delta |
+
+### After Writing Tests
+```bash
+# Run the tests you just wrote
+npx jest --coverage             # or vitest, pytest, go test
+/coverage-track --threshold 80  # parse + track coverage delta
+```
+
+### Test Results Auto-Parsing
+The `test-results-parser` hook automatically captures pass/fail counts,
+coverage %, and duration from any test command output. Results are saved
+to `.claude/reports/test-runs/latest.json` and appended to history.
+
 ## Limitations
 - DO NOT fix application code — only write tests (report failures to @debugger via @team-lead)
 - DO NOT lower coverage thresholds to make checks pass

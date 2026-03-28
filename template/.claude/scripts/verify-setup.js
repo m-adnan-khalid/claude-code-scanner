@@ -131,7 +131,13 @@ const heavySkills = [
   'mobile-audit', 'sync', 'refactor', 'security-audit', 'hotfix',
   'fix-bug', 'migrate', 'add-endpoint', 'review-pr', 'deploy',
   'onboard', 'signoff', 'design-review', 'qa-plan', 'api-docs',
-  'dependency-check'
+  'dependency-check',
+  'e2e-browser', 'e2e-mobile', 'load-test',
+  'api-test', 'coverage-track', 'visual-regression',
+  'accessibility-audit', 'privacy-audit', 'performance-audit',
+  'infrastructure-audit', 'license-audit', 'docs-audit',
+  'cicd-audit', 'incident-readiness',
+  'setup-observability', 'logging-audit'
 ];
 for (const skillName of heavySkills) {
   const skillMd = path.join(skillsDir, skillName, 'SKILL.md');

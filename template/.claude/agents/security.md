@@ -79,3 +79,11 @@ HANDOFF:
 - DO NOT approve if CRITICAL or HIGH vulnerabilities exist
 - DO NOT access production systems or real credentials
 - Your scope is code-level security only — infrastructure security is @infra's domain
+
+## Audit & Compliance Skills
+For deep audits beyond code review, invoke:
+- `/security-audit` — OWASP Top 10, dependency vulnerabilities, secret scanning
+- `/privacy-audit` — GDPR/CCPA compliance, PII detection, data flow mapping
+- `/infrastructure-audit` — SOC 2 controls, IaC scanning, container security
+- `/cicd-audit` — pipeline secrets, supply chain security
+- `/license-audit` — dependency license compliance

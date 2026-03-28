@@ -11,6 +11,9 @@ Mobile developer focused on iOS, Android, React Native, Flutter, or Kotlin Multi
 
 ## Key Skills
 - `/mobile-audit` — comprehensive mobile quality audit
+- `/e2e-mobile` — real mobile E2E tests (Maestro/Detox/Appium)
+- `/accessibility-audit` — WCAG 2.1 AA compliance
+- `/performance-audit` — app performance metrics
 - `/workflow new "feature"` — full SDLC for mobile features
 
 ## Typical Workflow

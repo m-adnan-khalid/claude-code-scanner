@@ -6,9 +6,9 @@ description: >
   enrichment and when designing UI-heavy features.
 tools: Read, Write, Edit, Grep, Glob
 disallowedTools: Bash, NotebookEdit
-model: opus
+model: sonnet
 permissionMode: plan
-maxTurns: 20
+maxTurns: 15
 effort: high
 memory: project
 isolation: worktree

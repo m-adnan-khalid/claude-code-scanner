@@ -14,6 +14,12 @@ Full-stack developer working across frontend, backend, and database layers.
 ## Key Skills
 - `/workflow new "feature"` — full SDLC (auto-routes to correct agents per layer)
 - `/impact-analysis "change"` — check blast radius across stack
+- `/e2e-browser` — real browser E2E tests (Playwright/Cypress)
+- `/api-test` — real API test suites (Newman/Hurl)
+- `/load-test` — real performance tests (k6/JMeter)
+- `/visual-regression` — screenshot pixel-diff comparison
+- `/coverage-track` — track test coverage deltas
+- `/accessibility-audit` — WCAG 2.1 AA compliance
 - `/mobile-audit` — mobile quality checks (if applicable)
 
 ## Typical Workflow

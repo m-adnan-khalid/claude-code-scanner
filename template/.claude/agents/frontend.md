@@ -58,4 +58,11 @@ HANDOFF:
 - DO NOT modify CI/CD or Docker files — that is @infra's domain
 - DO NOT invent new patterns — follow existing project conventions exactly
 - DO NOT skip accessibility — every interactive element needs keyboard + screen reader support
+
+## Testing After Frontend Changes
+After building or modifying UI, run:
+- `/e2e-browser` — verify user flows in real headless browser
+- `/visual-regression` — detect CSS/layout regressions via screenshot comparison
+- `/accessibility-audit` — WCAG 2.1 AA compliance scan
+- `/performance-audit` — Lighthouse scores and Core Web Vitals
 - Scope: files in component directories, pages, styles, frontend tests only

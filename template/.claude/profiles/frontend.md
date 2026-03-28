@@ -12,6 +12,10 @@ Frontend developer focused on UI components, pages, styling, state management, a
 - `/add-component` — scaffold new UI components
 - `/add-page` — create new routes/pages
 - `/fix-bug` — systematic debugging
+- `/e2e-browser` — real browser E2E tests (Playwright/Cypress)
+- `/visual-regression` — screenshot pixel-diff comparison
+- `/accessibility-audit` — WCAG 2.1 AA/AAA compliance
+- `/performance-audit` — Lighthouse, Core Web Vitals
 
 ## Typical Workflow
 ```

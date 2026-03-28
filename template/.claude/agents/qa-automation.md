@@ -289,6 +289,44 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+## Real Testing Tool Integration
+Invoke these skills for real 100% environment testing:
+
+| Test Type | Skill Command | Tools |
+|-----------|--------------|-------|
+| Browser E2E | `/e2e-browser` | Playwright, Cypress (real headless browser) |
+| Mobile E2E | `/e2e-mobile` | Maestro, Detox, Appium (real emulator/device) |
+| API Testing | `/api-test` | Newman, Hurl, HTTPyac (real HTTP requests) |
+| Load Testing | `/load-test` | k6, JMeter CLI, Locust (real concurrent users) |
+| Visual Regression | `/visual-regression` | Playwright screenshots, BackstopJS (pixel comparison) |
+| Coverage Tracking | `/coverage-track` | Istanbul/c8/coverage.py (real coverage parsing) |
+
+### Execution Order for Full QA
+```bash
+# 1. Start the app
+{start-command}
+
+# 2. API tests first (fastest feedback)
+/api-test --base-url http://localhost:8000
+
+# 3. Browser E2E
+/e2e-browser --browser chromium
+
+# 4. Visual regression
+/visual-regression --tool playwright
+
+# 5. Load testing
+/load-test --tool k6 --vus 50 --duration 60s
+
+# 6. Mobile E2E (if mobile app exists)
+/e2e-mobile --platform flutter
+
+# 7. Coverage report
+/coverage-track --threshold 80
+```
+
+All results are saved to `.claude/reports/` with structured JSON + human-readable markdown.
+
 ## Limitations
 - DO NOT modify application code — only run and verify it
 - DO NOT skip the deploy step — tests must run against real running app

@@ -12,6 +12,12 @@ DevOps engineer focused on infrastructure, CI/CD, deployment, monitoring, and cl
 - `/deploy` — deploy with checks
 - `/rollback` — rollback failed deployments
 - `/architecture` — system architecture diagrams
+- `/setup-observability` — logging, tracing, metrics, error tracking stack
+- `/logging-audit` — audit logging practices and PII protection
+- `/infrastructure-audit` — SOC 2 controls, IaC scanning, secrets
+- `/cicd-audit` — pipeline security, deployment gates, supply chain
+- `/incident-readiness` — DR plans, runbooks, monitoring, on-call
+- `/load-test` — performance/stress testing under load
 
 ## Typical Workflow
 ```

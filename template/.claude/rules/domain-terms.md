@@ -1,6 +1,6 @@
 ---
 paths:
-  - "**/*"
+  - ".claude/project/**"
 ---
 
 # Domain Terms Glossary

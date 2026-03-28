@@ -26,6 +26,7 @@ All criteria must pass before this task is marked complete.
 ## Next Steps
 - **Success:** `/deploy staging` — approved PR is ready for deployment
 - **Issues found:** `/fix-bug "review feedback"` — address requested changes
+- **Coverage check:** `/coverage-track` — verify coverage delta before merge
 - **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
 
 ## Rollback

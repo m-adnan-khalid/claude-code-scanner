@@ -309,6 +309,8 @@ User confirms.
 
 Track: `dev-test-loop: N/5`, `coverage-baseline`, `coverage-current`, `fix-agent`, `last-failure`
 
+**Real testing skills available:** `/coverage-track` (parse coverage + enforce thresholds)
+
 **State: DEV_TESTING**
 
 ## Phase 7: Code Review (Dual Approval Required)
@@ -388,6 +390,14 @@ Track: `ci-fix-loop: N/3`, `pr-url`, `pr-number`, `last-ci-failure`, `fix-agent`
 - Total > 15 -> escalate entire Phase 9
 
 Track: `qa-bug-loop` per bug, `total-bugs`, `regression-check-after-each-fix: true`
+
+**Real testing skills for Phase 9:**
+- `/api-test` — verify all API endpoints with real HTTP requests
+- `/e2e-browser` — verify critical user flows in real headless browser
+- `/e2e-mobile` — verify mobile flows on real emulator/device (if applicable)
+- `/visual-regression` — detect CSS/layout regressions via screenshot comparison
+- `/load-test` — verify performance under concurrent load
+- `/coverage-track` — verify coverage thresholds met
 
 **State: QA_TESTING**
 

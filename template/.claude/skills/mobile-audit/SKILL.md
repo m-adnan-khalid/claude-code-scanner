@@ -166,5 +166,9 @@ Auto-detect from project files:
 ## Next Steps
 - `/fix-bug` for critical issues, `/workflow new` for major improvements.
 
+## Real Mobile Testing
+After audit, run real device/emulator tests:
+- `/e2e-mobile` — execute Maestro/Detox/Appium/Flutter tests on real emulator/device
+
 ## Rollback
 - N/A (read-only audit).

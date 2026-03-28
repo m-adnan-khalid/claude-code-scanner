@@ -7,7 +7,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `.claude/rules/` — path-specific rules
 - `.claude/agents/` — role-based agent team (23 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
-- `.claude/skills/` — workflow skills
+- `.claude/skills/` — workflow skills (67 skills including 6 real-environment testing, 8 audit/compliance, and 2 observability skills)
 - `.claude/settings.json` — permissions, hooks
 - `.claude/hooks/` — automation scripts
 - `.claude/templates/` — code scaffolding templates
@@ -83,10 +83,26 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 - `/clarify` — Q&A session to clear requirement doubts, ambiguities, gaps (works for new + existing projects)
 - `/brainstorm`, `/product-spec`, `/feature-map`, `/tech-stack`, `/architecture`, `/scaffold`, `/deploy-strategy` — individual phases
 
+## Real Environment Testing
+- `/e2e-browser` — Playwright/Cypress real headless browser E2E tests
+- `/e2e-mobile` — Maestro/Detox/Appium real emulator/device mobile tests
+- `/api-test` — Newman/Hurl/HTTPyac real HTTP API test suites
+- `/load-test` — k6/JMeter/Locust/Artillery real concurrent load tests
+- `/visual-regression` — Playwright/BackstopJS screenshot pixel-diff comparison
+- `/coverage-track` — Istanbul/c8/coverage.py real coverage parsing + delta tracking
+
+## Audit & Compliance
+- `/accessibility-audit` — WCAG 2.1 AA/AAA with axe-core, Pa11y, Lighthouse
+- `/privacy-audit` — GDPR/CCPA data flow mapping, PII detection, consent validation
+- `/performance-audit` — Lighthouse, Core Web Vitals, bundle size, performance budgets
+- `/infrastructure-audit` — SOC 2 controls, IaC scanning, container/network security
+- `/license-audit` — OSS license compliance, SPDX validation, copyleft risk
+- `/docs-audit` — README quality, API docs completeness, ADR validation, changelog
+- `/cicd-audit` — Pipeline secrets, deployment gates, supply chain security
+- `/incident-readiness` — DR plans, runbooks, backup/restore, monitoring, on-call
+
 ## Workflow After Setup
 - `/workflow new "task"` — full SDLC (intake -> impact -> design -> dev -> test -> review -> QA -> signoff -> deploy)
 - `/task-tracker status` — dashboard
 - See `.claude/docs/commands-template.md` for complete reference
 
-@.claude/rules/context-budget.md
-@.claude/rules/request-validation.md

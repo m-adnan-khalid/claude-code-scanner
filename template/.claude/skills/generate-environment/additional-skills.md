@@ -269,6 +269,28 @@ allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 5. Write test, verify with {dev_cmd}
 ```
 
+### Real Environment Testing Skills (always included):
+- `/e2e-browser` — real browser E2E tests (Playwright/Cypress). Auto-detects framework, captures screenshots/traces/videos.
+- `/e2e-mobile` — real mobile E2E tests (Maestro/Detox/Appium/Flutter/XCUITest/Espresso). Runs on emulator/device.
+- `/api-test` — real API test suites (Newman/Hurl/HTTPyac/Bruno/Supertest). Real HTTP requests with assertions.
+- `/load-test` — real load/performance tests (k6/JMeter/Locust/Artillery). Measures throughput, latency, error rates.
+- `/visual-regression` — visual screenshot comparison (Playwright/BackstopJS/Percy). Detects CSS/layout regressions.
+- `/coverage-track` — real coverage parsing (Istanbul/c8/coverage.py/go cover). Tracks deltas, enforces thresholds.
+
+### Audit & Compliance Skills (always included):
+- `/accessibility-audit` — WCAG 2.1 AA/AAA scanning (axe-core, Pa11y, Lighthouse). Automated + manual checklist.
+- `/privacy-audit` — GDPR/CCPA compliance. PII detection, data flow mapping, consent, data subject rights.
+- `/performance-audit` — Lighthouse, Core Web Vitals, bundle size analysis, performance budget enforcement.
+- `/infrastructure-audit` — SOC 2 controls, IaC scanning (Terraform/Docker/K8s), secrets management, network security.
+- `/license-audit` — OSS license compliance, SPDX validation, copyleft risk detection.
+- `/docs-audit` — README quality scoring, API docs completeness, ADR validation, changelog compliance.
+- `/cicd-audit` — Pipeline secrets, deployment gates, supply chain security, environment parity.
+- `/incident-readiness` — DR plan validation, runbook completeness, backup/restore, monitoring, on-call readiness.
+
+### Observability & Logging Skills (always included):
+- `/setup-observability` — full observability stack setup (structured logging, OpenTelemetry tracing, Prometheus metrics, Sentry errors, health checks). Auto-detects tech stack.
+- `/logging-audit` — audit logging practices (PII leak detection, log level distribution, correlation ID coverage, console.log usage, observability gaps).
+
 ### Additional conditional skills:
 - If i18n: `/add-translation` (translation file format + key naming)
 - If GraphQL: `/add-query`, `/add-mutation` (schema + resolver patterns)

@@ -29,6 +29,7 @@ All criteria must pass before this task is marked complete.
 
 ## Next Steps
 - **Success:** `/execution-report` — generate post-deployment analytics
+- **Post-deploy validation:** `/logging-audit` — verify observability coverage, `/incident-readiness` — verify DR readiness
 - **Issues found:** `/rollback deploy` — revert to previous stable version
 - **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
 

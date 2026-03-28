@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 23 role-based agents, 51 skills, 14 hooks, rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 23 role-based agents, 67 skills, 17 hooks, rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -104,6 +104,20 @@ Then build each MVP feature: `/workflow new "feature description"`
 
 Or go fully automated: `/idea-to-launch "your idea"`
 
+## Token Optimization & Quality Assurance
+
+Built-in enforcement rules that minimize token usage and maximize accuracy:
+
+| Feature | What It Does |
+|---------|-------------|
+| **prompt-efficiency rule** | Forces concise output — no preamble, answer-first, targeted reads, code diffs only |
+| **accuracy rule** | Forces verification — Glob before citing paths, Grep before referencing functions, re-read after edits |
+| **context-monitor hook** | Auto-tracks context usage after every tool call, warns at 45%/60%/75% thresholds |
+| **prompt-stats hook** | Shows session stats on exit — tool calls, tokens used, files changed, hallucination risk |
+| **context-budget rule** | Hard 60% working budget with auto-compaction guidance |
+| **Agent model optimization** | Read-only agents use sonnet (cheaper), deep-reasoning agents use opus |
+| **maxTurns tuning** | Advisory agents capped at 15-20 turns to prevent runaway token spend |
+
 ## What It Creates
 
 ```
@@ -132,7 +146,7 @@ your-project/
 │   │   ├── ux-designer.md        <- User flows & wireframes
 │   │   ├── code-quality.md      <- Design patterns, SOLID, static analysis
 │   │   └── mobile.md            <- iOS, Android, React Native, Flutter, KMP
-│   ├── skills/                   <- 51 workflow skills
+│   ├── skills/                   <- 67 workflow skills
 │   │   ├── workflow/             <- /workflow — Full 13-phase SDLC
 │   │   ├── scan-codebase/        <- /scan-codebase
 │   │   ├── generate-environment/ <- /generate-environment
@@ -165,7 +179,7 @@ your-project/
 │   │   ├── release-notes/        <- /release-notes — Release documentation
 │   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
 │   │   └── ...                   <- + more utility skills
-│   ├── hooks/                    <- 14 automation scripts (10 events)
+│   ├── hooks/                    <- 17 automation scripts (10 events)
 │   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
@@ -300,7 +314,7 @@ Phase 13: Execution Report — success score, hallucination check, regression au
 
 Mandatory `/context-check` between every phase transition to enforce 60% context budget.
 
-## Hook Events (14 hooks implementing 10 events)
+## Hook Events (17 hooks implementing 10 events)
 
 | Event | Hook | Purpose |
 |-------|------|---------|

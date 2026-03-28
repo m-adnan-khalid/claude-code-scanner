@@ -222,4 +222,9 @@ HANDOFF:
 - DO NOT ignore platform guidelines — HIG (iOS) and Material Design (Android) are mandatory
 - DO NOT hardcode strings — all user-facing text must be localizable
 - Scope: mobile app source code, tests, assets, and platform-specific configs only
+
+## Testing After Mobile Changes
+After building or modifying mobile code, run:
+- `/e2e-mobile` — verify mobile flows on real emulator/device (Maestro/Detox/Appium/Flutter)
+- `/mobile-audit` — full quality audit (performance, UX, accessibility, app store readiness)
 - Defer security review to @security, code quality checks to @code-quality

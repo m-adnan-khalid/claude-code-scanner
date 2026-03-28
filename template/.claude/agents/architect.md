@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash
 disallowedTools: Edit, Write
 model: opus
 permissionMode: plan
-maxTurns: 25
+maxTurns: 20
 effort: high
 memory: project
 ---

@@ -24,13 +24,16 @@
 
 ## Testing Stack
 
-| Type | Tool | Config File |
-|------|------|------------|
-| Unit | {Jest/Vitest/Pytest/Go test} | {config path} |
-| Integration | {Supertest/Pytest/etc.} | {config path} |
-| E2E | {Playwright/Cypress/Detox} | {config path} |
-| Load | {k6/Locust/JMeter} | {config path} |
-| Coverage | {Istanbul/c8/coverage.py} | {config path} |
+| Type | Tool | Config File | Skill Command |
+|------|------|------------|---------------|
+| Unit | {Jest/Vitest/Pytest/Go test} | {config path} | `npm test` / `pytest` |
+| Integration | {Supertest/Pytest/etc.} | {config path} | `npm test` / `pytest` |
+| Browser E2E | {Playwright/Cypress} | {config path} | `/e2e-browser` |
+| Mobile E2E | {Maestro/Detox/Appium} | {config path} | `/e2e-mobile` |
+| API Testing | {Newman/Hurl/HTTPyac} | {config path} | `/api-test` |
+| Load | {k6/JMeter/Locust/Artillery} | {config path} | `/load-test` |
+| Visual Regression | {Playwright/BackstopJS/Percy} | {config path} | `/visual-regression` |
+| Coverage | {Istanbul/c8/coverage.py} | {config path} | `/coverage-track` |
 
 ## Test Categories
 
@@ -86,6 +89,18 @@ tests/integration/api/create-order.test.ts
 tests/e2e/checkout/complete-purchase.test.ts
 ```
 
+## Real Environment Testing Commands
+
+```bash
+# Run all real-environment tests in order:
+/api-test                                    # API endpoints (fastest)
+/e2e-browser --browser chromium              # Browser E2E
+/visual-regression                           # Screenshot comparison
+/load-test --tool k6 --vus 50 --duration 30s # Performance under load
+/e2e-mobile --platform flutter               # Mobile flows (if applicable)
+/coverage-track --threshold 80               # Coverage analysis + delta
+```
+
 ## CI/CD Test Pipeline
 
 ```
@@ -93,11 +108,14 @@ PR opened
   → Lint + Type check (< 1 min)
   → Unit tests (< 3 min)
   → Integration tests (< 5 min)
-  → Coverage report + comparison
-  → E2E smoke (< 10 min, critical paths only)
+  → Coverage report + comparison (/coverage-track)
+  → API tests (/api-test, < 2 min)
+  → E2E smoke (/e2e-browser, < 10 min, critical paths only)
+  → Visual regression (/visual-regression, < 5 min)
 
 Pre-deploy
-  → Full E2E suite
-  → Load test baseline check
-  → Security scan
+  → Full E2E suite (/e2e-browser --browser all)
+  → Mobile E2E (/e2e-mobile, if applicable)
+  → Load test baseline check (/load-test)
+  → Security scan (/security-audit)
 ```

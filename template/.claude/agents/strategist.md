@@ -6,7 +6,7 @@ description: >
   Use for Pre-Phase 2 (Product Spec) and Pre-Phase 3 (Feature Map).
 tools: Read, Write, Edit, Grep, Glob
 disallowedTools: Bash, NotebookEdit
-model: opus
+model: sonnet
 maxTurns: 30
 effort: high
 memory: project

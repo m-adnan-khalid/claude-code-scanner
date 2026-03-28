@@ -4,89 +4,36 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 
 ## What You Generate
 - `CLAUDE.md` (root + nested per module) | `.claude/rules/` (path-specific rules)
-- `.claude/agents/` (23 agents) | `.claude/skills/` (51 skills) | `.claude/hooks/` (14 hooks)
+- `.claude/agents/` (23 agents) | `.claude/skills/` (67 skills) | `.claude/hooks/` (17 hooks)
 - `.claude/project/` (pre-dev docs) | `.claude/templates/` | `.claude/profiles/`
 - `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands-template.md`
 
-## New Project Mode (Idea to Launch)
-For brand-new projects (no existing code), use `/new-project "idea"` to run 8 pre-development phases:
-1. **Ideation** (`@ideator`) — brainstorm problem, audience, value proposition
-2. **Product Spec** (`@strategist` + `@ux-designer`) — MVP scope, user journeys, flows
-3. **Feature Map** (`@strategist`) — MoSCoW prioritization, feature tree, backlog
-3b. **Domain Model** (`@strategist`) — entities, glossary, bounded contexts, business rules
-4. **Tech Selection** (`@architect`) — language, framework, DB, hosting recommendations
-5. **Architecture** (`@architect` + `@ux-designer`) — data model, API design, components
-6. **Scaffolding** (`@scaffolder`) — generate project structure, configs, dependencies
-7. **Environment Setup** (auto) — scan scaffold, generate Claude Code environment
-8. **Launch Planning** (`@infra`) — CI/CD, hosting, monitoring, launch checklist
+## New Project Mode
+`/new-project "idea"` — runs 8 phases: Ideation → Spec → Features → Domain → Tech → Architecture → Scaffold → Launch Planning
+`/idea-to-launch "idea"` — full automation from concept to deployed product
+`/import-docs "path/"` — import existing PRDs/specs | `/clarify` — clear requirement doubts
+`/mvp-kickoff next` — start next feature | `/mvp-status` — progress | `/launch-mvp` — deploy
 
-Import existing docs: `/new-project "idea" --from-docs "path/"` or `/import-docs "path/"`
-Validate requirements: `/clarify --before-dev` (Q&A to clear all doubts)
-Build features: `/mvp-kickoff next` (auto-selects, enforces dependencies, injects context)
-Track progress: `/mvp-status` | Launch: `/launch-mvp`
-Or: `/idea-to-launch "idea"` for full automation from concept to deployed product.
+## Existing Codebase Setup
+1. `/scan-codebase` — fingerprint tech stack → TECH_MANIFEST
+2. `/generate-environment` — produce all artifacts from manifest
+3. `/validate-setup` — check quality | 4. `/setup-smithery` — install MCP servers
 
-## Execution Order (Existing Codebase)
+## Context Budget
+- CLAUDE.md: max 150 lines | Rules: max 50 lines with `paths:` | Skills: `context: fork`
+- Startup: <20% | Working: <60% (hard budget, auto-monitored by context-monitor hook)
+- `/context-check` between phases | `/compact` when warned
 
-### Phase 1: Scan (parallel subagents)
-Use `/scan-codebase` skill — spawns 6 agents to fingerprint the tech stack, directory structure, backend, frontend, architecture, domain knowledge, and tooling. Outputs a `TECH_MANIFEST`.
+## Agent Team
+23 agents auto-discovered from `.claude/agents/`. Key roles: `@team-lead` (orchestrator), `@architect` (design), `@tester` (tests), `@qa-lead` (QA), `@security` (security review). See `.claude/docs/commands-template.md` for full roster.
 
-### Phase 2: Generate
-Use `/generate-environment` skill — takes TECH_MANIFEST and produces all artifacts. Every `{placeholder}` replaced with real values from Phase 1.
+## Skills (67 total, auto-discovered)
+**Testing:** `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
+**Audit:** `/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`
+**Observability:** `/setup-observability`, `/logging-audit`
+**Workflow:** `/workflow new "task"`, `/methodology`, `/parallel-dev`, `/task-tracker status`
+**Sync:** `/sync --check`, `/sync --fix`, `/sync --full-rescan`
 
-### Phase 3: Validate
-Use `/validate-setup` skill — checks line counts, JSON validity, hook permissions, context budget.
-
-### Phase 4: Setup Smithery
-Use `/setup-smithery` skill — installs matching Smithery skills and MCP servers based on tech stack.
-
-## Context Budget Rules
-- Root CLAUDE.md: recommended 150 lines (hard limit 200)
-- Rules: max 50 lines each, with `paths:` frontmatter
-- Skills: `context: fork` for heavy work
-- MCP servers: max 5, scoped to agents via `mcpServers:` field
-- Startup context: under 20%
-- Working context: under 60%
-- Run `/context` to verify
-
-## Agent Team (Role-Based)
-| Role | Agent | Access |
-|------|-------|--------|
-| Tech Lead | `@team-lead` | Read/Write — orchestrates, assigns, signs off |
-| Architect | `@architect` | Read-only — designs, reviews architecture |
-| Product Owner | `@product-owner` | Read-only — acceptance criteria, biz sign-off |
-| QA Lead | `@qa-lead` | Read-only — QA plans, QA sign-off |
-| Explorer | `@explorer` | Read-only — investigation, impact analysis |
-| Reviewer | `@reviewer` | Read-only — code review |
-| Security | `@security` | Read-only — vulnerability review |
-| API Dev | `@api-builder` | Read/Write — backend endpoints, services |
-| Frontend Dev | `@frontend` | Read/Write — UI components, pages |
-| Tester | `@tester` | Read/Write — automated tests |
-| Debugger | `@debugger` | Read/Write — bug fixes |
-| Infra | `@infra` | Read/Write — Docker, CI/CD, deployment |
-| Ideator | `@ideator` | Read-only — brainstorming, idea refinement |
-| Strategist | `@strategist` | Read/Write project docs — product strategy, features |
-| Scaffolder | `@scaffolder` | Read/Write — project generation, boilerplate |
-| UX Designer | `@ux-designer` | Read-only — user flows, wireframes, IA |
-| Code Quality | `@code-quality` | Read-only — design patterns, SOLID, duplication, static analysis |
-| Mobile Dev | `@mobile` | Read/Write — iOS, Android, React Native, Flutter, KMP |
-| QA Automation | `@qa-automation` | Read/Write — deploy app, run E2E flows, visual verification |
-| Gatekeeper | `@gatekeeper` | Read-only — auto-approve/block changes, regression detection |
-| Process Coach | `@process-coach` | Read/Write docs — SDLC methodology selection and configuration |
-| Database | `@database` | Read/Write — schema design, migrations, query optimization |
-| Docs Writer | `@docs-writer` | Read/Write docs — READMEs, API docs, ADRs, changelogs |
-
-## Keeping In Sync
-- `/sync --check` — detect drift between environment and codebase (weekly recommended)
-- `/sync --fix` — auto-repair stale agents, skills, CLAUDE.md, rules, hooks
-- `/sync --full-rescan` — re-scan and regenerate everything
-- Drift detector runs automatically on every session start
-
-## Workflow After Setup
-- `/methodology` — choose SDLC model (Scrum, Kanban, Waterfall, XP, DevOps, Lean, Spiral, RAD)
-- `/workflow new "task"` — full SDLC adapted to your chosen methodology
-- `/parallel-dev --analyze` — find independent tasks, `--start` to launch parallel agents
-- `/task-tracker status` — dashboard | See `.claude/docs/commands-template.md` for full reference
-
-@.claude/rules/context-budget.md
-@.claude/rules/request-validation.md
+## Rules (7, auto-scoped by file paths)
+**Always active:** context-budget, prompt-efficiency, accuracy, request-validation
+**Domain-specific:** logging (code files), task-lifecycle (task files), domain-terms (project docs)

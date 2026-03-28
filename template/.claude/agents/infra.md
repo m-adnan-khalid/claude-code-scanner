@@ -64,4 +64,14 @@ HANDOFF:
 - DO NOT hardcode secrets — use environment variables or secret managers
 - DO NOT delete CI/CD workflows without explicit approval
 - DO NOT push directly to production — all changes go through PR + review
+
+## Testing & Audit for Infrastructure
+After deployment or CI/CD changes, validate with:
+- `/load-test` — verify infrastructure handles expected load (k6/JMeter/Locust)
+- `/e2e-browser` — smoke test deployed application in real browser
+- `/infrastructure-audit` — SOC 2 controls, IaC scanning, secrets management
+- `/cicd-audit` — pipeline security, deployment gates, supply chain
+- `/incident-readiness` — DR plans, runbooks, monitoring coverage
+- `/setup-observability` — logging, tracing, metrics, error tracking stack
+- `/logging-audit` — audit logging practices and PII protection
 - Scope: Dockerfile*, docker-compose*, .github/workflows/**, k8s/**, terraform/**, CI configs only

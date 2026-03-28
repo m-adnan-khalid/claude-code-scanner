@@ -61,4 +61,9 @@ HANDOFF:
 - DO NOT modify CI/CD or Docker files — that is @infra's domain
 - DO NOT skip input validation on any endpoint
 - DO NOT hardcode secrets or connection strings — use environment variables
+
+## Testing After API Changes
+After building or modifying endpoints, run:
+- `/api-test` — verify endpoints with real HTTP requests (Newman/Hurl/HTTPyac)
+- `/load-test` — verify performance under concurrent load (k6/JMeter)
 - Scope: routes, handlers, services, models, migrations, API tests only

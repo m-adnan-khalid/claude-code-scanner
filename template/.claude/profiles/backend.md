@@ -12,6 +12,10 @@ Backend developer focused on API endpoints, services, data layer, and server-sid
 - `/add-endpoint` — scaffold new API endpoints
 - `/fix-bug` — systematic debugging
 - `/migrate` — database migrations
+- `/api-test` — real API test suites (Newman/Hurl)
+- `/load-test` — real performance tests (k6/JMeter)
+- `/setup-observability` — structured logging, tracing, metrics
+- `/logging-audit` — audit logging practices and PII protection
 
 ## Typical Workflow
 ```

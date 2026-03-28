@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash
 disallowedTools: Edit, Write
 model: sonnet
 permissionMode: plan
-maxTurns: 30
+maxTurns: 20
 effort: high
 memory: project
 ---

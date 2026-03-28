@@ -34,7 +34,10 @@
       "Bash(node -c /Users/muhammad.adnan/ai_projects/claude-code-scanner/bin/cli.js)",
       "Bash(node -c /Users/muhammad.adnan/ai_projects/claude-code-scanner/scripts/verify-setup.js)",
       "Bash(node -c template/.claude/hooks/track-file-changes.js)",
-      "Bash(head -15 /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/agents/*.md)"
+      "Bash(head -15 /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/agents/*.md)",
+      "Bash(/tmp/gap_analysis.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(grep:*)"
     ]
   }
 }

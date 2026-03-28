@@ -40,7 +40,8 @@ function checkPrerequisites() {
 checkPrerequisites();
 
 const COMMANDS = {
-  init: 'Initialize Claude Code environment in current directory',
+  setup: 'Interactive setup wizard — configure agents, skills, branching, rules',
+  init: 'Initialize Claude Code environment (use --interactive for wizard)',
   new: 'Create a new project from idea to launch',
   status: 'Check if Claude Code environment is set up',
   verify: 'Run verification checks on existing setup',
@@ -501,6 +502,142 @@ function update() {
   init();
 }
 
+async function setup() {
+  const { runWizard } = require('./setup-wizard');
+  const config = await runWizard();
+  if (config) {
+    log('\nApplying configuration...\n');
+    // Apply the config by running init with the saved config
+    init();
+    // Post-init: apply config-specific customizations
+    applyWizardConfig(config);
+  }
+}
+
+function applyWizardConfig(config) {
+  const cwd = process.cwd();
+
+  // 1. Remove disabled agents
+  const allAgents = fs.readdirSync(path.join(cwd, '.claude', 'agents')).filter(f => f.endsWith('.md'));
+  for (const file of allAgents) {
+    const agentName = file.replace('.md', '');
+    if (!config.agents.includes(agentName)) {
+      fs.unlinkSync(path.join(cwd, '.claude', 'agents', file));
+    }
+  }
+  success(`Agents: ${config.agents.length} enabled, ${allAgents.length - config.agents.length} removed`);
+
+  // 2. Remove disabled skill packs
+  const skillPackMap = {
+    core: ['workflow', 'task-tracker', 'execution-report', 'context-check', 'standup'],
+    predev: ['brainstorm', 'product-spec', 'feature-map', 'domain-model', 'tech-stack', 'architecture'],
+    mvp: ['new-project', 'idea-to-launch', 'mvp-kickoff', 'mvp-status', 'launch-mvp'],
+    scaffold: ['scaffold', 'add-endpoint', 'add-component', 'add-page'],
+    quality: ['review-pr', 'design-review', 'security-audit', 'qa-plan', 'impact-analysis'],
+    deploy: ['deploy', 'signoff', 'rollback', 'deploy-strategy'],
+    bugfix: ['fix-bug', 'hotfix', 'migrate'],
+    reporting: ['progress-report', 'metrics', 'cost-estimate', 'changelog'],
+    docs: ['api-docs', 'release-notes', 'onboard', 'mobile-audit'],
+    maintenance: ['sync', 'dependency-check', 'refactor', 'parallel-dev'],
+    config: ['methodology', 'clarify', 'import-docs', 'scan-codebase', 'validate-setup', 'setup-smithery'],
+    mobile: ['mobile-audit'],
+  };
+
+  const enabledSkills = new Set();
+  for (const pack of config.skillPacks) {
+    if (skillPackMap[pack]) {
+      skillPackMap[pack].forEach(s => enabledSkills.add(s));
+    }
+  }
+
+  const skillsDir = path.join(cwd, '.claude', 'skills');
+  if (fs.existsSync(skillsDir)) {
+    let removed = 0;
+    for (const dir of fs.readdirSync(skillsDir)) {
+      if (!enabledSkills.has(dir)) {
+        const skillPath = path.join(skillsDir, dir);
+        if (fs.statSync(skillPath).isDirectory()) {
+          fs.rmSync(skillPath, { recursive: true });
+          removed++;
+        }
+      }
+    }
+    success(`Skills: ${enabledSkills.size} enabled, ${removed} removed`);
+  }
+
+  // 3. Remove disabled rules
+  const ruleFiles = {
+    'context-budget': 'context-budget.md',
+    'request-validation': 'request-validation.md',
+    'domain-terms': 'domain-terms.md',
+    'task-lifecycle': 'task-lifecycle.md',
+  };
+  const rulesDir = path.join(cwd, '.claude', 'rules');
+  if (fs.existsSync(rulesDir)) {
+    for (const [ruleKey, fileName] of Object.entries(ruleFiles)) {
+      if (!config.rules.includes(ruleKey)) {
+        const fp = path.join(rulesDir, fileName);
+        if (fs.existsSync(fp)) fs.unlinkSync(fp);
+      }
+    }
+    success(`Rules: ${config.rules.length} active`);
+  }
+
+  // 4. Remove disabled hooks from settings.json
+  const settingsPath = path.join(cwd, '.claude', 'settings.json');
+  if (fs.existsSync(settingsPath)) {
+    try {
+      const previewPath = path.join(cwd, '.claude', 'setup-settings-preview.json');
+      if (fs.existsSync(previewPath)) {
+        const preview = JSON.parse(fs.readFileSync(previewPath, 'utf-8'));
+        const existing = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+        existing.hooks = preview.hooks;
+        fs.writeFileSync(settingsPath, JSON.stringify(existing, null, 2));
+        fs.unlinkSync(previewPath); // Clean up preview
+        success(`Hooks: ${config.hooks.length} active, settings.json updated`);
+      }
+    } catch (e) {
+      warn(`Could not update settings.json hooks: ${e.message}`);
+    }
+  }
+
+  // 5. Save git workflow config to manifest
+  const manifestPath = path.join(cwd, '.claude', 'manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+      manifest.git = config.git;
+      manifest.methodology = config.methodology;
+      manifest.profile = config.profile;
+      manifest.setup_config = { version: config.version, generated: config.generated };
+      fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+      success('Manifest updated with Git workflow + methodology config');
+    } catch (e) {
+      warn(`Could not update manifest: ${e.message}`);
+    }
+  }
+
+  // 6. Copy selected profile
+  const profileSrc = path.join(cwd, '.claude', 'profiles', `${config.profile}.md`);
+  if (fs.existsSync(profileSrc)) {
+    success(`Profile loaded: ${config.profile}`);
+  }
+
+  // Summary
+  header('Setup Complete!\n');
+  log('Your Claude Code environment is configured.\n');
+  log(`  ${BOLD}1.${RESET} claude`);
+  log(`  ${BOLD}2.${RESET} /scan-codebase          ${CYAN}# Scan your existing code${RESET}`);
+  log(`  ${BOLD}3.${RESET} /generate-environment   ${CYAN}# Customize for your stack${RESET}`);
+  log('');
+  log(`${CYAN}Or start a new project:${RESET}`);
+  log(`  /new-project "your idea"  ${CYAN}# Full pre-dev pipeline${RESET}`);
+  log('');
+  log(`${CYAN}Config saved to:${RESET} .claude/setup-config.json`);
+  log(`${CYAN}Re-run anytime:${RESET} npx claude-code-scanner setup`);
+  log('');
+}
+
 function help() {
   header('Claude Code Scanner\n');
   log('Scan any codebase and generate a complete Claude Code environment.\n');
@@ -512,6 +649,7 @@ function help() {
   }
   log(`\n${BOLD}Options:${RESET}`);
   log(`  ${CYAN}--force, -f${RESET}      Overwrite existing files`);
+  log(`  ${CYAN}--interactive, -i${RESET} Run setup wizard (same as 'setup' command)`);
   log(`  ${CYAN}--here${RESET}           Initialize new project in current directory`);
   log(`  ${CYAN}--no-smithery${RESET}    Skip Smithery setup step in instructions`);
   log(`\n${BOLD}Quick Start (existing project):${RESET}`);
@@ -530,7 +668,14 @@ function help() {
 
 // Route command
 switch (command) {
-  case 'init': init(); break;
+  case 'setup': setup().catch(e => { error(e.message); process.exit(1); }); break;
+  case 'init':
+    if (flags.includes('--interactive') || flags.includes('-i')) {
+      setup().catch(e => { error(e.message); process.exit(1); });
+    } else {
+      init();
+    }
+    break;
   case 'new': newProject(); break;
   case 'status': status(); break;
   case 'verify': verify(); break;

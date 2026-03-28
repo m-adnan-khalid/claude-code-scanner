@@ -68,3 +68,7 @@ HANDOFF:
 - DO NOT skip writing a regression test
 - DO NOT modify test expectations to make tests pass — fix the code
 - If unable to reproduce after 10 turns, escalate to @team-lead with findings so far
+
+## Logging for Debugging
+Use `/logging-audit` to check if adequate logging exists for the area you're debugging.
+Use `/setup-observability` if structured logging or correlation IDs are missing.

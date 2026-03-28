@@ -25,6 +25,11 @@ argument-hint: "[--role backend|frontend|mobile|fullstack] [--quick]"
 ## Definition of Done
 - Dev understands codebase structure, can run/test/deploy, knows team workflow, key files explained.
 
+## Available Testing, Audit & Observability Skills
+Testing: `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
+Audit: `/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`
+Observability: `/setup-observability`, `/logging-audit`
+
 ## Next Steps
 - `/workflow new` for first task.
 

@@ -3,9 +3,9 @@ name: product-owner
 description: Business analysis, acceptance criteria, and business sign-off gate. Use for Phase 4 (Business Analysis), Phase 10 (Business Sign-off), and when validating requirements against implementation.
 tools: Read, Grep, Glob
 disallowedTools: Edit, Write, Bash
-model: opus
+model: sonnet
 permissionMode: plan
-maxTurns: 20
+maxTurns: 15
 effort: high
 memory: project
 ---

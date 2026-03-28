@@ -235,10 +235,10 @@
 - **Server-Sent Events:** EventSource patterns in code
 
 ## Testing
+
+### Unit & Integration
 - **Jest:** jest.config.*, "jest" in package.json
 - **Vitest:** vitest.config.*, "vitest" in package.json
-- **Cypress:** cypress.config.*, cypress/
-- **Playwright:** playwright.config.*, "@playwright/test" in package.json
 - **Pytest:** pytest.ini, conftest.py, [tool.pytest] in pyproject.toml
 - **Go test:** *_test.go files
 - **RSpec:** spec/, .rspec
@@ -247,10 +247,90 @@
 - **Mocha:** .mocharc.*, "mocha" in package.json
 - **Testing Library:** "@testing-library" in package.json
 - **Storybook:** .storybook/, *.stories.tsx/jsx
-- **k6 (load):** *.js with k6 imports, k6 config
-- **Locust (load):** locustfile.py, "locust" in Python
-- **Detox (mobile):** .detoxrc.js, "detox" in package.json
-- **Appium (mobile):** appium config, wdio.conf.js with appium
+
+### Browser E2E (real browser execution)
+- **Playwright:** playwright.config.*, "@playwright/test" in package.json → `/e2e-browser`
+- **Cypress:** cypress.config.*, cypress/ → `/e2e-browser`
+- **Selenium/WebDriver:** wdio.conf.js, "selenium-webdriver" in dependencies
+- **Puppeteer:** "puppeteer" in package.json
+
+### Mobile E2E (real device/emulator execution)
+- **Maestro:** .maestro/ directory, *.yaml maestro flows → `/e2e-mobile`
+- **Detox (React Native):** .detoxrc.js, "detox" in package.json → `/e2e-mobile`
+- **Appium:** appium config, wdio.conf.js with appium → `/e2e-mobile`
+- **Flutter integration:** integration_test/ directory → `/e2e-mobile`
+- **XCUITest:** *UITests target in *.xcodeproj → `/e2e-mobile`
+- **Espresso:** src/androidTest/, @RunWith annotations → `/e2e-mobile`
+
+### API Testing (real HTTP execution)
+- **Newman/Postman:** *.postman_collection.json, "newman" in dependencies → `/api-test`
+- **Hurl:** *.hurl files, tests/api/*.hurl → `/api-test`
+- **HTTPyac:** *.http files, .httpyac.config.js → `/api-test`
+- **Bruno:** bruno/ directory, *.bru files → `/api-test`
+- **Supertest:** "supertest" in package.json → `/api-test`
+- **REST Assured:** "rest-assured" in Java dependencies → `/api-test`
+
+### Load & Performance Testing (real concurrent users)
+- **k6:** *.js with k6 imports, k6 config → `/load-test`
+- **JMeter:** *.jmx test plans → `/load-test`
+- **Locust:** locustfile.py, "locust" in Python → `/load-test`
+- **Artillery:** artillery.yml, "artillery" in package.json → `/load-test`
+- **Gatling:** *.scala simulations, "gatling" in dependencies → `/load-test`
+
+### Visual Regression (real screenshot comparison)
+- **BackstopJS:** backstop.json, "backstopjs" in package.json → `/visual-regression`
+- **Playwright screenshots:** toHaveScreenshot assertions → `/visual-regression`
+- **Percy:** "percy" in dependencies, PERCY_TOKEN → `/visual-regression`
+- **Chromatic:** "chromatic" in package.json → `/visual-regression`
+- **Loki:** "loki" in package.json (Storybook visual testing) → `/visual-regression`
+
+### Coverage Tools (real coverage tracking)
+- **Istanbul/nyc:** "nyc" in package.json, .nycrc → `/coverage-track`
+- **c8:** "c8" in package.json → `/coverage-track`
+- **coverage.py:** .coveragerc, htmlcov/ → `/coverage-track`
+- **Go cover:** coverage.out, go tool cover → `/coverage-track`
+- **JaCoCo:** jacoco.xml, "jacoco" in build.gradle → `/coverage-track`
+- **lcov:** coverage/lcov.info → `/coverage-track`
+
+### Accessibility Testing
+- **axe-core:** "@axe-core/playwright" or "@axe-core/cli" in package.json
+- **Pa11y:** "pa11y" in package.json
+- **Lighthouse:** "lighthouse" in dependencies or Chrome DevTools
+
+## Logging & Observability (→ `/setup-observability`, `/logging-audit`)
+
+### Structured Logging
+- **pino:** "pino" in package.json, pino-http middleware
+- **winston:** "winston" in package.json
+- **bunyan:** "bunyan" in package.json
+- **morgan:** "morgan" in package.json (HTTP request logger)
+- **structlog:** "structlog" in Python dependencies
+- **loguru:** "loguru" in Python dependencies
+- **zap:** "go.uber.org/zap" in go.mod
+- **zerolog:** "rs/zerolog" in go.mod
+- **slog:** "log/slog" imports in Go files (stdlib 1.21+)
+- **log4j:** "log4j" in Java dependencies
+- **logback:** "logback" in Java dependencies, logback.xml
+- **SLF4J:** "slf4j" in Java dependencies
+
+### Distributed Tracing
+- **OpenTelemetry:** "@opentelemetry" in package.json, "opentelemetry-sdk" in Python
+- **Jaeger:** "jaeger-client" in dependencies, jaeger config
+- **Zipkin:** "zipkin" in dependencies
+- **Datadog APM:** "dd-trace" in package.json, "ddtrace" in Python
+- **New Relic:** "newrelic" in dependencies, newrelic.js
+- **AWS X-Ray:** "aws-xray-sdk" in dependencies
+
+### Metrics
+- **Prometheus:** "prom-client" in package.json, prometheus.yml, /metrics endpoint
+- **StatsD:** "hot-shots" or "node-statsd" in package.json
+- **Micrometer:** "micrometer" in Java dependencies
+
+### Error Tracking
+- **Sentry:** "@sentry/node" or "@sentry/browser" in package.json, "sentry-sdk" in Python
+- **Bugsnag:** "@bugsnag" in package.json
+- **Rollbar:** "rollbar" in dependencies
+- **TrackJS:** "trackjs" in dependencies
 
 ## Infrastructure
 - **Docker:** Dockerfile, docker-compose.yml, .dockerignore
@@ -308,8 +388,8 @@
   "auth": {"provider": "", "strategy": "jwt|session|oauth2|saml"},
   "infrastructure": {"containerized": false, "orchestration": "", "iac": "", "cloud": ""},
   "ci_cd": {"platform": "", "config_file": ""},
-  "monitoring": {"apm": "", "logging": "", "metrics": "", "tracing": ""},
-  "testing": {"unit": "", "integration": "", "e2e": "", "load": "", "coverage_tool": ""},
+  "monitoring": {"apm": "", "logging": "", "logging_library": "", "metrics": "", "tracing": "", "error_tracking": ""},
+  "testing": {"unit": "", "integration": "", "e2e_browser": "", "e2e_mobile": "", "api_testing": "", "load": "", "visual_regression": "", "coverage_tool": "", "accessibility": ""},
   "monorepo": {"tool": "", "packages": []},
   "package_manager": ""
 }

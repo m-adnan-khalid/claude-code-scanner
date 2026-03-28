@@ -12,7 +12,15 @@ QA engineer focused on test strategy, test automation, quality metrics, and rele
 
 ## Key Skills
 - `/workflow new "test task"` — SDLC workflow (routes to QA phases)
+- `/e2e-browser` — real browser E2E tests (Playwright/Cypress)
+- `/e2e-mobile` — real mobile E2E tests (Maestro/Detox/Appium)
+- `/api-test` — real API test suites (Newman/Hurl/HTTPyac)
+- `/load-test` — real load/performance tests (k6/JMeter/Locust)
+- `/visual-regression` — visual screenshot comparison (BackstopJS/Playwright)
+- `/coverage-track` — coverage parsing, delta tracking, threshold enforcement
 - `/mobile-audit` — mobile quality audit (if applicable)
+- `/accessibility-audit` — WCAG 2.1 AA/AAA compliance scanning
+- `/performance-audit` — Lighthouse, Core Web Vitals measurement
 - `/metrics` — team quality and velocity metrics
 
 ## Typical Workflow

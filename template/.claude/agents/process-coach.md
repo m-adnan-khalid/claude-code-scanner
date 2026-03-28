@@ -6,7 +6,7 @@ description: >
   workspace — agents, workflows, ceremonies, and quality gates — to follow that methodology.
 tools: Read, Write, Edit, Grep, Glob
 disallowedTools: Bash, NotebookEdit
-model: opus
+model: sonnet
 maxTurns: 30
 effort: high
 memory: project

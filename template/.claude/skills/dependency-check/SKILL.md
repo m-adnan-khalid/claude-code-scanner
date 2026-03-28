@@ -26,6 +26,7 @@ argument-hint: "[--outdated|--vulnerabilities|--unused|--licenses]"
 
 ## Next Steps
 - `/fix-bug` for critical vulnerabilities, `/refactor` for major upgrades.
+- `/license-audit` for deeper OSS license compliance, copyleft risk, and SPDX validation.
 
 ## Rollback
 - N/A (read-only check).

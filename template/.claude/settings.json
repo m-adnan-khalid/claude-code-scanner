@@ -9,7 +9,29 @@
       "Bash(git checkout -b *)",
       "Bash(npm init *)",
       "Bash(npx create-* *)",
-      "Bash(mkdir -p *)"
+      "Bash(mkdir -p *)",
+      "Bash(npx playwright test *)",
+      "Bash(npx cypress run *)",
+      "Bash(npx jest *)",
+      "Bash(npx vitest *)",
+      "Bash(npx newman run *)",
+      "Bash(npx backstop *)",
+      "Bash(npx artillery *)",
+      "Bash(hurl --test *)",
+      "Bash(k6 run *)",
+      "Bash(locust *)",
+      "Bash(maestro test *)",
+      "Bash(flutter test *)",
+      "Bash(python -m pytest *)",
+      "Bash(go test *)",
+      "Bash(npx axe *)",
+      "Bash(npx pa11y *)",
+      "Bash(npx pa11y-ci *)",
+      "Bash(npx lighthouse *)",
+      "Bash(npx license-checker *)",
+      "Bash(pip-licenses *)",
+      "Bash(npx hadolint *)",
+      "Bash(npx source-map-explorer *)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -62,6 +84,25 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/context-monitor.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/test-results-parser.js",
+            "statusMessage": "Parsing test results..."
+          }
+        ]
+      },
       {
         "matcher": "Edit|Write",
         "hooks": [
@@ -150,9 +191,9 @@
             "statusMessage": "Collecting execution metrics..."
           },
           {
-            "type": "prompt",
-            "prompt": "MANDATORY POST-EXECUTION REPORT: Before confirming completion, you MUST generate an execution report. Do the following:\n\n1. Check if task is complete (tests pass, no lint errors, no type errors)\n2. Read the latest execution snapshot from .claude/reports/executions/\n3. Generate a summary report with:\n   - SUCCESS SCORE (0-100): completeness + quality + efficiency\n   - TOKEN/CONTEXT USAGE: estimate tokens used, peak context %\n   - AGENT COMMUNICATION: which agents ran, handoff count, loop iterations\n   - HALLUCINATION CHECK: verify all file:line refs exist, function names are real, patterns match project conventions\n   - REGRESSION IMPACT: run test suite, check coverage delta, flag new failures\n4. Save the report to .claude/reports/executions/\n5. Return {\"ok\": true/false, \"score\": N, \"hallucination\": 0-3, \"regression\": 0-3, \"summary\": \"one-line\"}\n\nIf score < 50 or hallucination >= 2 or regression >= 2, set ok=false with reason.",
-            "model": "haiku"
+            "type": "command",
+            "command": "node .claude/hooks/prompt-stats.js",
+            "statusMessage": "Generating session stats..."
           }
         ]
       }

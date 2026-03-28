@@ -32,6 +32,9 @@ Workflow: `/workflow new|status|plan|dev|review|qa|deploy`, `--hotfix`, `--spike
 Tracking: `/task-tracker create|status|update|report|dashboard|history|blockers|metrics`
 Development: `/add-feature`, `/add-endpoint`, `/add-component`, `/add-page`, `/fix-bug`, `/migrate`, `/onboard`, `/architecture`
 Review: `/review-pr`, `/impact-analysis`, `/design-review`, `/qa-plan`
+Testing: `/e2e-browser [--framework playwright|cypress] [--browser all]`, `/e2e-mobile [--platform ios|android|flutter]`, `/api-test [--tool newman|hurl]`, `/load-test [--tool k6|jmeter|locust] [--vus 50]`, `/visual-regression [--tool playwright|backstop]`, `/coverage-track [--threshold 80]`
+Audit & Compliance: `/accessibility-audit [--level AA|AAA]`, `/privacy-audit [--regulation gdpr|ccpa]`, `/performance-audit [--threshold 90]`, `/infrastructure-audit [--framework soc2|iso27001]`, `/license-audit [--policy permissive]`, `/docs-audit [--scope full]`, `/cicd-audit [--platform github]`, `/incident-readiness [--scope full]`
+Observability: `/setup-observability [--stack elt|datadog|grafana] [--scope full|logging|tracing|metrics]`, `/logging-audit [--scope full|pii|levels|correlation]`
 Reports: `/progress-report dev|qa|business|management|executive`, `/metrics velocity|quality|cycle-time|agents|all`, `/standup`, `/execution-report [task-id|last|all] [--phase N]`
 Sync: `/sync --check`, `/sync --fix`, `/sync --fix --component agents|skills|rules|hooks|claude-md`, `/sync --full-rescan`
 Deploy: `/signoff qa|business|tech`, `/deploy staging|production`, `/rollback deploy|code|phase [task-id]`

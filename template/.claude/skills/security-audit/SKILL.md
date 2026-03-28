@@ -29,6 +29,8 @@ argument-hint: "[--full|--deps|--secrets|--owasp|--auth]"
 
 ## Next Steps
 - `/fix-bug` for critical findings, `/workflow resume` for clean audit.
+- `/api-test` — verify auth flows, injection resistance, error handling with real HTTP requests
+- `/e2e-browser` — verify XSS prevention, CSRF protection in real browser
 
 ## Rollback
 - N/A (read-only audit).

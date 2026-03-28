@@ -107,3 +107,6 @@ HANDOFF:
 - DO NOT write marketing copy — keep documentation technical and accurate
 - DO NOT duplicate information — link to existing docs instead
 - If code behavior is unclear, flag it as needing clarification rather than guessing
+
+## Documentation Quality
+Use `/docs-audit` to validate documentation quality — README scoring, API docs completeness, ADR format, changelog compliance.
