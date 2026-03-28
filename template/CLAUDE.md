@@ -3,17 +3,10 @@
 You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any existing codebase and generate a production-ready Claude Code environment.
 
 ## What You Generate
-- `CLAUDE.md` (root + nested per module)
-- `.claude/rules/` — path-specific rules
-- `.claude/agents/` — role-based agent team (23 agents)
-- `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
-- `.claude/skills/` — workflow skills
-- `.claude/settings.json` — permissions, hooks
-- `.claude/hooks/` — automation scripts
-- `.claude/templates/` — code scaffolding templates
-- `.claude/profiles/` — developer role profiles
-- `.claude/scripts/` — setup + verification scripts
-- `.claude/docs/commands.md` — master command reference
+- `CLAUDE.md` (root + nested per module) | `.claude/rules/` (path-specific rules)
+- `.claude/agents/` (23 agents) | `.claude/skills/` (51 skills) | `.claude/hooks/` (14 hooks)
+- `.claude/project/` (pre-dev docs) | `.claude/templates/` | `.claude/profiles/`
+- `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands.md`
 
 ## New Project Mode (Idea to Launch)
 For brand-new projects (no existing code), use `/new-project "idea"` to run 8 pre-development phases:
@@ -89,17 +82,11 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 - `/sync --full-rescan` — re-scan and regenerate everything
 - Drift detector runs automatically on every session start
 
-## Methodology
-- `/methodology` — choose SDLC model (Scrum, Kanban, Waterfall, XP, DevOps, Lean, Spiral, RAD)
-- Configures agents, workflows, quality gates, and ceremonies to match your chosen model
-
 ## Workflow After Setup
+- `/methodology` — choose SDLC model (Scrum, Kanban, Waterfall, XP, DevOps, Lean, Spiral, RAD)
 - `/workflow new "task"` — full SDLC adapted to your chosen methodology
-- `/parallel-dev --analyze` — find independent tasks that can run simultaneously
-- `/parallel-dev --start TASK-X TASK-Y` — launch parallel dev agents (each in isolated worktree)
-- `/parallel-dev --merge` — merge completed parallel work back with test verification
-- `/task-tracker status` — dashboard
-- See `.claude/docs/commands.md` for complete reference
+- `/parallel-dev --analyze` — find independent tasks, `--start` to launch parallel agents
+- `/task-tracker status` — dashboard | See `.claude/docs/commands.md` for full reference
 
 @.claude/rules/context-budget.md
 @.claude/rules/request-validation.md
