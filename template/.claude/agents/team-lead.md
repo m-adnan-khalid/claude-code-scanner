@@ -80,8 +80,18 @@ Before Phase 5, check task `depends-on` field:
 ### Concurrency Guard
 Before starting new workflow:
 - Scan `.claude/tasks/` for tasks with active status
-- If found: prompt user to ON_HOLD or cancel the active task first
-- NEVER run two workflows simultaneously
+- **Dependent tasks:** BLOCK — only one active at a time for tasks sharing files/modules
+- **Independent tasks:** ALLOW parallel — tasks with no shared files/dependencies CAN run simultaneously
+- Use `/parallel-dev` to analyze and schedule independent work across dev agents
+- Each parallel agent runs in `isolation: worktree` — no merge conflicts
+
+### Parallel Orchestration
+When multiple independent tasks are ready:
+1. Run `/parallel-dev --analyze` to identify parallelizable work
+2. Assign each independent task to a different dev agent (e.g., @api-builder + @frontend + @mobile)
+3. Each agent works in its own worktree — zero interference
+4. Merge order: collect all results, merge one at a time, run tests between each merge
+5. If any merge conflicts: resolve sequentially, re-test after resolution
 
 ## Output Format
 ### Task Assignment

@@ -86,6 +86,9 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 
 ## Workflow After Setup
 - `/workflow new "task"` — full SDLC (intake -> impact -> design -> dev -> test -> review -> QA -> signoff -> deploy)
+- `/parallel-dev --analyze` — find independent tasks that can run simultaneously
+- `/parallel-dev --start TASK-X TASK-Y` — launch parallel dev agents (each in isolated worktree)
+- `/parallel-dev --merge` — merge completed parallel work back with test verification
 - `/task-tracker status` — dashboard
 - See `.claude/docs/commands.md` for complete reference
 
