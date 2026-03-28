@@ -80,6 +80,8 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 | QA Automation | `@qa-automation` | Read/Write — deploy app, run E2E flows, visual verification |
 | Gatekeeper | `@gatekeeper` | Read-only — auto-approve/block changes, regression detection |
 | Process Coach | `@process-coach` | Read/Write docs — SDLC methodology selection and configuration |
+| Database | `@database` | Read/Write — schema design, migrations, query optimization |
+| Docs Writer | `@docs-writer` | Read/Write docs — READMEs, API docs, ADRs, changelogs |
 
 ## Keeping In Sync
 - `/sync --check` — detect drift between environment and codebase (weekly recommended)

@@ -128,7 +128,18 @@
         ]
       }
     ],
-    "SubagentStop": [],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/subagent-tracker.js",
+            "statusMessage": "Tracking agent completion..."
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
