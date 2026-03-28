@@ -72,6 +72,11 @@
           {
             "type": "command",
             "command": "node .claude/hooks/track-file-changes.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gatekeeper-check.js",
+            "statusMessage": "Validating change..."
           }
         ]
       }
