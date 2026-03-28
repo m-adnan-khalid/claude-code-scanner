@@ -11,6 +11,12 @@ while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRo
   _projectRoot = path.dirname(_projectRoot);
 }
 
+// Drain stdin so hook never hangs if data is piped
+process.stdin.resume();
+process.stdin.on('data', () => {});
+process.stdin.on('error', () => {});
+setTimeout(() => process.exit(0), 5000).unref();
+
 const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
 const reportsDir = path.join(_projectRoot, '.claude', 'reports', 'executions');
 
@@ -19,7 +25,7 @@ let activeTask = null;
 let activeTaskPath = null;
 
 try {
-// Ensure reports directory exists
+  // Ensure reports directory exists
 if (!fs.existsSync(reportsDir)) {
   fs.mkdirSync(reportsDir, { recursive: true });
 }

@@ -2,6 +2,12 @@
 // Cross-platform OS notification when Claude needs user approval
 const { execSync } = require('child_process');
 
+// Drain stdin so hook never hangs if data is piped
+process.stdin.resume();
+process.stdin.on('data', () => {});
+process.stdin.on('error', () => {});
+setTimeout(() => process.exit(0), 5000).unref();
+
 const MSG = 'Claude Code needs your approval';
 
 function tryExec(cmd) {

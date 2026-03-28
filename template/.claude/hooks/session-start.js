@@ -9,6 +9,12 @@ while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRo
   _projectRoot = path.dirname(_projectRoot);
 }
 
+// Drain stdin so hook never hangs if data is piped
+process.stdin.resume();
+process.stdin.on('data', () => {});
+process.stdin.on('error', () => {});
+setTimeout(() => process.exit(0), 5000).unref();
+
 // --- Check new project pre-dev status ---
 const projectMd = path.join(_projectRoot, '.claude', 'project', 'PROJECT.md');
 if (fs.existsSync(projectMd)) {
