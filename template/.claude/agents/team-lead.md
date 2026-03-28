@@ -50,7 +50,8 @@ You are the ONLY agent that orchestrates work across the team. Other agents cann
 | Code review | @code-quality -> @reviewer + @security | — |
 | Architecture | @architect | @code-quality (pattern advice) |
 | Quality audit | @code-quality | — |
-| QA testing | @qa-lead | @tester |
+| QA automation | @qa-automation | @tester |
+| QA sign-off | @qa-lead | @qa-automation |
 | Business review | @product-owner | — |
 | Ideation | @ideator | — |
 | Product Strategy | @strategist | @ux-designer |

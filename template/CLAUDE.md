@@ -77,6 +77,9 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 | UX Designer | `@ux-designer` | Read-only — user flows, wireframes, IA |
 | Code Quality | `@code-quality` | Read-only — design patterns, SOLID, duplication, static analysis |
 | Mobile Dev | `@mobile` | Read/Write — iOS, Android, React Native, Flutter, KMP |
+| QA Automation | `@qa-automation` | Read/Write — deploy app, run E2E flows, visual verification |
+| Gatekeeper | `@gatekeeper` | Read-only — auto-approve/block changes, regression detection |
+| Process Coach | `@process-coach` | Read/Write docs — SDLC methodology selection and configuration |
 
 ## Keeping In Sync
 - `/sync --check` — detect drift between environment and codebase (weekly recommended)
