@@ -57,6 +57,10 @@ You are the ONLY agent that orchestrates work across the team. Other agents cann
 | Product Strategy | @strategist | @ux-designer |
 | UX Design | @ux-designer | — |
 | Scaffolding | @scaffolder | @infra |
+| Database/Migration | @database | @api-builder |
+| Documentation | @docs-writer | — |
+| Methodology | @process-coach | — |
+| Change Validation | @gatekeeper | — (automated via hook) |
 
 ### Loop Management
 Track ALL loop iteration counts in the task record:

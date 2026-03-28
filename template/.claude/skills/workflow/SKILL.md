@@ -50,6 +50,10 @@ Orchestrate the full development lifecycle. No phase advances until exit criteri
 | Security | @security | Vulnerability review |
 | Investigation | @explorer | Codebase exploration, impact mapping |
 | Infrastructure | @infra | Docker, CI/CD, deployment |
+| Mobile Dev | @mobile | iOS, Android, Flutter, React Native |
+| Database | @database | Schema design, migrations, query optimization |
+| QA Automation | @qa-automation | E2E testing, visual verification, deploy & test |
+| Change Validation | @gatekeeper | Auto-approve/block changes, regression detection |
 
 ## Pre-Development Context
 If `.claude/project/PROJECT.md` exists and has status `READY_FOR_DEV`, read these project docs before starting Phase 1:

@@ -66,7 +66,7 @@ for (const f of globDir(rulesDir, '.md')) {
   check(`${name} has paths:`, fileContains(f, 'paths:'));
 }
 
-// --- Agents (18 required) ---
+// --- Agents (23 required) ---
 console.log('--- Agents ---');
 const agentsDir = path.join(cwd, '.claude', 'agents');
 const requiredAgents = [
@@ -74,10 +74,11 @@ const requiredAgents = [
   'explorer', 'reviewer', 'security', 'debugger', 'tester',
   'frontend', 'api-builder', 'infra', 'mobile',
   'ideator', 'strategist', 'scaffolder', 'ux-designer',
-  'code-quality'
+  'code-quality', 'gatekeeper', 'process-coach', 'qa-automation',
+  'database', 'docs-writer'
 ];
-const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality'];
-const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile', 'debugger', 'tester', 'infra', 'team-lead', 'strategist', 'ux-designer'];
+const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality', 'gatekeeper'];
+const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile', 'debugger', 'tester', 'infra', 'team-lead', 'strategist', 'ux-designer', 'database', 'qa-automation'];
 
 for (const agentName of requiredAgents) {
   const agentFile = path.join(agentsDir, `${agentName}.md`);
@@ -125,7 +126,12 @@ const heavySkills = [
   'tech-stack', 'architecture', 'scaffold', 'deploy-strategy',
   'new-project', 'idea-to-launch', 'import-docs',
   'mvp-kickoff', 'mvp-status', 'launch-mvp', 'clarify',
-  'release-notes', 'cost-estimate', 'rollback', 'setup-smithery'
+  'release-notes', 'cost-estimate', 'rollback', 'setup-smithery',
+  'validate-setup', 'context-check', 'methodology', 'parallel-dev',
+  'mobile-audit', 'sync', 'refactor', 'security-audit', 'hotfix',
+  'fix-bug', 'migrate', 'add-endpoint', 'review-pr', 'deploy',
+  'onboard', 'signoff', 'design-review', 'qa-plan', 'api-docs',
+  'dependency-check'
 ];
 for (const skillName of heavySkills) {
   const skillMd = path.join(skillsDir, skillName, 'SKILL.md');
