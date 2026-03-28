@@ -25,3 +25,18 @@ argument-hint: '"refactor description" [--scope path/to/module] [--type extract|
 - NEVER change behavior — only structure
 - Run tests after every change
 - If tests break, revert and try a smaller step
+
+## Definition of Done
+- [ ] All existing tests pass (no behavior change)
+- [ ] Code review clean — no structural concerns raised
+- [ ] Refactoring improves at least one measurable quality metric (complexity, duplication, cohesion)
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/review-pr` — get code review on the refactored code
+- **Issues found:** `/fix-bug "regression from refactor"` — address any unintended behavior changes
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Undo changes:** `git stash pop` to restore stashed pre-refactor state, or `git revert <commit>` for committed changes
+- **Revert to previous state:** `git checkout <pre-refactor-branch>` to return to original structure

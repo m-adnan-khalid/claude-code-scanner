@@ -147,5 +147,23 @@ Show:
 - `.claude/project/ARCHITECTURE.md` must exist
 - `.claude/project/TECH_STACK.md` must exist
 
-## Next Step
-Automatic: `/scan-codebase` → `/generate-environment` → `/validate-setup` (Pre-Phase 7)
+## Definition of Done
+- [ ] Project builds successfully (type check, lint, build all pass)
+- [ ] Tests run (even if only example/stub tests)
+- [ ] Directory structure matches ARCHITECTURE.md plan
+- [ ] `.env.example` present with placeholder values (no real secrets)
+- [ ] Dependencies installed with no vulnerabilities
+- [ ] Dockerfile is production-ready (multi-stage, non-root user)
+- [ ] CI pipeline configuration created
+- [ ] README.md generated with project info
+- [ ] PROJECT.md updated with Phase 6 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/scan-codebase` (auto) — scan the scaffolded project for environment setup
+- **Iterate:** `/scaffold --from-architecture` — re-scaffold from updated architecture
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `rm -rf` generated directories and re-run `/scaffold`
+- **Revert output:** Delete generated project files and re-scaffold from ARCHITECTURE.md

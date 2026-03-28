@@ -44,6 +44,19 @@ PENDING → IN_PROGRESS → DONE → VERIFIED
 - Nothing is lost between sessions — task file is the source of truth
 - `/workflow status` always shows current state from the task file
 
+### Subtask Creation & Management
+- **When:** @team-lead creates subtasks during Phase 1 (intake) or Phase 3 (after design approval)
+- **Who:** @team-lead owns subtask creation; agents own subtask execution
+- **Regeneration:** If Phase 10 rejects back to Phase 3+, @team-lead regenerates affected subtasks
+- **VERIFIED status:** Set by the NEXT phase's agent when they confirm the output (e.g., @tester verifies dev subtask by confirming tests pass)
+- **BLOCKED subtask:** Unblock via `/workflow unblock TASK-{id} subtask-{N} "reason"` — only @team-lead can unblock
+- **Evidence standards:**
+  - Design subtasks: design doc link + review notes
+  - Implementation subtasks: code committed + lint clean
+  - Test subtasks: test results + coverage numbers
+  - Review subtasks: review comments addressed count
+  - Deploy subtasks: health check results + monitoring URL
+
 **Tip:** Run `/clarify --feature "description"` before `/workflow new` to validate requirements are clear for the feature. Or `/clarify --existing` to scan the full codebase for gaps.
 
 ## Concurrency Rule
@@ -67,15 +80,21 @@ PENDING → IN_PROGRESS → DONE → VERIFIED
 | Frontend Dev | @frontend | UI components, pages |
 | Testing | @tester | Write and run automated tests |
 | Debugging | @debugger | Root cause analysis, bug fixes |
-| Code Review | @reviewer | Quality, conventions |
+| Code Review (R1) | @reviewer | Quality, conventions, correctness — first of dual reviewers |
 | Code Quality | @code-quality | Design patterns, SOLID, duplication, static analysis |
-| Security | @security | Vulnerability review |
+| Code Review (R2) | @security | Security review — second of dual reviewers |
 | Investigation | @explorer | Codebase exploration, impact mapping |
 | Infrastructure | @infra | Docker, CI/CD, deployment |
 | Mobile Dev | @mobile | iOS, Android, Flutter, React Native |
 | Database | @database | Schema design, migrations, query optimization |
 | QA Automation | @qa-automation | E2E testing, visual verification, deploy & test |
 | Change Validation | @gatekeeper | Auto-approve/block changes, regression detection |
+| Ideator | @ideator | Brainstorming, idea refinement (pre-dev Phase 1) |
+| Strategist | @strategist | Product strategy, specs, feature maps (pre-dev Phase 2-3) |
+| Scaffolder | @scaffolder | Project generation, boilerplate (pre-dev Phase 6) |
+| UX Designer | @ux-designer | User flows, wireframes, IA (pre-dev Phase 2, 5) |
+| Process Coach | @process-coach | SDLC methodology selection and configuration |
+| Docs Writer | @docs-writer | READMEs, API docs, ADRs, changelogs |
 
 ## Pre-Development Context
 If `.claude/project/PROJECT.md` exists and has status `READY_FOR_DEV`, read these project docs before starting Phase 1:
@@ -170,7 +189,11 @@ Phase 1 (Intake: type=hotfix) -> Phase 2 (Impact, abbreviated)
 - Review: max 2 (not 3)
 - CI: max 2 (not 3)
 - Deploy: max 1 (immediate rollback on failure)
-- If any breaker trips: rollback + escalate immediately
+- If any breaker trips: execute hotfix rollback protocol:
+1. `/rollback deploy` — revert to pre-hotfix state
+2. `git revert {hotfix-commit}` — revert the code change
+3. Log failure in task record with root cause
+4. Escalate to user: "Hotfix failed after {N} attempts. Options: (1) retry with different approach, (2) manual fix, (3) accept the bug temporarily"
 
 ---
 
@@ -203,7 +226,27 @@ Phase 1 (Intake: type=spike) -> create task record, NO branch
 - If user says yes: run `/sync --fix`, then continue intake
 - If user says no: continue with warning logged
 
-Classify type (feature/bugfix/refactor/hotfix/spike), scope (frontend/backend/fullstack/infra), complexity (small/medium/large). Create branch (except spike). Log to `.claude/tasks/TASK-{id}.md`.
+Classify type (feature/bugfix/refactor/hotfix/spike), scope (frontend/backend/fullstack/infra), complexity (small/medium/large). Log to `.claude/tasks/TASK-{id}.md`.
+
+### Branch Creation (except spike)
+1. Identify the base branch: `main` or `dev` (read from CLAUDE.md or git config)
+2. Pull latest: `git pull origin {base-branch}`
+3. Create feature branch: `git checkout -b {type}/TASK-{id}/{short-description}` (e.g., `feature/TASK-042/user-auth`)
+4. Log branch name in task record under `## Git` section
+5. All development work happens on this branch — never commit directly to `main`/`dev`
+
+**Branch naming convention:**
+- Features: `feature/TASK-{id}/{slug}`
+- Bugfixes: `fix/TASK-{id}/{slug}`
+- Hotfixes: `hotfix/TASK-{id}/{slug}`
+- Refactors: `refactor/TASK-{id}/{slug}`
+
+### Phase 1 Exit Criteria
+- [ ] Task record created at `.claude/tasks/TASK-{id}.md`
+- [ ] Type, scope, complexity classified
+- [ ] Branch created and logged in task record (except spike)
+- [ ] Drift check completed
+- [ ] User confirmed task description
 
 **State: INTAKE**
 
@@ -223,7 +266,10 @@ If NOT skipped: @architect designs solution. Then @code-quality reviews the desi
 **State: DESIGNING -> APPROVED (on user approval)**
 
 ## Phase 4: Business Analysis
-@product-owner generates acceptance criteria (GIVEN/WHEN/THEN). User confirms.
+@product-owner generates acceptance criteria (GIVEN/WHEN/THEN). User reviews.
+**If user rejects criteria:** @product-owner revises based on feedback → user re-reviews (max 2 iterations).
+**If iteration 2 rejected:** escalate to @team-lead for mediation.
+User confirms.
 **Skip condition:** Skip if type == hotfix OR type == refactor OR type == tech-debt.
 
 **State: APPROVED (after user confirms criteria)**
@@ -265,32 +311,67 @@ Track: `dev-test-loop: N/5`, `coverage-baseline`, `coverage-current`, `fix-agent
 
 **State: DEV_TESTING**
 
-## Phase 7: Code Review
-@code-quality audits FIRST (SOLID violations, duplication, complexity, design pattern compliance, scalability).
-Then @reviewer + @security run in PARALLEL. Stricter verdict wins if split.
-**Loop (max 3 iterations):**
-1. ALL APPROVE (code-quality score >= 75, reviewer approves, security approves) -> EXIT to Phase 8
-2. @code-quality score < 75 -> route SOLID/pattern fixes to dev agent before reviewer sees code
-3. SPLIT DECISION -> only re-review with rejecting agent
-4. REQUEST_CHANGES -> route fixes by category to appropriate dev agent
-5. Partial re-review (only the agent(s) that requested changes)
-6. **Agent timeout:** Reviewer timeout = count as iteration, re-invoke
-7. Iteration 3 -> CIRCUIT BREAKER
+## Phase 7: Code Review (Dual Approval Required)
+Three-stage review process — ALL must approve before PR is created:
 
-Track: `review-loop: N/3`, `reviewer-status`, `security-status`, `open-comments`
+### Stage 1: Quality Gate
+@code-quality audits FIRST (SOLID violations, duplication, complexity, design pattern compliance, scalability).
+- Score < 75 -> route SOLID/pattern fixes to dev agent BEFORE human-style review
+- Score >= 75 -> proceed to Stage 2
+
+### Stage 2: Dual Code Review (PARALLEL)
+Two independent reviewers must BOTH approve:
+- **@reviewer** (Reviewer 1) — code quality, conventions, correctness, maintainability
+- **@security** (Reviewer 2) — security review, vulnerability check, auth/authz validation
+
+**Both approvals required.** If either requests changes:
+1. Route fixes by category to appropriate dev agent
+2. Only the rejecting reviewer(s) re-review (approved reviewer's verdict preserved)
+3. Stricter verdict wins if split on severity
+
+### Stage 3: Review Verdict
+| @reviewer | @security | Result |
+|-----------|-----------|--------|
+| APPROVE | APPROVE | -> EXIT to Phase 8 (PR Creation) |
+| APPROVE | REQUEST_CHANGES | -> fix security issues, @security re-reviews |
+| REQUEST_CHANGES | APPROVE | -> fix code issues, @reviewer re-reviews |
+| REQUEST_CHANGES | REQUEST_CHANGES | -> fix all issues, both re-review |
+
+**Loop (max 3 iterations):**
+1. Both APPROVE + code-quality score >= 75 -> EXIT to Phase 8
+2. REQUEST_CHANGES -> route fixes -> partial re-review
+3. **Agent timeout:** Reviewer timeout = count as iteration, re-invoke
+4. Iteration 3 -> CIRCUIT BREAKER
+
+Track: `review-loop: N/3`, `reviewer-1-status`, `reviewer-2-status`, `code-quality-score`, `open-comments`
 
 **State: REVIEWING**
 
-## Phase 8: PR + CI
-Create PR, wait for CI.
-**Loop (max 3 iterations):**
-1. CI fails -> classify failure -> route to fix agent
-2. Fix -> push -> CI re-runs
-3. Substantive fix (logic change): flag for Phase 7 re-review
-4. **Agent timeout:** CI fix agent timeout = count as iteration
-5. Iteration 3 -> CIRCUIT BREAKER
+## Phase 8: PR Creation + CI
+Dev agent creates the Pull Request after dual review approval:
 
-Track: `ci-fix-loop: N/3`, `last-ci-failure`, `fix-agent`
+### PR Creation Steps
+1. **Push branch:** `git push -u origin {branch-name}`
+2. **Create PR:** `gh pr create --base {base-branch} --title "TASK-{id}: {title}" --body "{pr-body}"`
+3. **PR body must include:**
+   - Summary of changes (from task record)
+   - Link to task: `TASK-{id}`
+   - Test evidence: coverage %, test results
+   - Review status: both reviewers approved
+   - Acceptance criteria checklist (from Phase 4)
+4. **Label PR:** type (feature/fix/refactor), scope (frontend/backend/fullstack)
+5. **Log PR URL** in task record under `## Git` section
+
+### CI Pipeline
+Wait for CI to complete. **Loop (max 3 iterations):**
+1. CI passes -> EXIT to Phase 9 (QA Testing)
+2. CI fails -> classify failure -> route to fix agent
+3. Fix -> `git push` -> CI re-runs
+4. Substantive fix (logic change): flag for Phase 7 re-review (back to dual review)
+5. **Agent timeout:** CI fix agent timeout = count as iteration
+6. Iteration 3 -> CIRCUIT BREAKER
+
+Track: `ci-fix-loop: N/3`, `pr-url`, `pr-number`, `last-ci-failure`, `fix-agent`
 
 **State: CI_PENDING**
 
@@ -332,8 +413,23 @@ Track: `signoff-rejection-cycle: N/2`, per-gate status
 
 **States: QA_SIGNOFF -> BIZ_SIGNOFF -> TECH_SIGNOFF**
 
-## Phase 11: Deployment (max 2 attempts)
-@infra: pre-checks -> merge PR -> deploy -> health check -> smoke test.
+## Phase 11: PR Merge + Deployment (max 2 attempts)
+
+### Step 1: @team-lead Merges PR
+Only @team-lead can merge — this is the final gate after all sign-offs:
+1. Verify all sign-offs obtained (QA + Business + Tech from Phase 10)
+2. Verify CI is green on the PR
+3. Merge PR: `gh pr merge {pr-number} --squash --delete-branch` (or `--merge` per project convention)
+4. Log merge commit SHA in task record
+5. **If merge conflicts:**
+1. @team-lead resolves conflicts following `.claude/docs/conflict-resolution-protocol.md`
+2. If > 5 files conflicted: @architect reviews resolution for correctness
+3. Push resolved code, wait for CI to pass
+4. If CI fails after resolution: re-triage (may need Phase 7 re-review for substantive changes)
+5. Then merge
+
+### Step 2: @infra Deploys
+@infra: pre-checks -> deploy -> health check -> smoke test.
 **On failure — triage first:**
 - Config/env -> @infra fixes -> retry directly
 - Code bug -> @debugger hotfix -> fast-track Phase 6->7->8->11
@@ -341,7 +437,7 @@ Track: `signoff-rejection-cycle: N/2`, per-gate status
 - Unknown -> `/rollback`, escalate to user
 Attempt 2 fails -> rollback + escalate.
 
-Track: `deploy-loop: N/2`, `last-deploy-failure`, `rollback-executed`
+Track: `deploy-loop: N/2`, `merge-sha`, `last-deploy-failure`, `rollback-executed`
 
 **State: DEPLOYING**
 
@@ -358,6 +454,13 @@ Generated by the orchestrator (NOT the Stop hook — Stop hook handles session-l
 - **Stop hook:** Generates session-level snapshot only — does NOT duplicate Phase 13
 
 ---
+
+## Blocked State Management
+- **Entry:** Task enters BLOCKED when `depends-on: TASK-X` and TASK-X has not reached Phase 8 (CI_PENDING)
+- **Auto-unblock:** Session-start hook checks dependencies — when TASK-X reaches Phase 8+, BLOCKED task auto-transitions to its previous state
+- **Manual unblock:** `/workflow unblock TASK-{id} "reason"` — @team-lead can force-unblock with justification
+- **Timeout:** If BLOCKED > 14 days, session-start hook warns user. If > 30 days, suggest: cancel, re-scope without dependency, or escalate
+- **Blocked subtasks:** Individual subtasks can be BLOCKED independently — phase still advances if non-blocked subtasks are DONE
 
 ## ON_HOLD Management
 - **Enter:** Any sign-off gate defers, or user explicitly pauses
@@ -404,3 +507,27 @@ Reverse transitions (rejection routing):
 | Deploy (P11) | 2 | Global | 1 |
 
 Any breaker tripped -> STOP -> escalate to user: continue, re-plan, reduce scope, cancel, assign to human.
+
+## Definition of Done
+- [ ] All subtasks for every phase are DONE with evidence
+- [ ] All tests pass, coverage >= baseline
+- [ ] Code review approved, all critical comments addressed
+- [ ] CI green, no P0/P1 bugs open
+- [ ] All sign-offs obtained (tech + QA + business)
+- [ ] Deployment successful, health checks green
+- [ ] Monitoring period passed, no regressions
+- [ ] Execution report generated with metrics
+All criteria must pass before task status moves to CLOSED.
+
+## Next Steps
+- **Task complete:** `/execution-report` — generate post-task analytics
+- **Start next task:** `/mvp-kickoff next` or `/workflow new "next task"`
+- **Check progress:** `/task-tracker status` or `/mvp-status`
+- **Resume paused task:** `/workflow resume TASK-{id}`
+- **Jump to phase:** `/workflow [plan|dev|review|qa|deploy] TASK-{id}`
+
+## Rollback
+- **Revert deployment:** `/rollback deploy TASK-{id}`
+- **Revert to previous phase:** `/rollback phase TASK-{id}`
+- **Revert code changes:** `/rollback code TASK-{id}` (git revert)
+- **Cancel task:** `/workflow cancel TASK-{id}` — moves to CANCELLED state

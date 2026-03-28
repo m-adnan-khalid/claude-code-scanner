@@ -18,7 +18,23 @@
       "Bash(node .claude/scripts/verify-setup.js)",
       "Bash(rm -rf final-test)",
       "Bash(node \"C:/adnan/cluade projects/claude-code-scanner/bin/cli.js\" new final-test)",
-      "Bash(grep -r \"MISSING\\\\|TODO\\\\|FIXME\\\\|HACK\" 'C:/adnan/cluade projects/claude-code-scanner/template/.claude/skills/' --include=*.md)"
+      "Bash(grep -r \"MISSING\\\\|TODO\\\\|FIXME\\\\|HACK\" 'C:/adnan/cluade projects/claude-code-scanner/template/.claude/skills/' --include=*.md)",
+      "Bash(ls:*)",
+      "Bash(wc -l /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/skills/*/SKILL.md)",
+      "Bash(ROOT=\"/Users/muhammad.adnan/ai_projects/claude-code-scanner/template\")",
+      "Bash(PASS=0)",
+      "Bash(FAIL=0)",
+      "Bash(TOTAL=0)",
+      "Bash(__NEW_LINE_7c6419331e42612f__ echo:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(wc:*)",
+      "Bash(node -c template/.claude/hooks/execution-report.js)",
+      "Bash(node -c /Users/muhammad.adnan/ai_projects/claude-code-scanner/bin/cli.js)",
+      "Bash(node -c /Users/muhammad.adnan/ai_projects/claude-code-scanner/scripts/verify-setup.js)",
+      "Bash(node -c template/.claude/hooks/track-file-changes.js)",
+      "Bash(head -15 /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/agents/*.md)"
     ]
   }
 }

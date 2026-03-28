@@ -1,6 +1,6 @@
 # Claude Code Scanner — Complete Documentation
 
-> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 18 role-based agents, 31 workflow skills, 12 automation hooks, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 23 role-based agents, 51 workflow skills, 14 automation hooks, and full lifecycle support from idea to deployment.
 
 ---
 
@@ -11,11 +11,11 @@
 3. [Installation Methods](#3-installation-methods)
 4. [How It Works (4-Phase Setup)](#4-how-it-works)
 4b. [New Project Mode (Idea to Launch)](#4b-new-project-mode)
-5. [The Agent Team (18 Roles)](#5-the-agent-team)
-6. [Skills Reference (31 Skills)](#6-skills-reference)
+5. [The Agent Team (23 Roles)](#5-the-agent-team)
+6. [Skills Reference (51 Skills)](#6-skills-reference)
 7. [The Workflow Engine (13 Phases)](#7-the-workflow-engine)
 8. [Loop Flows & Circuit Breakers](#8-loop-flows--circuit-breakers)
-9. [Hooks & Automation (12 Hooks)](#9-hooks--automation)
+9. [Hooks & Automation (14 Hooks)](#9-hooks--automation)
 10. [Task Tracking System](#10-task-tracking-system)
 11. [Execution Reports & Scoring](#11-execution-reports--scoring)
 12. [Context Budget Management](#12-context-budget-management)
@@ -33,9 +33,9 @@
 Claude Code Scanner is a tool that scans your existing codebase **or helps you start from scratch** and generates a complete Claude Code development environment tailored to your project. Instead of manually configuring agents, skills, and rules, the scanner reads your actual code (or helps you design it from an idea) and creates everything automatically.
 
 **What you get:**
-- 18 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
-- 31 workflow skills for common workflows (including 9 pre-development and 8 utility skills)
-- 12 automation hooks that run behind the scenes
+- 23 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
+- 51 workflow skills for common workflows (including 9 pre-development and 8 utility skills)
+- 14 automation hooks that run behind the scenes
 - **NEW:** 8-phase pre-development pipeline (idea → product spec → features → tech stack → architecture → scaffolding → environment → launch plan)
 - A 13-phase SDLC workflow from task intake to production deployment
 - Execution analytics with success scoring and hallucination detection
@@ -107,17 +107,17 @@ npx claude-code-scanner init
 
 ### One-Line Install (macOS/Linux)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/adnan-prompts/claude-code-scanner/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/master/install.sh | bash
 ```
 
 ### One-Line Install (Windows PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/adnan-prompts/claude-code-scanner/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/master/install.ps1 | iex
 ```
 
 ### Git Clone
 ```bash
-git clone https://github.com/adnan-prompts/claude-code-scanner.git /tmp/scanner
+git clone https://github.com/m-adnan-khalid/claude-code-scanner.git /tmp/scanner
 cp /tmp/scanner/template/CLAUDE.md ./CLAUDE.md
 cp -r /tmp/scanner/template/.claude ./.claude
 rm -rf /tmp/scanner
@@ -178,7 +178,7 @@ Takes the scan results and generates project-specific files:
 
 Runs 170+ automated checks:
 - CLAUDE.md under 200 lines, no placeholders
-- All 18 agents compliant (frontmatter, HANDOFF, limitations)
+- All 23 agents compliant (frontmatter, HANDOFF, limitations)
 - All skills have proper frontmatter (context:fork, argument-hint)
 - Settings.json valid, all hooks registered
 - Context budget under limits
@@ -242,7 +242,7 @@ See `.claude/docs/pre-dev-flow-engine.md` for detailed phase documentation and `
 
 ### Understanding Agent Roles
 
-The scanner creates an 18-agent team organized like a real development organization. Each agent has:
+The scanner creates a 23-agent team organized like a real development organization. Each agent has:
 
 - **Specific tools** — what it can read/write/execute
 - **Permission mode** — read-only agents can't modify code
@@ -550,6 +550,91 @@ Senior mobile engineer covering all major platforms: iOS (Swift/SwiftUI), Androi
 
 **Related skill:** `/mobile-audit` — comprehensive mobile quality audit (performance, UX, accessibility, store readiness, security).
 
+#### @database (Database Engineer)
+```
+Model: sonnet | Access: Read/Write | MaxTurns: 30
+```
+Designs schemas, writes migrations, optimizes queries, manages indexes. Handles safe schema changes with rollback plans and zero-downtime migration strategies.
+
+**When to use:** Schema design, creating or modifying migrations, query performance issues, index optimization.
+
+**Example:**
+```
+@database design the schema for the invoicing module
+@database optimize the slow query on the orders table
+@database create a migration to add soft deletes to users
+```
+
+**Output includes:** Schema diagrams, migration files, query analysis with EXPLAIN output, index recommendations.
+
+#### @docs-writer (Documentation Specialist)
+```
+Model: sonnet | Access: Read/Write (docs only) | MaxTurns: 25
+```
+Writes and maintains READMEs, API documentation, Architecture Decision Records (ADRs), changelogs, and onboarding guides. Ensures documentation stays in sync with code changes.
+
+**When to use:** Writing or updating documentation, creating ADRs, generating changelogs, onboarding guides.
+
+**Example:**
+```
+@docs-writer write the API documentation for the orders service
+@docs-writer create an ADR for choosing PostgreSQL over MongoDB
+@docs-writer update the README with the new setup instructions
+```
+
+**Output includes:** Documentation files, ADR records, changelog entries, documentation coverage report.
+
+#### @gatekeeper (Autonomous Quality Gate Enforcer)
+```
+Model: opus | Access: Read-only | MaxTurns: 30
+```
+Validates changes autonomously before they advance through workflow phases. Detects regressions, enforces quality standards, and ensures consistency across the codebase. Acts as the final checkpoint before phase transitions.
+
+**When to use:** Automated change validation, regression detection, quality gate enforcement between workflow phases.
+
+**Example:**
+```
+@gatekeeper validate TASK-001 changes before review
+@gatekeeper check for regressions in the auth module
+@gatekeeper enforce quality gates for the release candidate
+```
+
+**Output includes:** Validation report, regression analysis, quality score, gate decision (PASS/FAIL/WARN).
+
+#### @process-coach (SDLC Methodology Specialist)
+```
+Model: opus | Access: Read/Write (docs only) | MaxTurns: 25
+```
+Selects and configures SDLC methodology (Scrum, Kanban, XP, etc.) based on team size, project type, and constraints. Adapts agents, workflows, quality gates, and ceremonies to the chosen methodology.
+
+**When to use:** Setting up development methodology, configuring sprint cycles, adapting workflow to team preferences.
+
+**Example:**
+```
+@process-coach set up Scrum for a 5-person team with 2-week sprints
+@process-coach adapt the workflow for Kanban with WIP limits
+@process-coach recommend a methodology for this solo side project
+```
+
+**Output includes:** Methodology configuration, ceremony schedule, role mappings, workflow adaptations, quality gate adjustments.
+
+#### @qa-automation (QA Automation Specialist)
+```
+Model: sonnet | Access: Read/Write | MaxTurns: 35
+```
+Deploys the application, runs end-to-end test flows, performs visual verification, and validates user journeys across environments. Bridges the gap between unit tests and manual QA.
+
+**When to use:** Running E2E test suites, visual regression testing, validating deployment health, smoke testing after deploys.
+
+**Example:**
+```
+@qa-automation run the full E2E suite against staging
+@qa-automation verify the checkout flow after the payment update
+@qa-automation check for visual regressions on the dashboard
+```
+
+**Output includes:** E2E test results, visual diff report, environment health check, user journey verification status.
+
 ### Agent Communication
 
 Agents communicate through structured **HANDOFF** blocks:
@@ -626,7 +711,7 @@ Installs community Smithery skills and MCP servers matching your tech stack. Opt
 /workflow review TASK-001                    # Jump to review phase
 /workflow deploy TASK-001                    # Jump to deployment phase
 ```
-The main orchestrator. Coordinates all 18 agents through 13 phases. Includes automatic drift detection at Phase 1, context budget checks between phases, and execution reports after each phase.
+The main orchestrator. Coordinates all 23 agents through 13 phases. Includes automatic drift detection at Phase 1, context budget checks between phases, and execution reports after each phase.
 
 #### /task-tracker
 ```
@@ -1203,7 +1288,7 @@ your-project/
 │   ├── manifest.json                      # Drift tracking state
 │   ├── settings.json                      # Permissions + hooks
 │   ├── settings.local.json                # Personal env vars (gitignored)
-│   ├── agents/                            # 18 agent definitions
+│   ├── agents/                            # 23 agent definitions
 │   │   ├── team-lead.md                   # SDLC: orchestrator
 │   │   ├── architect.md                   # SDLC: design
 │   │   ├── product-owner.md               # SDLC: business
@@ -1221,7 +1306,12 @@ your-project/
 │   │   ├── scaffolder.md                  # Pre-dev: project generation
 │   │   ├── ux-designer.md                 # Pre-dev: user experience
 │   │   ├── code-quality.md                # Core: design patterns & SOLID
-│   │   └── mobile.md                      # Dev: mobile apps
+│   │   ├── mobile.md                      # Dev: mobile apps
+│   │   ├── database.md                    # Dev: schema & migrations
+│   │   ├── docs-writer.md                 # Utility: documentation
+│   │   ├── gatekeeper.md                  # Core: quality gate enforcement
+│   │   ├── process-coach.md               # Utility: SDLC methodology
+│   │   └── qa-automation.md               # Core: E2E & visual verification
 │   ├── project/                           # Pre-development artifacts
 │   │   ├── PROJECT.md                     # Master project status
 │   │   ├── IDEA_CANVAS.md                 # Idea brainstorming
@@ -1231,7 +1321,7 @@ your-project/
 │   │   ├── TECH_STACK.md                  # Technology decisions
 │   │   ├── ARCHITECTURE.md                # System architecture
 │   │   └── DEPLOY_STRATEGY.md             # Deployment strategy
-│   ├── skills/                            # 31 workflow skills
+│   ├── skills/                            # 51 workflow skills
 │   │   ├── workflow/SKILL.md
 │   │   ├── scan-codebase/SKILL.md
 │   │   ├── generate-environment/SKILL.md
@@ -1263,7 +1353,7 @@ your-project/
 │   │   ├── cost-estimate/SKILL.md
 │   │   ├── release-notes/SKILL.md
 │   │   └── mobile-audit/SKILL.md
-│   ├── hooks/                             # 12 automation scripts
+│   ├── hooks/                             # 14 automation scripts
 │   ├── rules/                             # Path-scoped coding rules
 │   ├── docs/                              # 11 reference documents
 │   ├── profiles/                          # Role-based developer guides
@@ -1404,9 +1494,9 @@ If the operation is legitimate, temporarily remove the hook from `settings.json`
 
 | Component | Count |
 |-----------|-------|
-| Agents | 12 (4 SDLC + 5 core + 3 dev) |
-| Skills | 13 (all with proper frontmatter) |
-| Hooks | 12 (covering 10 events) |
+| Agents | 23 (4 SDLC + 7 core + 5 dev + 7 pre-dev/utility) |
+| Skills | 51 (all with proper frontmatter) |
+| Hooks | 14 (covering 10 events) |
 | Docs | 9 (full protocol coverage) |
 | Profiles | 3 (backend, frontend, devops) |
 | Workflow Phases | 13 |

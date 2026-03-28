@@ -237,3 +237,23 @@ Or: Review imported files and run individual phases to fill gaps
 ## Best Used Before
 - `/new-project` — import first, then resume from first incomplete phase
 - `/domain-model` — import populates initial data, domain-model refines it
+
+## Definition of Done
+- [ ] All provided documents read and classified (type + confidence)
+- [ ] Structured data extracted from each document
+- [ ] Project files populated (IDEA_CANVAS, PRODUCT_SPEC, BACKLOG, TECH_STACK, ARCHITECTURE as applicable)
+- [ ] Domain glossary and entities extracted into DOMAIN_MODEL.md
+- [ ] `.claude/rules/domain-terms.md` generated from terminology
+- [ ] Phase status updated in PROJECT.md (skippable phases marked)
+- [ ] Import report generated with document table, populated files, and gaps
+- [ ] Conflicts flagged inline for manual resolution (if `--merge`)
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/new-project --resume` — continue from first incomplete phase
+- **Iterate:** `/import-docs "path" --merge` — import additional documents and merge
+- **Skip ahead:** `/clarify --before-dev` — validate all requirements before development
+
+## Rollback
+- **Redo this phase:** `/import-docs "path" --merge` to re-import with merge strategy
+- **Revert output:** Delete populated project files and re-import from scratch

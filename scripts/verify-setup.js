@@ -66,7 +66,7 @@ for (const f of globDir(rulesDir, '.md')) {
   check(`${name} has paths:`, fileContains(f, 'paths:'));
 }
 
-// --- Agents (18 required) ---
+// --- Agents (23 required) ---
 console.log('--- Agents ---');
 const agentsDir = path.join(cwd, '.claude', 'agents');
 const requiredAgents = [
@@ -74,10 +74,11 @@ const requiredAgents = [
   'explorer', 'reviewer', 'security', 'debugger', 'tester',
   'frontend', 'api-builder', 'infra', 'mobile',
   'ideator', 'strategist', 'scaffolder', 'ux-designer',
-  'code-quality'
+  'code-quality', 'database', 'docs-writer', 'gatekeeper',
+  'process-coach', 'qa-automation'
 ];
 const sdlcRoleAgents = ['team-lead', 'architect', 'product-owner', 'qa-lead'];
-const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality'];
+const readOnlyAgents = ['explorer', 'reviewer', 'security', 'architect', 'product-owner', 'qa-lead', 'ideator', 'ux-designer', 'code-quality', 'gatekeeper'];
 const worktreeAgents = ['frontend', 'api-builder', 'scaffolder', 'mobile'];
 
 for (const agentName of requiredAgents) {

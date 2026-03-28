@@ -12,8 +12,13 @@ scope: frontend-only | backend-only | fullstack | infrastructure | cross-cutting
 complexity: small | medium | large
 priority: P0-critical | P1-high | P2-medium | P3-low
 status: {state — see State Machine below}
-branch: {branch name}
+branch: {type}/TASK-{id}/{slug}
 pr: {PR number or "pending"}
+pr-url: {PR URL or "pending"}
+merge-sha: {merge commit SHA or "pending"}
+base-branch: {main or dev}
+reviewer-1: {APPROVE or REQUEST_CHANGES or "pending"}
+reviewer-2: {APPROVE or REQUEST_CHANGES or "pending"}
 assigned-to: {agent name or "unassigned"}
 depends-on: {TASK-id or "none"}
 created: {ISO timestamp}
@@ -28,20 +33,14 @@ updated: {ISO timestamp}
 Every task must be broken into subtasks with clear owners:
 ```markdown
 ## Subtasks
-| # | Subtask | Owner | Status | Phase | Completed | Evidence |
-|---|---------|-------|--------|-------|-----------|----------|
-| 1 | Design API schema | @architect | DONE | 3 | {timestamp} | ARCHITECTURE.md updated |
-| 2 | Implement endpoint | @api-builder | DONE | 5 | {timestamp} | app/api/v1/users.py |
-| 3 | Write unit tests | @tester | DONE | 6 | {timestamp} | 12 tests, 95% coverage |
-| 4 | Write integration tests | @tester | DONE | 6 | {timestamp} | 5 tests, all pass |
-| 5 | Code review | @reviewer | DONE | 7 | {timestamp} | 0 critical, 2 suggestions |
-| 6 | Security review | @security | DONE | 7 | {timestamp} | no findings |
-| 7 | QA automation | @qa-automation | IN_PROGRESS | 9 | — | — |
-| 8 | QA sign-off | @qa-lead | PENDING | 10 | — | — |
-| 9 | Business sign-off | @product-owner | PENDING | 10 | — | — |
-| 10 | Tech sign-off | @team-lead | PENDING | 10 | — | — |
-| 11 | Deploy to staging | @infra | PENDING | 11 | — | — |
-| 12 | Update documentation | @docs-writer | PENDING | 12 | — | — |
+| # | Subtask | Owner | Status | Phase | Depends-On | Completed |
+|---|---------|-------|--------|-------|------------|-----------|
+| 1 | Design API schema | @architect | DONE | 3 | — | 2026-03-28T09:00Z |
+| 2 | Backend API endpoint | @api-builder | DONE | 5 | 1 | 2026-03-28T10:00Z |
+| 3 | Unit + integration tests | @tester | DONE | 6 | 2 | 2026-03-28T11:00Z |
+| 4 | Code review | @reviewer | IN_PROGRESS | 7 | 3 | — |
+| 5 | QA automation run | @qa-automation | PENDING | 9 | 4 | — |
+| 6 | Documentation update | @docs-writer | PENDING | 12 | 5 | — |
 ```
 
 **Status values:** PENDING → IN_PROGRESS → DONE → VERIFIED (or BLOCKED, SKIPPED)
@@ -82,18 +81,23 @@ Track all active correspondence loops to survive compaction:
 - coverage-current: N%
 - fix-agent: @debugger|@api-builder|@frontend|@infra
 - last-failure: [test name] — [error] at [ISO timestamp]
+- last-reentry-reason: test_failure | lint_error | build_error | coverage_drop
 
-### Review-Rework Loop (Phase 7)
+### Dual Code Review Loop (Phase 7)
 - review-loop: iteration N/3
-- reviewer-status: APPROVE | REQUEST_CHANGES (N critical, M suggestions)
-- security-status: APPROVE | REQUEST_CHANGES (N findings)
+- code-quality-score: N/100 (must be >= 75 to proceed)
+- reviewer-1-status (@reviewer): APPROVE | REQUEST_CHANGES (N critical, M suggestions)
+- reviewer-2-status (@security): APPROVE | REQUEST_CHANGES (N findings)
+- dual-approval: true | false (both must be APPROVE)
 - open-comments: [count] critical, [count] suggestions
 - addressed-comments: [count] fixed, [count] won't-fix
+- last-reentry-reason: code_quality_score | reviewer_changes | security_findings
 
 ### CI Fix Loop (Phase 8)
 - ci-fix-loop: iteration N/3
 - last-ci-failure: [check name] — [error] at [ISO timestamp]
 - fix-agent: @debugger|@api-builder|@frontend|@infra|@tester
+- last-reentry-reason: test_failure | lint_failure | type_error | build_failure | flaky_test
 
 ### QA Bug Loop (Phase 9)
 - qa-bug-loop:
@@ -192,6 +196,8 @@ Each phase records specific outputs:
 
 ### Blocker Log
 | Timestamp | Blocker | Severity | Owner | Resolved | Resolution |
+
+**Blocker duration:** Auto-calculated as `resolved_at - created_at`. If unresolved, shows "ongoing ({N} days)".
 
 ### Decision Log
 | Timestamp | Decision | Rationale | Made By | Reversible |

@@ -15,3 +15,18 @@ argument-hint: "[tech|qa|business] [TASK-id]"
 3. For QA sign-off: invoke @qa-lead (all tests pass, QA plan complete, no open bugs)
 4. For business sign-off: invoke @product-owner (acceptance criteria met, UX approved)
 5. Output: APPROVED / REJECTED with specific reasons
+
+## Definition of Done
+- [ ] All sign-off criteria met for the requested type (tech/QA/business)
+- [ ] Evidence attached (test reports, review links, demo screenshots)
+- [ ] No open P0/P1 bugs against this task
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/deploy staging` — approved task is ready for deployment
+- **Issues found:** `/fix-bug "rejection reason"` — address sign-off feedback
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Undo changes:** Revoke approval by updating task file status back to pre-sign-off phase
+- **Revert to previous state:** `/task-tracker update TASK-{id} status=REVIEWING`

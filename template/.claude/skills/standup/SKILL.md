@@ -16,3 +16,12 @@ argument-hint: "[--yesterday] [--team]"
    - **Today**: current active task, next planned work
    - **Blockers**: any blocked tasks with reasons
    - **Metrics**: velocity, items in progress, items in review
+
+## Definition of Done
+- Standup report generated with yesterday/today/blockers, task statuses accurate.
+
+## Next Steps
+- Address blockers, `/workflow resume` for active tasks.
+
+## Rollback
+- N/A (read-only report).

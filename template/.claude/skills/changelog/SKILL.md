@@ -14,3 +14,13 @@ argument-hint: "[--from-git|--add 'entry'] [--version X.Y.Z]"
 3. If --add: add manual entry to Unreleased section
 4. If --version: move Unreleased to new version section with date
 5. Follow keep-a-changelog format: Added, Changed, Fixed, Removed
+
+## Definition of Done
+- Changelog updated, follows keep-a-changelog format, version bumped if applicable.
+
+## Next Steps
+- `/release-notes` for release.
+
+## Rollback
+- **Undo changelog update:** `git checkout -- CHANGELOG.md` to revert changes
+- **Regenerate:** `/changelog --force` to rebuild from git history

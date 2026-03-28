@@ -21,3 +21,12 @@ argument-hint: "[--role backend|frontend|mobile|fullstack] [--quick]"
    - How to run, test, lint, deploy
    - Team workflow (methodology, PR process, review)
    - Common gotchas and debugging tips
+
+## Definition of Done
+- Dev understands codebase structure, can run/test/deploy, knows team workflow, key files explained.
+
+## Next Steps
+- `/workflow new` for first task.
+
+## Rollback
+- N/A (informational).

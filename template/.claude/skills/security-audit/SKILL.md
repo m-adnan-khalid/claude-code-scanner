@@ -23,3 +23,12 @@ argument-hint: "[--full|--deps|--secrets|--owasp|--auth]"
 
 ## Output
 | # | Severity | Category | Finding | File:Line | Fix |
+
+## Definition of Done
+- OWASP Top 10 checked, dependencies scanned, secrets scanned, findings categorized by severity.
+
+## Next Steps
+- `/fix-bug` for critical findings, `/workflow resume` for clean audit.
+
+## Rollback
+- N/A (read-only audit).

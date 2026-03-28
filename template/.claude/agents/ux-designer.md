@@ -4,15 +4,8 @@ description: >
   User experience design specialist. Creates user flows, wireframe descriptions, information
   architecture, and interaction patterns using text and Mermaid diagrams. Use for Pre-Phase 2
   enrichment and when designing UI-heavy features.
-tools:
-  - Read
-  - Write
-  - Edit
-  - Grep
-  - Glob
-disallowedTools:
-  - Bash
-  - NotebookEdit
+tools: Read, Write, Edit, Grep, Glob
+disallowedTools: Bash, NotebookEdit
 model: opus
 permissionMode: plan
 maxTurns: 20
@@ -132,6 +125,10 @@ HANDOFF:
     files_read: N
     files_modified: N
     files_created: N
+    tests_run: "N/A"
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     confidence: HIGH|MEDIUM|LOW
   status: complete
 ```

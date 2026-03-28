@@ -159,3 +159,12 @@ Auto-detect from project files:
 2. [Second priority]
 3. [Third priority]
 ```
+
+## Definition of Done
+- All audit categories checked (performance, UX, accessibility, offline, security), findings prioritized.
+
+## Next Steps
+- `/fix-bug` for critical issues, `/workflow new` for major improvements.
+
+## Rollback
+- N/A (read-only audit).

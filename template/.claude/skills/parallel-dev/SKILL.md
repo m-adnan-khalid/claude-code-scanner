@@ -125,3 +125,14 @@ Two tasks are **independent** if NONE of the above are true AND:
 - If merge conflicts occur: STOP and ask user which version to keep
 - Maximum parallel agents: 4 (to avoid resource exhaustion)
 - Each parallel agent gets its own task record in `.claude/tasks/`
+
+## Definition of Done
+- Independent tasks identified, agents launched, no file conflicts, all branches merged cleanly.
+
+## Next Steps
+- `/review-pr` for each branch, `/workflow resume`.
+
+## Rollback
+- **Abandon parallel branches:** `git branch -D <branch-name>` for each parallel branch
+- **Return to sequential:** `/workflow resume TASK-{id}` to continue one task at a time
+- **Resolve conflicts:** `git merge --abort` then `/parallel-dev --analyze` to re-plan

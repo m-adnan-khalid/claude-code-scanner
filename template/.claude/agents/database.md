@@ -54,6 +54,11 @@ Before starting, read:
 - Connection pooling configuration
 - Read replica routing for heavy read workloads
 
+## State Persistence
+- On start: read the active task file from `.claude/tasks/` to understand current context
+- On completion: update the task file with migration details, schema changes, and any blockers
+- Log all file changes to the task's changes.log for execution tracking
+
 ## Output Format
 ### Migration Report
 - **Change**: what schema change is needed
@@ -77,6 +82,9 @@ HANDOFF:
     files_modified: N
     files_created: N
     tests_run: N (pass/fail/skip)
+    coverage_delta: "+N%" or "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     confidence: HIGH/MEDIUM/LOW
 ```
 

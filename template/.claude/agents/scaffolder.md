@@ -4,15 +4,8 @@ description: >
   Project structure and boilerplate generation specialist. Creates directory structures,
   config files, dependency files, and initial scaffolding based on architecture and tech stack
   decisions. Use for Pre-Phase 6 (Scaffolding).
-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Grep
-  - Glob
-disallowedTools:
-  - NotebookEdit
+tools: Read, Write, Edit, Bash, Grep, Glob
+disallowedTools: NotebookEdit
 model: sonnet
 maxTurns: 40
 effort: high
@@ -72,7 +65,12 @@ Create project structure following ARCHITECTURE.md:
 - Git: .gitignore (comprehensive for the tech stack)
 - Editor: .editorconfig
 
-### 5. VERIFY
+### 5. STATE PERSISTENCE
+- Read the active task file from `.claude/tasks/` to understand current phase
+- After scaffolding, update the task file with files created, configs applied, and verification results
+- Log all file changes to the task's changes.log for execution tracking
+
+### 6. VERIFY
 Run verification commands:
 - Package install: `npm install` / `pip install -r requirements.txt` / `go mod tidy`
 - Type check: `npx tsc --noEmit` (if TypeScript)
@@ -120,6 +118,9 @@ HANDOFF:
     files_modified: N
     files_created: N
     tests_run: "N/A"
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     confidence: HIGH|MEDIUM|LOW
   status: complete
 ```

@@ -48,7 +48,7 @@ function check(raw) {
 
         // Console.log left in production code (not test files)
         if (!relative.includes('test') && !relative.includes('spec') && !relative.includes('__test')) {
-          if (/console\.(log|debug|info)\(/.test(content) && ext !== '.js') {
+          if (/console\.(log|debug|info)\(/.test(content) && ['.js', '.ts', '.jsx', '.tsx'].includes(ext)) {
             warnings.push('QUALITY: console.log found in production code. Remove before merge.');
           }
         }

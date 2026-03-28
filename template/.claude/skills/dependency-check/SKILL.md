@@ -20,3 +20,12 @@ argument-hint: "[--outdated|--vulnerabilities|--unused|--licenses]"
 3. Check for unused dependencies (depcheck, deptry, etc.)
 4. Check license compliance
 5. Output report with update recommendations and risk assessment
+
+## Definition of Done
+- All deps scanned, vulnerabilities listed with severity, outdated packages flagged, upgrade path clear.
+
+## Next Steps
+- `/fix-bug` for critical vulnerabilities, `/refactor` for major upgrades.
+
+## Rollback
+- N/A (read-only check).

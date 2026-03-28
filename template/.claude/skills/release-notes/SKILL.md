@@ -109,3 +109,13 @@ Update: CHANGELOG.md in project root (append)
 ## Outputs
 - `.claude/reports/release-notes-{version}.md`
 - `CHANGELOG.md` (project root, appended)
+
+## Definition of Done
+- Release notes cover all changes, audience-appropriate, linked to issues/PRs.
+
+## Next Steps
+- `/deploy` for release, `/changelog` to update.
+
+## Rollback
+- **Regenerate notes:** `/release-notes --force` with different parameters
+- **Revert file changes:** `git checkout -- RELEASE_NOTES.md` to undo edits

@@ -15,3 +15,12 @@ argument-hint: '"feature name" [--task TASK-id]'
 3. Identify risk areas and edge cases
 4. Define test data requirements
 5. Output structured test plan with: test cases, priority, type (manual/automated), expected results
+
+## Definition of Done
+- Test plan created with test cases, acceptance criteria mapped, risk areas identified, test data defined.
+
+## Next Steps
+- `/workflow qa TASK-{id}` to execute tests.
+
+## Rollback
+- `/qa-plan --update` to revise.

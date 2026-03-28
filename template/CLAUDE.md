@@ -6,7 +6,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `CLAUDE.md` (root + nested per module) | `.claude/rules/` (path-specific rules)
 - `.claude/agents/` (23 agents) | `.claude/skills/` (51 skills) | `.claude/hooks/` (14 hooks)
 - `.claude/project/` (pre-dev docs) | `.claude/templates/` | `.claude/profiles/`
-- `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands.md`
+- `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands-template.md`
 
 ## New Project Mode (Idea to Launch)
 For brand-new projects (no existing code), use `/new-project "idea"` to run 8 pre-development phases:
@@ -86,7 +86,7 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 - `/methodology` — choose SDLC model (Scrum, Kanban, Waterfall, XP, DevOps, Lean, Spiral, RAD)
 - `/workflow new "task"` — full SDLC adapted to your chosen methodology
 - `/parallel-dev --analyze` — find independent tasks, `--start` to launch parallel agents
-- `/task-tracker status` — dashboard | See `.claude/docs/commands.md` for full reference
+- `/task-tracker status` — dashboard | See `.claude/docs/commands-template.md` for full reference
 
 @.claude/rules/context-budget.md
 @.claude/rules/request-validation.md

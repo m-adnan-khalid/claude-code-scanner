@@ -111,3 +111,12 @@ This skill should be called:
 2. By `@team-lead` before assigning heavy work
 3. Manually whenever responses feel slow or truncated
 4. After any operation that reads many large files
+
+## Definition of Done
+- Context usage measured, budget status determined (GREEN/YELLOW/ORANGE/RED), action taken if over budget.
+
+## Next Steps
+- `/compact` if over budget, continue work if under.
+
+## Rollback
+- N/A (diagnostic only).

@@ -202,3 +202,24 @@ Show:
 ## Best Used After
 - `/product-spec` (for new projects) — provides user journeys to extract entities from
 - `/scan-codebase` (for existing projects) — provides code patterns to extract from
+
+## Definition of Done
+- [ ] DOMAIN_MODEL.md created at `.claude/project/DOMAIN_MODEL.md`
+- [ ] Glossary covers all domain-specific terms with definitions
+- [ ] All entities defined with attributes, behaviors, and relationships
+- [ ] Bounded contexts identified with entity ownership and interfaces
+- [ ] Business rules documented with enforcement locations and examples
+- [ ] Domain events listed with triggers, producers, and consumers
+- [ ] All terms consistent with code naming conventions
+- [ ] `.claude/rules/domain-terms.md` generated from glossary
+- [ ] PROJECT.md updated with Domain Model status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/tech-stack` — choose technologies based on domain complexity
+- **Iterate:** `/domain-model --update` — refine current domain model
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/domain-model --update` or `/domain-model --from-code`
+- **Revert output:** Delete or overwrite `.claude/project/DOMAIN_MODEL.md`

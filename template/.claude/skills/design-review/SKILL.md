@@ -15,3 +15,14 @@ argument-hint: '"design description" [--scope backend|frontend|mobile|infra]'
 3. Invoke @code-quality for pattern analysis
 4. Check alignment with existing conventions
 5. Output: APPROVED / NEEDS_REVISION with specific feedback
+
+## Definition of Done
+- All architecture criteria checked, verdict given (APPROVED/NEEDS_REVISION), action items listed.
+
+## Next Steps
+- `/workflow dev` if approved, `/refactor` if revision needed.
+
+## Rollback
+- **Request re-review:** `/design-review --update` with revised architecture
+- **Revert design changes:** `git checkout -- .claude/project/ARCHITECTURE.md` if design was modified
+- **Escalate:** `/workflow resume TASK-{id}` to return to previous phase

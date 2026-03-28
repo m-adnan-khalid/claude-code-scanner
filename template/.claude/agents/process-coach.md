@@ -294,6 +294,10 @@ HANDOFF:
     files_read: N
     files_modified: N
     files_created: N
+    tests_run: "N/A"
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     confidence: HIGH/MEDIUM/LOW
 ```
 

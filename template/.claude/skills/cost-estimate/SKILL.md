@@ -89,3 +89,12 @@ Total: ${initial}/mo → ${current}/mo ({+/-}${delta}/mo)
 ## Outputs
 - Cost estimate displayed to user
 - Updated `.claude/project/DEPLOY_STRATEGY.md` cost section (if --update flag)
+
+## Definition of Done
+- Infrastructure costs estimated per environment, monthly projections calculated, cost drivers identified.
+
+## Next Steps
+- `/deploy-strategy` to incorporate, `/architecture` if cost too high.
+
+## Rollback
+- `/cost-estimate --update` with revised parameters.

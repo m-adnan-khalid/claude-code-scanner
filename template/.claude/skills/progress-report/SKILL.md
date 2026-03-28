@@ -25,3 +25,12 @@ Portfolio table (all tasks with phase/status/%/ETA), health indicators (on track
 
 ## executive — Executive Summary
 Status light (green/yellow/red), key metrics table with trends (tasks completed, cycle time, quality, deploy success, blocked), highlights, risks, needs attention.
+
+## Definition of Done
+- Report generated with accurate data for target audience, blockers highlighted.
+
+## Next Steps
+- Address blockers listed, `/standup` for team sync.
+
+## Rollback
+- N/A (read-only report).

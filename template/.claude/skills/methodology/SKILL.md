@@ -117,3 +117,22 @@ After methodology is configured:
 2. Start work with `/workflow new "first task"` (adapted to chosen model)
 3. Use `/methodology --status` to check adherence
 4. Use `/methodology --adapt` if process needs tweaking
+
+## Definition of Done
+- [ ] METHODOLOGY.md written at `.claude/project/METHODOLOGY.md`
+- [ ] Selected model documented with rationale
+- [ ] Ceremonies/rituals schedule defined
+- [ ] Role-to-agent mapping configured
+- [ ] Workflow skill adapted to match chosen methodology phases
+- [ ] Quality gates configured (definition of ready, definition of done)
+- [ ] Agent behavior instructions updated for the methodology
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/workflow new "first task"` — start building with the configured methodology
+- **Iterate:** `/methodology --adapt` — adjust methodology mid-project
+- **Skip ahead:** `/parallel-dev --analyze` — find independent tasks for parallel work
+
+## Rollback
+- **Redo this phase:** `/methodology --adapt` or `/methodology --select` to choose a different model
+- **Revert output:** Delete or overwrite `.claude/project/METHODOLOGY.md`

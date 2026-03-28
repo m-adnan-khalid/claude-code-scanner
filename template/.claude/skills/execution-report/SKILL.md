@@ -227,3 +227,12 @@ Includes:
 - Full hallucination audit
 - Full regression audit
 - Lessons learned (what should be different next time)
+
+## Definition of Done
+- Report generated with token usage, context metrics, success score, recommendations.
+
+## Next Steps
+- `/context-check` if context high, `/workflow resume` for next task.
+
+## Rollback
+- N/A (read-only report).

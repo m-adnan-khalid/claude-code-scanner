@@ -27,3 +27,12 @@ argument-hint: "[create|run|rollback|status] [migration-name]"
 - NEVER run against production without explicit approval
 - Every migration MUST have a rollback step
 - Check backward compatibility before applying
+
+## Definition of Done
+- Migration runs successfully, rollback tested, data integrity verified, models updated.
+
+## Next Steps
+- `/workflow resume` or `/deploy`.
+
+## Rollback
+- `/migrate rollback`.

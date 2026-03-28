@@ -57,3 +57,21 @@ Read 20+ files to establish patterns. Extract: naming conventions (variables, fi
 
 ## Output
 Combine all 6 reports into a single structured document saved to `.claude/scan-results.md`.
+
+## Definition of Done
+- [ ] TECH_MANIFEST created with all detected technologies and versions
+- [ ] All 6 scan agents completed (or partial results captured for failed agents)
+- [ ] Results merged into `.claude/scan-results.md`
+- [ ] Project type identified (monorepo, fullstack, API-only, frontend-only, etc.)
+- [ ] Directory structure mapped with classifications
+- [ ] Domain conventions extracted (naming, patterns, git conventions)
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/generate-environment` — generate Claude Code environment from scan results
+- **Iterate:** `/scan-codebase` — re-scan with updated codebase
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** Delete `.claude/scan-results.md` and re-run `/scan-codebase`
+- **Revert output:** Delete `.claude/scan-results.md`

@@ -74,3 +74,17 @@ HANDOFF:
   artifacts: [revert commit, task record]
   context: [what was rolled back and current state]
 ```
+
+## Definition of Done
+- [ ] System restored to previous known-good state
+- [ ] Health checks pass after rollback
+- [ ] Root cause identified and documented in task record
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/fix-bug "root cause of rollback"` — address the underlying issue
+- **Issues found:** Escalate to user — manual intervention required
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- Rolling back a rollback is not supported — fix forward instead with `/fix-bug` or `/hotfix`

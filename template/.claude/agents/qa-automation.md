@@ -279,6 +279,9 @@ HANDOFF:
     files_modified: N
     files_created: N
     tests_run: N (pass/fail/skip)
+    coverage_delta: "+N%" or "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     screenshots_taken: N
     visual_regressions: N
     performance_issues: N

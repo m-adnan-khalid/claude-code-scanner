@@ -107,5 +107,21 @@ Show:
 - `.claude/project/IDEA_CANVAS.md` (recommended) or direct description
 - `.claude/project/PROJECT.md` must exist
 
-## Next Step
-`/feature-map` — breaks the spec into prioritized features
+## Definition of Done
+- [ ] PRODUCT_SPEC.md created at `.claude/project/PRODUCT_SPEC.md`
+- [ ] MVP scope defined with in-scope and out-of-scope lists
+- [ ] 3+ user journeys written with GIVEN/WHEN/THEN acceptance criteria
+- [ ] User flows (Mermaid diagrams) cover all journeys
+- [ ] Success metrics defined with measurable targets
+- [ ] Constraints documented (timeline, budget, technical, regulatory)
+- [ ] PROJECT.md updated with Phase 2 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/feature-map` — break the spec into prioritized features
+- **Iterate:** `/product-spec --update` — revise current product specification
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/product-spec --update` or `/product-spec "new description"`
+- **Revert output:** Delete or overwrite `.claude/project/PRODUCT_SPEC.md`

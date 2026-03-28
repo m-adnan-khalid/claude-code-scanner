@@ -178,3 +178,17 @@ Next: Fix pending items, then run /launch-mvp
 ## Outputs
 - Dashboard text output (displayed to user)
 - No files modified (read-only skill)
+
+## Definition of Done
+- [ ] Dashboard generated with accurate feature counts and statuses
+- [ ] Data sourced from actual BACKLOG.md, task records, and execution reports
+- [ ] All sections requested by flags are included (progress, deps, quality, launch-ready)
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/mvp-kickoff next` — start next available feature
+- **Issues found:** `/launch-mvp --check` — run launch readiness validation
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- No rollback needed — this is a read-only dashboard skill with no side effects

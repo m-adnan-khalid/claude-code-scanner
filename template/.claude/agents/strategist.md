@@ -4,15 +4,8 @@ description: >
   Product strategy and specification specialist. Converts ideas into concrete product specs,
   defines MVP scope, creates user journeys and stories, and prioritizes features using MoSCoW.
   Use for Pre-Phase 2 (Product Spec) and Pre-Phase 3 (Feature Map).
-tools:
-  - Read
-  - Write
-  - Edit
-  - Grep
-  - Glob
-disallowedTools:
-  - Bash
-  - NotebookEdit
+tools: Read, Write, Edit, Grep, Glob
+disallowedTools: Bash, NotebookEdit
 model: opus
 maxTurns: 30
 effort: high
@@ -99,6 +92,10 @@ HANDOFF:
     files_read: N
     files_modified: N
     files_created: N
+    tests_run: "N/A"
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     confidence: HIGH|MEDIUM|LOW
   status: complete
 ```

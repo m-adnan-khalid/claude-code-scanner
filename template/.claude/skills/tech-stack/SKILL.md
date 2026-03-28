@@ -149,5 +149,22 @@ Show:
 ## Prerequisites
 - `.claude/project/PRODUCT_SPEC.md` and `.claude/project/BACKLOG.md` (recommended)
 
-## Next Step
-`/architecture` — designs system architecture using the chosen stack
+## Definition of Done
+- [ ] TECH_STACK.md created at `.claude/project/TECH_STACK.md`
+- [ ] Decisions made for every layer (language, backend, frontend, DB, hosting, CI/CD, testing)
+- [ ] Each decision includes rationale and alternative considered
+- [ ] Version numbers specified for all choices
+- [ ] No compatibility conflicts between choices
+- [ ] Hosting cost estimate provided
+- [ ] Install commands documented
+- [ ] PROJECT.md updated with Phase 4 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/architecture` — design system architecture using the chosen stack
+- **Iterate:** `/tech-stack --update` — revise current technology decisions
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/tech-stack --update` or `/tech-stack "new requirements"`
+- **Revert output:** Delete or overwrite `.claude/project/TECH_STACK.md`

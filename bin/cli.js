@@ -98,6 +98,12 @@ function init() {
   const force = flags.includes('--force') || flags.includes('-f');
   const skipSmithery = flags.includes('--no-smithery');
 
+  // Validate template directory exists
+  if (!fs.existsSync(templateDir)) {
+    error('Template directory not found. Package may be corrupted — reinstall with: npm install -g claude-code-scanner');
+    process.exit(1);
+  }
+
   header('Claude Code Scanner — Environment Setup');
   log(`Target: ${cwd}\n`);
 
@@ -246,6 +252,14 @@ function newProject() {
       error(`Invalid project name "${projectName}". Avoid special characters: < > : " / \\ | ? *`);
       process.exit(1);
     }
+    if (projectName.includes('..')) {
+      error(`Invalid project name "${projectName}". Path traversal ("..") is not allowed.`);
+      process.exit(1);
+    }
+    if (projectName.startsWith('.')) {
+      error(`Invalid project name "${projectName}". Name cannot start with a dot.`);
+      process.exit(1);
+    }
     if (projectName.length > 100) {
       error('Project name too long (max 100 characters).');
       process.exit(1);
@@ -299,9 +313,20 @@ function newProject() {
     warn('Could not initialize git (git not found or error)');
   }
 
+  // Validate template directory exists
+  if (!fs.existsSync(templateDir)) {
+    error('Template directory not found. Package may be corrupted — reinstall with: npm install -g claude-code-scanner');
+    process.exit(1);
+  }
+
   // Copy CLAUDE.md
-  fs.copyFileSync(path.join(templateDir, 'CLAUDE.md'), path.join(targetDir, 'CLAUDE.md'));
-  success('CLAUDE.md');
+  try {
+    fs.copyFileSync(path.join(templateDir, 'CLAUDE.md'), path.join(targetDir, 'CLAUDE.md'));
+    success('CLAUDE.md');
+  } catch (err) {
+    error(`Failed to copy CLAUDE.md: ${err.message}`);
+    process.exit(1);
+  }
 
   // Copy .claude/ directory structure (same as init)
   const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles', 'project'];
@@ -309,30 +334,40 @@ function newProject() {
     const src = path.join(templateDir, '.claude', dir);
     const dest = path.join(targetDir, '.claude', dir);
     if (fs.existsSync(src)) {
-      const result = copyDir(src, dest, force);
-      success(`.claude/${dir}/ (${result.copied} files${result.skipped ? `, ${result.skipped} skipped` : ''})`);
+      try {
+        const result = copyDir(src, dest, force);
+        success(`.claude/${dir}/ (${result.copied} files${result.skipped ? `, ${result.skipped} skipped` : ''})`);
+      } catch (err) {
+        error(`Failed to copy .claude/${dir}/: ${err.message}`);
+        process.exit(1);
+      }
     }
   }
 
   // Copy settings + manifest
-  const settingsSrc = path.join(templateDir, '.claude', 'settings.json');
-  const settingsDest = path.join(targetDir, '.claude', 'settings.json');
-  if (fs.existsSync(settingsSrc)) {
-    fs.copyFileSync(settingsSrc, settingsDest);
-    success('.claude/settings.json');
-  }
+  try {
+    const settingsSrc = path.join(templateDir, '.claude', 'settings.json');
+    const settingsDest = path.join(targetDir, '.claude', 'settings.json');
+    if (fs.existsSync(settingsSrc)) {
+      fs.copyFileSync(settingsSrc, settingsDest);
+      success('.claude/settings.json');
+    }
 
-  const localSettingsDest = path.join(targetDir, '.claude', 'settings.local.json');
-  if (!fs.existsSync(localSettingsDest)) {
-    fs.writeFileSync(localSettingsDest, JSON.stringify({ env: {} }, null, 2));
-    success('.claude/settings.local.json (template)');
-  }
+    const localSettingsDest = path.join(targetDir, '.claude', 'settings.local.json');
+    if (!fs.existsSync(localSettingsDest)) {
+      fs.writeFileSync(localSettingsDest, JSON.stringify({ env: {} }, null, 2));
+      success('.claude/settings.local.json (template)');
+    }
 
-  const manifestSrc = path.join(templateDir, '.claude', 'manifest.json');
-  const manifestDest = path.join(targetDir, '.claude', 'manifest.json');
-  if (fs.existsSync(manifestSrc)) {
-    fs.copyFileSync(manifestSrc, manifestDest);
-    success('.claude/manifest.json');
+    const manifestSrc = path.join(templateDir, '.claude', 'manifest.json');
+    const manifestDest = path.join(targetDir, '.claude', 'manifest.json');
+    if (fs.existsSync(manifestSrc)) {
+      fs.copyFileSync(manifestSrc, manifestDest);
+      success('.claude/manifest.json');
+    }
+  } catch (err) {
+    error(`Failed to write config files: ${err.message}`);
+    process.exit(1);
   }
 
   // Create runtime directories

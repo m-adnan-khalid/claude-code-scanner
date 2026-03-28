@@ -24,3 +24,18 @@ argument-hint: '"critical bug description" [--severity P0|P1]'
 - Must have at least 1 regression test
 - Post-deploy monitoring is mandatory
 - Create follow-up task for proper fix if hotfix is a band-aid
+
+## Definition of Done
+- [ ] Fix deployed to production successfully
+- [ ] Monitoring green for 15 minutes post-deploy (error rates, latency)
+- [ ] At least one regression test added for the fixed issue
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/workflow new "comprehensive fix for <issue>"` — follow up with proper long-term fix
+- **Issues found:** `/rollback deploy` — revert if hotfix causes new issues
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Undo changes:** `/rollback deploy` — revert production to pre-hotfix state
+- **Revert to previous state:** `git revert <hotfix-commit>` and redeploy previous version

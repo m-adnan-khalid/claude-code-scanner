@@ -38,3 +38,19 @@ Bugs logged as: BUG-{task_id}-{number} with severity (P0-P4), steps to reproduce
 - business: acceptance criteria status, progress bar, ETA
 - management: portfolio table, health indicators, blockers
 - executive: status light, key metrics, trends
+
+## Definition of Done
+- [ ] Task state accurately reflects current progress
+- [ ] All phase transitions recorded with timestamps
+- [ ] Blockers logged with owner and resolution path
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/workflow resume TASK-{id}` — continue work on tracked task
+- **Issues found:** `/standup` — surface blockers in daily standup report
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Revert task status:** `/task-tracker update TASK-{id} --status {previous-status}`
+- **Undo phase change:** Edit `.claude/tasks/TASK-{id}.md` — restore previous phase in frontmatter
+- **View history:** `git log --oneline .claude/tasks/TASK-{id}.md` to find previous state

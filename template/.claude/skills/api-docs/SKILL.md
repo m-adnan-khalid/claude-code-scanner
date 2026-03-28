@@ -16,3 +16,12 @@ argument-hint: "[--generate|--update|--validate] [--format openapi|markdown]"
 4. Generate OpenAPI 3.0 spec or Markdown reference
 5. Validate spec against actual implementation
 6. Output: API reference document + endpoint inventory
+
+## Definition of Done
+- OpenAPI spec valid, all endpoints documented, examples included, spec matches code.
+
+## Next Steps
+- `/review-pr` or `/deploy`.
+
+## Rollback
+- Regenerate from code with `/api-docs --force`.

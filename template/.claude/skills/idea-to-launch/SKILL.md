@@ -181,3 +181,23 @@ If the user wants to stop and continue later:
 - Large features (L-sized) may require session splits
 - User gates in pre-dev phases require interaction (cannot be fully unattended)
 - Deploy phase requires actual infrastructure (hosting account, domain, etc.)
+
+## Definition of Done
+- [ ] All 8 pre-development phases complete (PROJECT.md status was READY_FOR_DEV)
+- [ ] All Must-Have features from BACKLOG.md built and marked COMPLETE
+- [ ] Cross-feature integration tests pass
+- [ ] Launch checklist from DEPLOY_STRATEGY.md fully executed
+- [ ] Production deployment successful
+- [ ] Post-launch monitoring stable (30 minutes, no critical errors)
+- [ ] MVP Launch Report generated at `.claude/reports/mvp-launch-report.md`
+- [ ] PROJECT.md status is LAUNCHED
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/mvp-kickoff --post-mvp` — start building Should-Have features
+- **Iterate:** `/idea-to-launch --resume` — resume from where you left off
+- **Skip ahead:** `/sync --check` — set up ongoing maintenance
+
+## Rollback
+- **Redo this phase:** `/idea-to-launch --resume` to continue from last checkpoint
+- **Revert deployment:** Follow rollback procedure in DEPLOY_STRATEGY.md

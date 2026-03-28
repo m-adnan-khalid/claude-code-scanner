@@ -55,6 +55,11 @@ Follow the format in `.claude/project/ADR.md`:
 - Rustdoc for Rust public items
 - Only document non-obvious behavior — skip trivial getters/setters
 
+## State Persistence
+- On start: read the active task file from `.claude/tasks/` to understand current context
+- On completion: update the task file with documentation changes and any gaps remaining
+- Log all file changes to the task's changes.log for execution tracking
+
 ### Changelog
 Follow keep-a-changelog format:
 ```markdown
@@ -89,6 +94,10 @@ HANDOFF:
     files_read: N
     files_modified: N
     files_created: N
+    tests_run: "N/A"
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     confidence: HIGH/MEDIUM/LOW
 ```
 

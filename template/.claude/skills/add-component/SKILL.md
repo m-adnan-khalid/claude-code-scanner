@@ -15,3 +15,14 @@ argument-hint: '"component name" [--type page|layout|widget|form]'
 3. Follow project conventions (React/Vue/Svelte/Flutter patterns)
 4. Add prop types/interfaces
 5. Run lint + tests
+
+## Definition of Done
+- Component renders, tests pass, follows project conventions, Storybook story (if applicable).
+
+## Next Steps
+- `/add-page` to wire up, or continue development.
+
+## Rollback
+- **Undo scaffolding:** `git checkout -- <component-dir>/` to revert generated files
+- **Remove component:** `rm -rf <component-dir>/` then `git checkout .` to clean up
+- **Re-scaffold differently:** `/add-component "Name" --force` to overwrite

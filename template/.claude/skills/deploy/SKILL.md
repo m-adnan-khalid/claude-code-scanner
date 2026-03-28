@@ -20,3 +20,18 @@ argument-hint: "[staging|production] [--dry-run] [--rollback]"
 - Production deploys require explicit user confirmation
 - Always deploy to staging first
 - Keep rollback plan ready
+
+## Definition of Done
+- [ ] Deployment successful (no errors during deploy process)
+- [ ] Health check endpoints return 200 OK
+- [ ] Monitoring green for 5 minutes (error rates, latency, CPU/memory)
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/execution-report` — generate post-deployment analytics
+- **Issues found:** `/rollback deploy` — revert to previous stable version
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Undo changes:** `/rollback deploy TASK-{id}` — automated rollback to previous deployment
+- **Revert to previous state:** `git revert <deploy-commit>` and trigger redeployment pipeline

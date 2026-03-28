@@ -27,60 +27,65 @@ let saved = false;
 
 for (const file of files) {
   const filePath = path.join(tasksDir, file);
-  const content = fs.readFileSync(filePath, 'utf-8');
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
 
-  if (!/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING|QA_SIGNOFF|BIZ_SIGNOFF|TECH_SIGNOFF|DEPLOYING)/.test(content)) {
+    if (!/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING|QA_SIGNOFF|BIZ_SIGNOFF|TECH_SIGNOFF|DEPLOYING)/.test(content)) {
+      continue;
+    }
+
+    const id = (content.match(/^id:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
+    const title = (content.match(/^title:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
+    const status = (content.match(/^status:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
+
+    // Save pre-compaction state snapshot
+    const snapshotDir = path.join(reportsDir, 'executions');
+    if (!fs.existsSync(snapshotDir)) {
+      fs.mkdirSync(snapshotDir, { recursive: true });
+    }
+
+    const snapshot = {
+      event: 'pre-compaction',
+      timestamp: new Date().toISOString(),
+      task_id: id.trim(),
+      title: title.trim(),
+      status: status.trim(),
+      reason: 'Context approaching 95% — auto-compaction imminent',
+      preserved: {
+        loop_state: extractSection(content, 'Loop State'),
+        last_handoff: extractLastHandoff(content),
+        open_bugs: extractBugs(content),
+        blocked: /blocked:\s*Y/i.test(content)
+      }
+    };
+
+    const snapshotPath = path.join(snapshotDir, `${id.trim()}_precompact_${Date.now()}.json`);
+    fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
+
+    // Output critical context for the compaction to preserve
+    console.log('');
+    console.log('WARNING: Context at ~95% — compaction starting.');
+    console.log(`TASK: ${id.trim()} — ${title.trim()} [${status.trim()}]`);
+
+    if (snapshot.preserved.loop_state) {
+      console.log(`LOOPS: ${snapshot.preserved.loop_state}`);
+    }
+    if (snapshot.preserved.open_bugs) {
+      console.log(`BUGS: ${snapshot.preserved.open_bugs}`);
+    }
+
+    console.log('State snapshot saved. PostCompact will re-inject critical state.');
+    console.log('');
+    console.log('COMPACTION GUIDANCE: Focus on preserving the current phase instructions.');
+    console.log('Discard: file contents already read, intermediate exploration results.');
+    console.log('Preserve: task requirements, active phase, loop state, pending decisions.');
+
+    saved = true;
+    break;
+  } catch (e) {
+    // Skip unreadable task files
     continue;
   }
-
-  const id = (content.match(/^id:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
-  const title = (content.match(/^title:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
-  const status = (content.match(/^status:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
-
-  // Save pre-compaction state snapshot
-  const snapshotDir = path.join(reportsDir, 'executions');
-  if (!fs.existsSync(snapshotDir)) {
-    fs.mkdirSync(snapshotDir, { recursive: true });
-  }
-
-  const snapshot = {
-    event: 'pre-compaction',
-    timestamp: new Date().toISOString(),
-    task_id: id.trim(),
-    title: title.trim(),
-    status: status.trim(),
-    reason: 'Context approaching 95% — auto-compaction imminent',
-    preserved: {
-      loop_state: extractSection(content, 'Loop State'),
-      last_handoff: extractLastHandoff(content),
-      open_bugs: extractBugs(content),
-      blocked: /blocked:\s*Y/i.test(content)
-    }
-  };
-
-  const snapshotPath = path.join(snapshotDir, `${id.trim()}_precompact_${Date.now()}.json`);
-  fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
-
-  // Output critical context for the compaction to preserve
-  console.log('');
-  console.log('WARNING: Context at ~95% — compaction starting.');
-  console.log(`TASK: ${id.trim()} — ${title.trim()} [${status.trim()}]`);
-
-  if (snapshot.preserved.loop_state) {
-    console.log(`LOOPS: ${snapshot.preserved.loop_state}`);
-  }
-  if (snapshot.preserved.open_bugs) {
-    console.log(`BUGS: ${snapshot.preserved.open_bugs}`);
-  }
-
-  console.log('State snapshot saved. PostCompact will re-inject critical state.');
-  console.log('');
-  console.log('COMPACTION GUIDANCE: Focus on preserving the current phase instructions.');
-  console.log('Discard: file contents already read, intermediate exploration results.');
-  console.log('Preserve: task requirements, active phase, loop state, pending decisions.');
-
-  saved = true;
-  break;
 }
 
 if (!saved) {

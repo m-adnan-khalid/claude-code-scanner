@@ -88,24 +88,45 @@ ENTRY: orchestrator invokes @tester with Phase 5 artifacts
 
 ---
 
-## Loop 2: Review-Rework Loop (Phase 7, max 3 iterations)
+## Loop 2: Dual Code Review Loop (Phase 7, max 3 iterations)
 
 ### Entry Condition
-Phase 6 passes -> orchestrator invokes @reviewer + @security in PARALLEL.
+Phase 6 passes -> @code-quality audits FIRST -> then orchestrator invokes dual reviewers in PARALLEL.
+
+### Dual Approval Model
+Two independent reviewers must BOTH approve before PR creation:
+- **@reviewer (Reviewer 1)** — code quality, conventions, correctness, maintainability
+- **@security (Reviewer 2)** — security review, vulnerability check, auth/authz
+Neither reviewer can override the other. Both approvals are mandatory.
 
 ### Flow
 ```
-ENTRY: orchestrator invokes @reviewer + @security in parallel
+ENTRY: @code-quality audit (score must be >= 75)
+```
+
+### Code Quality Score Escalation
+If @code-quality score < 75 after dev agent fixes:
+1. First attempt: route specific violations back to dev agent with fix instructions
+2. Second attempt: if score still < 75, @team-lead reviews — options:
+   a. Override threshold (log justification in decision log)
+   b. Reassign to different dev agent
+   c. Escalate to user: "Code quality cannot reach 75. Current: {score}. Issues: {list}"
+3. Override requires explicit justification in task record
+
+```
   |
   v
-@reviewer produces: APPROVE or REQUEST_CHANGES (with comments)
-@security produces: APPROVE or REQUEST_CHANGES (with findings)
+orchestrator invokes @reviewer (R1) + @security (R2) in parallel
   |
-  +-> BOTH APPROVE -> EXIT: advance to Phase 8
+  v
+@reviewer (R1) produces: APPROVE or REQUEST_CHANGES (with comments)
+@security (R2) produces: APPROVE or REQUEST_CHANGES (with findings)
+  |
+  +-> BOTH APPROVE -> EXIT: advance to Phase 8 (PR Creation)
   |
   +-> SPLIT DECISION (one approves, one requests changes):
   |     -> treat as REQUEST_CHANGES (stricter wins)
-  |     -> only re-review with the agent that requested changes
+  |     -> only re-review with the rejecting reviewer (approved verdict preserved)
   |
   +-> BOTH REQUEST_CHANGES -> combine all comments
        |
@@ -160,6 +181,12 @@ ENTRY: orchestrator invokes @reviewer + @security in parallel
 
 ### Entry Condition
 Phase 8 PR+CI pass -> orchestrator invokes @qa-lead to create test plan, then @tester to execute.
+
+### Regression Suite Definition
+- **Scope:** All tests from Phase 6 that were GREEN at Phase 6 exit (baseline)
+- **After each bug fix:** Run FULL regression suite (not just targeted tests)
+- **Time limit:** If regression suite > 10 minutes, run targeted tests first; full suite runs async
+- **Failure:** Any regression = new bug report (P1 severity, filed immediately)
 
 ### Flow
 ```
@@ -347,10 +374,16 @@ Gate 3: @team-lead (Tech sign-off)
 
 ### Flow
 ```
-ENTRY: orchestrator invokes @infra for deployment
+ENTRY: @team-lead merges PR (only after ALL sign-offs + CI green)
   |
   v
-@infra runs: pre-checks -> merge PR -> deploy -> health check -> smoke test
+@team-lead: gh pr merge {pr-number} --squash --delete-branch
+  |
+  v
+orchestrator invokes @infra for deployment
+  |
+  v
+@infra runs: pre-checks -> deploy -> health check -> smoke test
   |
   +-> ALL PASS -> EXIT: advance to Phase 12
   |

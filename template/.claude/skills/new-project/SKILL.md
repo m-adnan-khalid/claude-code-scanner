@@ -429,3 +429,22 @@ For each phase completion:
 | 6 | Project files (src/, tests/, configs) |
 | 7 | `.claude/` environment (agents, skills, rules, hooks) |
 | 8 | `.claude/project/DEPLOY_STRATEGY.md` |
+
+## Definition of Done
+- [ ] All 8 pre-development phases completed (or skipped with justification)
+- [ ] PROJECT.md status is `READY_FOR_DEV`
+- [ ] All project documents created and populated (no template placeholders)
+- [ ] Cross-phase validation passed (no unresolved blockers between phases)
+- [ ] Decision Log in PROJECT.md records all user gate approvals
+- [ ] Project builds successfully (scaffold verified)
+- [ ] Claude Code environment generated and validated
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/clarify --before-dev` — validate requirements, then `/mvp-kickoff next`
+- **Iterate:** `/new-project --resume` — resume from last completed phase
+- **Skip ahead:** `/idea-to-launch --resume` — continue full lifecycle automation
+
+## Rollback
+- **Redo a specific phase:** Run the individual phase skill (e.g., `/brainstorm --refine`, `/architecture --update`)
+- **Restart entirely:** Delete `.claude/project/` and re-run `/new-project "idea"`

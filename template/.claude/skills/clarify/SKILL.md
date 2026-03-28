@@ -398,3 +398,22 @@ DEFER — postpone to later:
 | Before launching the MVP | `/clarify --before-launch` |
 | Quick sanity check (top issues only) | `/clarify --quick` |
 | After major scope change or pivot | `/clarify --full` |
+
+## Definition of Done
+- [ ] All project documents scanned for gaps and ambiguities
+- [ ] Findings categorized (blockers, ambiguous, assumptions, missing, suggestions)
+- [ ] All blocker-level gaps resolved through Q&A
+- [ ] Answers recorded in relevant project documents
+- [ ] Decision Log updated in PROJECT.md
+- [ ] Readiness assessment generated with clarity percentage
+- [ ] Clarification report saved to `.claude/reports/`
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/mvp-kickoff next` — start the next MVP feature
+- **Iterate:** `/clarify --feature "name"` — deep-dive on a specific feature
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/clarify --full` for exhaustive re-scan, or `/clarify --feature "name"`
+- **Revert output:** Revert document changes and re-run `/clarify`

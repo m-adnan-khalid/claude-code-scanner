@@ -179,5 +179,23 @@ Show:
 ## Prerequisites
 - `.claude/project/TECH_STACK.md` must exist
 
-## Next Step
-`/scaffold` — generates actual project files from this architecture
+## Definition of Done
+- [ ] ARCHITECTURE.md created at `.claude/project/ARCHITECTURE.md`
+- [ ] Data model (ERD) covers all domain entities with relationships
+- [ ] API design includes complete endpoint table with auth, request/response shapes
+- [ ] Component hierarchy defined (if frontend exists)
+- [ ] Directory structure matches tech stack conventions
+- [ ] Authentication flow documented with sequence diagram
+- [ ] All key design decisions recorded with rationale and trade-offs
+- [ ] Security considerations documented
+- [ ] PROJECT.md updated with Phase 5 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/scaffold` — generate actual project files from this architecture
+- **Iterate:** `/architecture --update` — revise current architecture design
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/architecture --update` or `/architecture "new style"`
+- **Revert output:** Delete or overwrite `.claude/project/ARCHITECTURE.md`

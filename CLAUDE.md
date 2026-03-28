@@ -5,7 +5,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 ## What You Generate
 - `CLAUDE.md` (root + nested per module)
 - `.claude/rules/` — path-specific rules
-- `.claude/agents/` — role-based agent team (18 agents)
+- `.claude/agents/` — role-based agent team (23 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
 - `.claude/skills/` — workflow skills
 - `.claude/settings.json` — permissions, hooks
@@ -13,7 +13,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `.claude/templates/` — code scaffolding templates
 - `.claude/profiles/` — developer role profiles
 - `.claude/scripts/` — setup + verification scripts
-- `.claude/docs/commands.md` — master command reference
+- `.claude/docs/commands-template.md` — master command reference
 
 ## Execution Order
 
@@ -59,6 +59,11 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 | UX Designer | `@ux-designer` | Read-only — user flows, wireframes, IA |
 | Code Quality | `@code-quality` | Read-only — design patterns, SOLID, duplication, static analysis |
 | Mobile Dev | `@mobile` | Read/Write — iOS, Android, React Native, Flutter, KMP |
+| QA Automation | `@qa-automation` | Read/Write — deploy app, run E2E flows, visual verification |
+| Gatekeeper | `@gatekeeper` | Read-only — auto-approve/block changes, regression detection |
+| Process Coach | `@process-coach` | Read/Write docs — SDLC methodology selection and configuration |
+| Database | `@database` | Read/Write — schema design, migrations, query optimization |
+| Docs Writer | `@docs-writer` | Read/Write docs — READMEs, API docs, ADRs, changelogs |
 
 ## Keeping In Sync
 - `/sync --check` — detect drift between environment and codebase (weekly recommended)
@@ -81,6 +86,7 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 ## Workflow After Setup
 - `/workflow new "task"` — full SDLC (intake -> impact -> design -> dev -> test -> review -> QA -> signoff -> deploy)
 - `/task-tracker status` — dashboard
-- See `.claude/docs/commands.md` for complete reference
+- See `.claude/docs/commands-template.md` for complete reference
 
 @.claude/rules/context-budget.md
+@.claude/rules/request-validation.md

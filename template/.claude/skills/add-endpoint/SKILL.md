@@ -15,3 +15,14 @@ argument-hint: '"endpoint description" [--method GET|POST|PUT|DELETE] [--path /a
 3. Follow project's architecture (Clean Architecture layers, repository pattern, etc.)
 4. Add tests (unit + integration)
 5. Run test suite to verify
+
+## Definition of Done
+- Endpoint responds correctly, tests pass, follows API standards, documented.
+
+## Next Steps
+- `/api-docs` to update documentation.
+
+## Rollback
+- **Undo scaffolding:** `git checkout -- <route-file> <service-file> <model-file> <test-file>`
+- **Remove endpoint:** `git stash` to stash all generated files
+- **Re-scaffold differently:** `/add-endpoint "name" --force` to overwrite

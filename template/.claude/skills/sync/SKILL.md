@@ -251,3 +251,12 @@ Next: {recommendation}
   - "N items need manual review — see .claude/reports/drift-report.md"
   - "Major drift detected. Consider /sync --full-rescan."
 ```
+
+## Definition of Done
+- All drift categories checked, report generated, fixes applied (if --fix), manifest updated.
+
+## Next Steps
+- `/validate-setup` to verify fixes, `/workflow new` to start work.
+
+## Rollback
+- Revert changed files via git, re-run `/sync --check` to confirm.

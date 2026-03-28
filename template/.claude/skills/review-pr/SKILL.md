@@ -16,3 +16,19 @@ argument-hint: "[PR-number|branch-name]"
 4. Check test coverage delta
 5. Verify architecture alignment
 6. Output structured review with APPROVE / REQUEST_CHANGES / COMMENT
+
+## Definition of Done
+- [ ] All review criteria checked (code quality, tests, security, architecture)
+- [ ] Verdict given: APPROVE, REQUEST_CHANGES, or COMMENT
+- [ ] Blocking issues explicitly listed with severity and remediation
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/deploy staging` — approved PR is ready for deployment
+- **Issues found:** `/fix-bug "review feedback"` — address requested changes
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Re-request review:** `/review-pr {PR-number}` to review again after changes
+- **Dismiss review:** Use `gh pr review --dismiss` to clear stale reviews
+- **Return to dev:** `/workflow dev TASK-{id}` to make additional changes

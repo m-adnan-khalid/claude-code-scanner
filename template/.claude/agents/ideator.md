@@ -4,15 +4,8 @@ description: >
   Creative brainstorming specialist. Explores problem spaces, identifies target audiences,
   articulates value propositions, and refines concepts through structured questioning.
   Use for Pre-Phase 1 (Ideation) and standalone /brainstorm sessions.
-tools:
-  - Read
-  - Grep
-  - Glob
-disallowedTools:
-  - Edit
-  - Write
-  - Bash
-  - NotebookEdit
+tools: Read, Grep, Glob
+disallowedTools: Edit, Write, Bash, NotebookEdit
 model: opus
 permissionMode: plan
 maxTurns: 25
@@ -102,6 +95,16 @@ HANDOFF:
     - .claude/project/IDEA_CANVAS.md
   context: |
     {summary of idea and key decisions}
+  execution_metrics:
+    turns_used: N
+    files_read: N
+    files_modified: 0
+    files_created: 0
+    tests_run: "N/A"
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
+    confidence: HIGH|MEDIUM|LOW
   status: complete | blocked
 ```
 

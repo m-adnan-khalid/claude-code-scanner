@@ -30,3 +30,12 @@ Read all `.claude/tasks/*.md` and `.claude/project/PROJECT.md` to calculate:
 ### Aggregation
 - **all** — everything above combined
 - If `.claude/project/PROJECT.md` doesn't exist, skip lifecycle metrics (backward compatible)
+
+## Definition of Done
+- All metrics calculated (velocity, quality, cycle-time), trends identified, bottlenecks flagged.
+
+## Next Steps
+- `/progress-report` to share, address bottleneck areas.
+
+## Rollback
+- N/A (read-only analysis).

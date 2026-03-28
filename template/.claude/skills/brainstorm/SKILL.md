@@ -84,5 +84,22 @@ Show the user:
 ## Prerequisites
 - `.claude/project/PROJECT.md` must exist (created by `npx claude-code-scanner new` or manually)
 
-## Next Step
-`/product-spec` — converts the Idea Canvas into a full product specification
+## Definition of Done
+- [ ] IDEA_CANVAS.md created at `.claude/project/IDEA_CANVAS.md`
+- [ ] Problem statement is specific and testable
+- [ ] Target audience defined with primary and secondary segments
+- [ ] Value proposition written as a single sentence
+- [ ] Competitive landscape includes 3-5 alternatives
+- [ ] SWOT analysis complete
+- [ ] Viability score assigned (STRONG/PROMISING/NEEDS_WORK/PIVOT_NEEDED)
+- [ ] PROJECT.md updated with Phase 1 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/product-spec` — convert the Idea Canvas into a full product specification
+- **Iterate:** `/brainstorm --refine` — refine current Idea Canvas output
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/brainstorm --refine` or `/brainstorm "new idea"`
+- **Revert output:** Delete or overwrite `.claude/project/IDEA_CANVAS.md`

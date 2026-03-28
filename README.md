@@ -132,7 +132,7 @@ your-project/
 │   │   ├── ux-designer.md        <- User flows & wireframes
 │   │   ├── code-quality.md      <- Design patterns, SOLID, static analysis
 │   │   └── mobile.md            <- iOS, Android, React Native, Flutter, KMP
-│   ├── skills/                   <- 31 workflow skills
+│   ├── skills/                   <- 51 workflow skills
 │   │   ├── workflow/             <- /workflow — Full 13-phase SDLC
 │   │   ├── scan-codebase/        <- /scan-codebase
 │   │   ├── generate-environment/ <- /generate-environment
@@ -165,7 +165,7 @@ your-project/
 │   │   ├── release-notes/        <- /release-notes — Release documentation
 │   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
 │   │   └── ...                   <- + more utility skills
-│   ├── hooks/                    <- 12 automation scripts (10 events)
+│   ├── hooks/                    <- 14 automation scripts (10 events)
 │   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
@@ -300,18 +300,21 @@ Phase 13: Execution Report — success score, hallucination check, regression au
 
 Mandatory `/context-check` between every phase transition to enforce 60% context budget.
 
-## Hook Events (10 registered)
+## Hook Events (14 hooks implementing 10 events)
 
 | Event | Hook | Purpose |
 |-------|------|---------|
 | SessionStart | session-start.js | Re-inject active task context |
+| SessionStart | drift-detector.js | Detect environment drift on startup |
 | PreToolUse | protect-files.js, validate-bash.js | Block dangerous operations |
 | PostToolUse | post-edit-format.js, track-file-changes.js | Auto-format, log changes |
+| PostToolUse | gatekeeper-check.js | Auto-validate code changes for secrets, skipped tests, scope |
 | PostToolUseFailure | tool-failure-tracker.js | Track tool errors for debugging |
 | PreCompact | pre-compact-save.js | Save loop state before compaction |
 | PostCompact | post-compact-recovery.js | Restore workflow state after compaction |
 | Notification | notify-approval.js | OS notification on permission prompt |
 | SubagentStop | track-file-changes.js | Record subagent file changes |
+| SubagentStop | subagent-tracker.js | Track agent completion for execution metrics |
 | Stop | execution-report.js + prompt | Mandatory execution report |
 | StopFailure | stop-failure-handler.js | Preserve state on failures |
 

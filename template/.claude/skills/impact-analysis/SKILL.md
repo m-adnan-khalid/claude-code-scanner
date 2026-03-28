@@ -29,3 +29,12 @@ If the change affects requirements or architecture, also check:
 - Flag the downstream feature and its task ID
 - Recommend: regression test Feature 2's integration points
 - Warn if Feature 2 is already DEPLOYED (production impact)
+
+## Definition of Done
+- Blast radius documented, affected files listed, risk level assessed, migration plan if needed.
+
+## Next Steps
+- `/workflow dev TASK-{id}` if safe, `/design-review` if risky.
+
+## Rollback
+- N/A (read-only analysis).

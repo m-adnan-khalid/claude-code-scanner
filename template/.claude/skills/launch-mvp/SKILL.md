@@ -259,3 +259,19 @@ Post-MVP changes to workflow:
 ## Prerequisites
 - All Must-Have features in BACKLOG.md must have status COMPLETE (or use --force)
 - `.claude/project/DEPLOY_STRATEGY.md` must exist
+
+## Definition of Done
+- [ ] All Must-Have features status is COMPLETE in BACKLOG.md
+- [ ] Quality gates pass (no score < 70, no hallucination/regression >= 2, coverage > 75%)
+- [ ] Deployment successful and health checks pass
+- [ ] Post-launch monitoring stable for 30 minutes
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/mvp-kickoff --post-mvp` — transition to Should-Have features
+- **Issues found:** `/fix-bug "launch issue"` — address post-launch problems
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Undo changes:** `/rollback deploy` — revert production to pre-launch state
+- **Revert to previous state:** Update PROJECT.md status back to IN_DEVELOPMENT, BACKLOG.md features back to COMPLETE (not DEPLOYED)

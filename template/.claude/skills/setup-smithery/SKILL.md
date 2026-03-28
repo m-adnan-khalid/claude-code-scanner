@@ -37,3 +37,14 @@ smithery skill add anthropics/pdf --agent claude-code
 
 ## After Install
 Run `/context-check` to verify under 60%. Remove low-priority items if over budget.
+
+## Definition of Done
+- Matching MCP servers installed, scoped to relevant agents, `/context-check` confirms budget OK.
+
+## Next Steps
+- `/validate-setup` to verify, `/workflow new` to start.
+
+## Rollback
+- **Remove MCP servers:** Edit `.claude/settings.json` — remove entries from `mcpServers`
+- **Verify removal:** `/validate-setup` to confirm clean state
+- **Re-install selectively:** `/setup-smithery --only "server-name"` to add specific servers

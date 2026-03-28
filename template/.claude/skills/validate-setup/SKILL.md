@@ -29,3 +29,20 @@ node .claude/scripts/verify-setup.js
 ```
 
 Report results as PASS/FAIL/WARN with specific fix instructions for failures.
+
+## Definition of Done
+- [ ] All 12 checks executed (CLAUDE.md, rules, agents, skills, settings, hooks, templates, gitignore, commands, context budget, handoff protocol, loop tracking)
+- [ ] 0 errors (FAIL results)
+- [ ] Warnings are acceptable and documented
+- [ ] Verification script runs without crashes
+- [ ] Context budget under 20% at startup
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/setup-smithery` — install MCP servers, or `/workflow new` — start development
+- **Iterate:** `/validate-setup --fix` — auto-repair detected issues
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/validate-setup --fix` to auto-repair, then re-validate
+- **Revert output:** Fix issues manually based on FAIL/WARN report

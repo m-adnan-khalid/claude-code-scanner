@@ -127,5 +127,22 @@ Show:
 ## Prerequisites
 - `.claude/project/PRODUCT_SPEC.md` must exist
 
-## Next Step
-`/tech-stack` — recommends technology stack based on features and requirements
+## Definition of Done
+- [ ] BACKLOG.md created at `.claude/project/BACKLOG.md`
+- [ ] All features categorized using MoSCoW (Must/Should/Could/Won't)
+- [ ] All Must-Have features sized (S/M/L)
+- [ ] Dependencies mapped with no circular references
+- [ ] No orphan features (every feature maps to a user journey)
+- [ ] Implementation order defined for all Must-Have features
+- [ ] Critical path identified and documented
+- [ ] PROJECT.md updated with Phase 3 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/domain-model` — extract domain entities, or `/tech-stack` — choose technologies
+- **Iterate:** `/feature-map --update` — revise current backlog
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/feature-map --update` or `/feature-map "specific area"`
+- **Revert output:** Delete or overwrite `.claude/project/BACKLOG.md`

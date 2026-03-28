@@ -132,3 +132,22 @@ After generation, create/update `.claude/manifest.json`:
 - Record project structure (source dirs, test dirs, config files)
 - Record CLAUDE.md line count and agent count
 This manifest enables `/sync` to detect drift in future sessions.
+
+## Definition of Done
+- [ ] All files generated (CLAUDE.md, agents, skills, rules, hooks, settings, templates, profiles, docs)
+- [ ] No `{placeholder}` text remains in any generated file
+- [ ] `manifest.json` created/updated with file hashes and timestamps
+- [ ] CLAUDE.md under 150 lines (hard limit 200)
+- [ ] `settings.json` is valid JSON
+- [ ] All hook scripts exist and are syntactically valid
+- [ ] `.gitignore` updated with Claude Code entries
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/validate-setup` — verify the generated environment meets all standards
+- **Iterate:** `/generate-environment --force` — regenerate all files from scan results
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/generate-environment --force` to regenerate all files
+- **Revert output:** Delete generated `.claude/` files and re-run from scan results

@@ -182,7 +182,12 @@ HANDOFF:
   execution_metrics:
     turns_used: N
     files_read: N
+    files_modified: N
+    files_created: N
     tests_run: N (pass/fail/skip)
+    coverage_delta: "+N%" or "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: [list or "CLEAN"]
     regressions_found: N
     confidence: HIGH/MEDIUM/LOW
 ```

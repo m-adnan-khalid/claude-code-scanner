@@ -123,5 +123,23 @@ Show:
 - `.claude/project/ARCHITECTURE.md` must exist
 - `.claude/project/TECH_STACK.md` must exist
 
-## Next Step
-`/workflow new "Feature description"` — start building MVP features using the 13-phase SDLC
+## Definition of Done
+- [ ] DEPLOY_STRATEGY.md created at `.claude/project/DEPLOY_STRATEGY.md`
+- [ ] CI/CD pipeline designed with all stages (lint, test, build, deploy, smoke test)
+- [ ] Hosting plan specified for every component (API, DB, frontend, workers, storage)
+- [ ] Environments defined (development, staging, production) with URL patterns
+- [ ] Monitoring and alerting configured with thresholds
+- [ ] Rollback plan documented (automated + manual)
+- [ ] Launch checklist is actionable (each item has a command or verification)
+- [ ] Cost estimate provided with growth projections
+- [ ] PROJECT.md updated with Phase 8 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/methodology` — choose SDLC model, or `/workflow new` — start building MVP features
+- **Iterate:** `/deploy-strategy --update` — revise current deployment strategy
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/deploy-strategy --update` or `/deploy-strategy "new target"`
+- **Revert output:** Delete or overwrite `.claude/project/DEPLOY_STRATEGY.md`

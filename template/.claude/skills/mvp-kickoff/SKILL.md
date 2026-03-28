@@ -227,3 +227,19 @@ Before any command, validate prerequisites:
 ## Prerequisites
 - `.claude/project/BACKLOG.md` must exist with Must-Have features
 - `.claude/project/PROJECT.md` status must be `READY_FOR_DEV` or later
+
+## Definition of Done
+- [ ] Next feature selected based on dependency ordering
+- [ ] All feature dependencies verified as COMPLETE
+- [ ] Workflow task created with enriched context from backlog, spec, and architecture
+All criteria must pass before this task is marked complete.
+
+## Next Steps
+- **Success:** `/workflow dev TASK-{id}` — begin development on the selected feature
+- **Issues found:** `/clarify` — resolve ambiguities in feature requirements before starting
+- **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## Rollback
+- **Revert feature selection:** Edit `.claude/project/BACKLOG.md` — change feature status back to PENDING
+- **Cancel created workflow:** `/workflow cancel TASK-{id}` to remove the task
+- **Re-select feature:** `/mvp-kickoff next` to pick a different feature

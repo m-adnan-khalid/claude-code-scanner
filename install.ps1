@@ -1,11 +1,11 @@
 # Claude Code Scanner — Quick Install (Windows PowerShell)
-# Usage: irm https://raw.githubusercontent.com/adnan-prompts/claude-code-scanner/main/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/master/install.ps1 | iex
 # Or:    .\install.ps1
 
 $ErrorActionPreference = "Stop"
 
-$REPO = "adnan-prompts/claude-code-scanner"
-$BRANCH = "main"
+$REPO = "m-adnan-khalid/claude-code-scanner"
+$BRANCH = "master"
 
 Write-Host "`nClaude Code Scanner — Installing...`n" -ForegroundColor Cyan
 
@@ -39,7 +39,7 @@ Copy-Item (Join-Path $src "CLAUDE.md") "CLAUDE.md"
 Write-Host "[OK] CLAUDE.md" -ForegroundColor Green
 
 # Copy .claude/ directories
-$dirs = @("rules","agents","skills","hooks","scripts","docs","templates","profiles")
+$dirs = @("rules","agents","skills","hooks","scripts","docs","templates","profiles","project")
 foreach ($dir in $dirs) {
     $srcDir = Join-Path $src ".claude" $dir
     if (Test-Path $srcDir) {
