@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 18 role-based agents, 31 skills, 12 hooks, rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 23 role-based agents, 51 skills, 14 hooks, rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -43,13 +43,13 @@ npx claude-code-scanner init
 ### Method 2: One-line install (macOS/Linux)
 ```bash
 cd /path/to/your-project
-curl -fsSL https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/master/install.sh | bash
 ```
 
 ### Method 2b: One-line install (Windows PowerShell)
 ```powershell
 cd C:\path\to\your-project
-irm https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/master/install.ps1 | iex
 ```
 
 ### Method 3: Git clone
@@ -113,7 +113,7 @@ your-project/
 │   ├── settings.json             <- Permissions + 10 hook events
 │   ├── settings.local.json       <- Your env vars (gitignored)
 │   ├── rules/                    <- Path-specific coding rules
-│   ├── agents/                   <- 18 role-based AI agents
+│   ├── agents/                   <- 23 role-based AI agents
 │   │   ├── team-lead.md          <- Orchestrator, assigns work, tech sign-off
 │   │   ├── architect.md          <- Architecture design & review
 │   │   ├── product-owner.md      <- Acceptance criteria, business sign-off
@@ -210,6 +210,15 @@ your-project/
 | `@strategist` | Product strategy — MVP scope, features, prioritization | Read/Write (project docs) | opus |
 | `@scaffolder` | Project generation — directory structure, configs, boilerplate | Read/Write + Bash | sonnet |
 | `@ux-designer` | UX design — user flows, wireframes, information architecture | Read-only | opus |
+
+### Quality & Process Agents
+| Agent | Role | Access | Model |
+|-------|------|--------|-------|
+| `@qa-automation` | E2E testing — deploy app, run flows, visual verification | Read/Write + worktree | opus |
+| `@gatekeeper` | Auto-approve/block changes, regression detection | Read-only | sonnet |
+| `@process-coach` | SDLC methodology selection and configuration | Read/Write (project docs) | opus |
+| `@database` | Schema design, migrations, query optimization | Read/Write + worktree | sonnet |
+| `@docs-writer` | READMEs, API docs, ADRs, changelogs | Read/Write (docs only) | sonnet |
 
 All agents include: structured handoff protocol with execution metrics, explicit limitations, cross-session memory, and self-check for hallucinations and regressions.
 
@@ -369,7 +378,7 @@ npx claude-code-scanner new my-app --here    # New project in current directory
 2. **`/generate-environment`** uses scan results to create project-specific:
    - CLAUDE.md with your exact commands, paths, and conventions
    - Rules that enforce YOUR codebase patterns
-   - 18 agents configured for YOUR tech stack
+   - 23 agents configured for YOUR tech stack
    - Skills with YOUR project's commands and file paths
    - Templates extracted from YOUR existing code
    - Profiles for backend, frontend, and devops roles

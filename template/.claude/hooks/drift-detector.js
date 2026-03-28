@@ -33,11 +33,15 @@ let daysSinceSync = Infinity;
 if (fs.existsSync(manifestPath)) {
   try {
     manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-    const lastSync = new Date(manifest.last_sync);
-    daysSinceSync = Math.floor((Date.now() - lastSync.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (daysSinceSync > 14) {
-      warnings.push(`DRIFT: Last sync was ${daysSinceSync} days ago. Run /sync --check`);
+    // Skip drift check if never synced (fresh install)
+    if (manifest.last_sync) {
+      const lastSync = new Date(manifest.last_sync);
+      daysSinceSync = Math.floor((Date.now() - lastSync.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (daysSinceSync > 14) {
+        warnings.push(`DRIFT: Last sync was ${daysSinceSync} days ago. Run /sync --check`);
+      }
     }
   } catch (e) {
     warnings.push('DRIFT: manifest.json is corrupted. Run /sync --fix');
