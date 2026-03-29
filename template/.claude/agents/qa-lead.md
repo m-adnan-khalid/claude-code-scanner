@@ -82,6 +82,7 @@ HANDOFF:
   reason: [QA sign-off result]
   artifacts: [test plan, bug reports, QA report]
   context: [summary of quality assessment]
+  next_agent_needs: QA test plan, priority areas, known risk zones, acceptance criteria to verify
   execution_metrics:
     turns_used: N
     files_read: N

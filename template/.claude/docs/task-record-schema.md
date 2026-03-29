@@ -203,6 +203,20 @@ Circuit breaker -> escalated to user (stays in current state until resolved)
 ### Timeline Section
 Every event: timestamp, phase, event description, agent/actor, duration
 
+**Standard timeline event types:**
+| Event Type | When | Example |
+|------------|------|---------|
+| PHASE_START | Phase begins | Phase 5 started, assigned @api-builder |
+| PHASE_COMPLETE | Phase exits | Phase 6 passed, all tests green |
+| AGENT_COMPLETE | Agent finishes work | @tester completed (12 turns) |
+| AGENT_TIMEOUT | Agent hits maxTurns | @api-builder TIMEOUT(30/30) — work incomplete |
+| INTERRUPTED | Session crash/failure | session-failure:rate_limit |
+| TOOL_FAILURE | Tool call fails | Bash failed: exit 1 |
+| REGRESSION_DETECTED | Tests regressed vs baseline | 3 new failures, coverage -2.1% |
+| BLOCKER_ADDED | Task blocked | Depends on TASK-042 (not at Phase 8 yet) |
+| BLOCKER_RESOLVED | Blocker cleared | TASK-042 reached CI_PENDING |
+| DECISION | Key decision made | P2 bug accepted as known issue with workaround |
+
 ### Handoff Log
 Track every agent-to-agent handoff:
 ```markdown

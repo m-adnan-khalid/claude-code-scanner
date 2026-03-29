@@ -125,6 +125,7 @@ HANDOFF:
   reason: [assignment or escalation]
   artifacts: [task file, design doc, PR link]
   context: [what was decided and why]
+  next_agent_needs: Task record location, assigned subtasks, current loop state, phase entry requirements
   iteration: N/max
   execution_metrics:
     turns_used: N

@@ -53,6 +53,7 @@ HANDOFF:
   reason: testing complete — [all pass / N failures]
   artifacts: [test files, coverage report, test results]
   context: [coverage delta, any gaps noted]
+  next_agent_needs: Test results summary, failing tests with reasons, coverage delta, regression flags
   execution_metrics:
     turns_used: N
     files_read: N

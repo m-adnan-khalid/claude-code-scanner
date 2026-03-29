@@ -2,6 +2,16 @@
 // Cross-platform OS notification when Claude needs user approval
 const { execSync } = require('child_process');
 
+
+const reportsDir = path.join(_projectRoot, '.claude', 'reports');
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (e) { logHookFailure("notify-approval", e.message); }
+}
+
 // Drain stdin so hook never hangs if data is piped
 process.stdin.resume();
 process.stdin.on('data', () => {});

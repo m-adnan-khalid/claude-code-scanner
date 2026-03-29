@@ -61,6 +61,7 @@ HANDOFF:
   reason: security review complete
   artifacts: [security findings report]
   context: [N critical, M high, O medium findings]
+  next_agent_needs: Security findings with severity, vulnerable code locations, remediation steps
   execution_metrics:
     turns_used: N
     files_read: N

@@ -72,6 +72,7 @@ HANDOFF:
   reason: design review complete
   artifacts: [design doc path, diagram]
   context: [chosen option and key trade-offs]
+  next_agent_needs: Architecture decisions, component diagram refs, API contracts, tech constraints to follow
   execution_metrics:
     turns_used: N
     files_read: N

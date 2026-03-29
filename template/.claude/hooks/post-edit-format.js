@@ -10,6 +10,16 @@ while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRo
   _projectRoot = path.dirname(_projectRoot);
 }
 
+const reportsDir = path.join(_projectRoot, '.claude', 'reports');
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (e) { logHookFailure("post-edit-format", e.message); }
+}
+
+
 // ── Formatting logic ────────────────────────────────────────────────
 function format(raw) {
   try {

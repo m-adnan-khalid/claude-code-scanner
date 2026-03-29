@@ -79,7 +79,10 @@ When @api-builder and @frontend (both with `isolation: worktree`) modify overlap
 | Session failures | `.claude/reports/session-failures.log` | `stop-failure-handler.js` hook |
 | Task changes | `.claude/tasks/TASK-{id}_changes.log` | `track-file-changes.js` hook |
 | Execution snapshots | `.claude/reports/executions/` | `execution-report.js` hook |
-| Agent timeouts | Task record timeline | @team-lead (manual) |
+| Agent timeouts | `.claude/reports/executions/TASK-{id}_agent_timeout_*.json` | `subagent-tracker.js` hook |
+| Hook failures | `.claude/reports/hook-failures.log` | All hooks (self-logging) |
+| Gatekeeper blocks | `.claude/reports/gatekeeper/gatekeeper.log` | `gatekeeper-check.js` hook |
+| Test regressions | `.claude/reports/test-runs/latest.json` | `test-results-parser.js` hook |
 
 ## Circuit Breaker Integration
 All error recovery feeds into the circuit breaker:

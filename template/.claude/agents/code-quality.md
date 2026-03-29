@@ -269,6 +269,7 @@ HANDOFF:
   reason: [pre-implementation review | post-implementation audit] complete
   artifacts: [quality report, pattern recommendations]
   context: [score, critical count, key findings summary]
+  next_agent_needs: Quality score, SOLID violations found, refactoring recommendations, complexity hotspots
   execution_metrics:
     turns_used: N
     files_read: N

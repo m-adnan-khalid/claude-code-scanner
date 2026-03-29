@@ -53,6 +53,7 @@ HANDOFF:
   reason: [sign-off result]
   artifacts: [task file path, criteria doc]
   context: [summary of decision and reasoning]
+  next_agent_needs: Acceptance criteria (GIVEN/WHEN/THEN), user journey refs, scope boundaries
   execution_metrics:
     turns_used: N
     files_read: N

@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 68 commands organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 68 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 
@@ -221,7 +221,52 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 12. Maintenance & Context
+## 12. Real-Environment Testing
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/e2e-browser` | Run Playwright/Cypress headless browser E2E tests | @qa-automation |
+| `/e2e-mobile` | Run Maestro/Detox/Appium emulator/device mobile tests | @qa-automation |
+| `/api-test` | Run Newman/Hurl/HTTPyac real HTTP API test suites | @tester |
+| `/load-test` | Run k6/JMeter/Locust/Artillery concurrent load tests | @tester |
+| `/visual-regression` | Playwright/BackstopJS screenshot pixel-diff comparison | @qa-automation |
+| `/coverage-track` | Istanbul/c8/coverage.py real coverage parsing + delta tracking | @tester |
+
+---
+
+## 13. Audit & Compliance
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/accessibility-audit` | WCAG 2.1 AA/AAA with axe-core, Pa11y, Lighthouse | @qa-automation |
+| `/privacy-audit` | GDPR/CCPA data flow mapping, PII detection, consent validation | @security |
+| `/performance-audit` | Lighthouse, Core Web Vitals, bundle size, performance budgets | @qa-automation |
+| `/infrastructure-audit` | SOC 2 controls, IaC scanning, container/network security | @infra |
+| `/license-audit` | OSS license compliance, SPDX validation, copyleft risk | @security |
+| `/docs-audit` | README quality, API docs completeness, ADR validation, changelog | @docs-writer |
+| `/cicd-audit` | Pipeline secrets, deployment gates, supply chain security | @infra |
+| `/incident-readiness` | DR plans, runbooks, backup/restore, monitoring, on-call | @infra |
+
+---
+
+## 14. Observability
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/setup-observability` | Set up structured logging, tracing (OpenTelemetry), metrics, error tracking | @infra |
+| `/logging-audit` | Audit logging practices — PII leaks, log levels, correlation IDs | @security |
+
+---
+
+## 15. Story Management
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/create-story "title"` | Create user story/bug/defect with role-based subtasks, BDD acceptance criteria | @strategist |
+
+---
+
+## 16. Maintenance & Context
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
@@ -233,7 +278,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 13. Git Workflow (Built Into `/workflow`)
+## 17. Git Workflow (Built Into `/workflow`)
 
 ```
 Phase 1:  git checkout -b feature/TASK-{id}/{slug}     ← Branch from main/dev
@@ -249,7 +294,7 @@ Phase 11: @infra deploys                                 ← Production deployme
 
 ---
 
-## 14. Agent Team (23 Agents)
+## 18. Agent Team (23 Agents)
 
 | Agent | Role | Access | Use For |
 |-------|------|--------|---------|

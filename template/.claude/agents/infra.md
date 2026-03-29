@@ -47,6 +47,7 @@ HANDOFF:
   reason: infrastructure changes complete
   artifacts: [modified files, new env vars list]
   context: [what changed and any deployment notes]
+  next_agent_needs: Deployment config changes, environment variables, health check endpoints, rollback steps
   execution_metrics:
     turns_used: N
     files_read: N

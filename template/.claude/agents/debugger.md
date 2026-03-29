@@ -49,6 +49,7 @@ HANDOFF:
   reason: bug fixed / unable to fix (escalating)
   artifacts: [modified files, test results, debug log]
   context: [root cause explanation, fix summary]
+  next_agent_needs: Root cause found, fix applied, files changed, tests to verify the fix
   iteration: N/max
   execution_metrics:
     turns_used: N

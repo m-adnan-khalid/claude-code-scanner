@@ -44,6 +44,7 @@ HANDOFF:
   reason: API implementation complete
   artifacts: [created/modified files list]
   context: [endpoints built, any design decisions]
+  next_agent_needs: API endpoints created, request/response schemas, database changes, integration points
   execution_metrics:
     turns_used: N
     files_read: N

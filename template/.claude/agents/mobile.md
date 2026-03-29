@@ -202,6 +202,7 @@ HANDOFF:
   reason: mobile implementation complete
   artifacts: [created/modified files list]
   context: [platform, what was built, architecture decisions, any native bridge work]
+  next_agent_needs: Platform-specific changes, native module updates, build config changes, device test results
   execution_metrics:
     turns_used: N
     files_read: N

@@ -289,6 +289,7 @@ HANDOFF:
     Selected {model}. Key adaptations:
     - {adaptation 1}
     - {adaptation 2}
+  next_agent_needs: Methodology config, ceremony schedule, quality gates defined, workflow adjustments
   execution_metrics:
     turns_used: N
     files_read: N

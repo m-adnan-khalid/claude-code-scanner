@@ -11,7 +11,6 @@ permissionMode: plan
 maxTurns: 15
 effort: high
 memory: project
-isolation: worktree
 ---
 
 # @ux-designer — User Experience Specialist
@@ -120,6 +119,7 @@ HANDOFF:
     - {files produced}
   context: |
     {summary of screens designed and key UX decisions}
+  next_agent_needs: User flows, wireframe locations, navigation structure, interaction patterns
   execution_metrics:
     turns_used: N
     files_read: N

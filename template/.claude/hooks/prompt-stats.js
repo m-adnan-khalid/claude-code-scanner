@@ -13,6 +13,16 @@
 const fs = require('fs');
 const path = require('path');
 
+
+const reportsDir = path.join(_projectRoot, '.claude', 'reports');
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (e) { logHookFailure("prompt-stats", e.message); }
+}
+
 // Drain stdin
 process.stdin.resume();
 process.stdin.on('data', () => {});
@@ -51,7 +61,7 @@ try {
     filesChanged = diffOutput.split('\n').filter(l => l.trim()).length;
     const untrackedOutput = execSync('git ls-files --others --exclude-standard 2>/dev/null', { cwd: root, timeout: 3000 }).toString();
     filesAdded = untrackedOutput.split('\n').filter(l => l.trim()).length;
-  } catch (e) { /* not a git repo or git failed */ }
+  } catch (e) { logHookFailure("prompt-stats", e.message); }
 
   // 4. Basic hallucination risk assessment
   // Check if any recently written files reference non-existent imports
@@ -86,7 +96,7 @@ try {
         }
       }
     }
-  } catch (e) { /* silent */ }
+  } catch (e) { logHookFailure("prompt-stats", e.message); }
 
   // 5. Build and output stats
   console.log('\n' + '='.repeat(50));

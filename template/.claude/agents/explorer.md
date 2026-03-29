@@ -52,6 +52,7 @@ HANDOFF:
   reason: exploration complete
   artifacts: [findings document]
   context: [key discovery summary]
+  next_agent_needs: Impact analysis results, affected files list, risk assessment, test coverage gaps
   execution_metrics:
     turns_used: N
     files_read: N

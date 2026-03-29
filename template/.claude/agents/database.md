@@ -76,6 +76,7 @@ HANDOFF:
   reason: migration complete / schema reviewed
   artifacts: [migration file, schema diff, rollback script]
   context: [what changed, backward compatibility notes]
+  next_agent_needs: Migration files created, schema changes, rollback SQL, query optimization notes
   execution_metrics:
     turns_used: N
     files_read: N

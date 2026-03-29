@@ -89,6 +89,7 @@ HANDOFF:
   reason: documentation updated
   artifacts: [list of doc files created/updated]
   context: [what was documented, what's still missing]
+  next_agent_needs: Docs created/updated, API spec location, changelog entries, ADR decisions
   execution_metrics:
     turns_used: N
     files_read: N

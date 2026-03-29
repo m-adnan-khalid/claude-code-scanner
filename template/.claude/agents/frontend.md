@@ -41,6 +41,7 @@ HANDOFF:
   reason: frontend implementation complete
   artifacts: [created/modified files list]
   context: [what was built, any design decisions made]
+  next_agent_needs: Components created, routes added, state management changes, API integrations
   execution_metrics:
     turns_used: N
     files_read: N

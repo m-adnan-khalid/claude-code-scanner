@@ -273,6 +273,7 @@ HANDOFF:
   context: |
     {N} journeys tested, {N} passed, {N} failed.
     {summary of issues if any}
+  next_agent_needs: E2E test results, visual regression diffs, automation coverage, flaky test list
   execution_metrics:
     turns_used: N
     files_read: N

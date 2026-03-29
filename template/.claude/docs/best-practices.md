@@ -81,6 +81,22 @@
 - Block advancement if hallucination >= 2 or regression >= 2
 - Reports saved to `.claude/reports/executions/`
 
+## Regression Baselines
+- **Baseline established:** Pre-Phase 5 — run existing tests and save to `.claude/reports/test-runs/baseline.json`
+- **Coverage baseline:** Measured at Phase 5 completion, tracked as `coverage-baseline` in Loop State
+- **Auto-detection:** `test-results-parser` hook compares every test run to baseline — flags new failures, coverage drops, removed tests
+- **Enforcement:** Do NOT advance Phase 6→7 with regressions. Phase 9 regression = new P1 bug.
+- **Update baseline:** After intentional test changes, copy `latest.json` to `baseline.json`
+
+## Disaster Recovery
+- **Session failure:** State preserved by `stop-failure-handler` hook. Resume: `claude --continue`
+- **Agent timeout:** Checkpoint saved by `subagent-tracker` hook. Counts as +1 loop iteration. Re-invoke with narrower scope.
+- **Tool failure x3:** `tool-failure-tracker` escalates after 3 consecutive. Try different approach.
+- **Crash detection:** `session-start` hook flags tasks stuck in DEVELOPING >6 hours. Check `.claude/reports/executions/` for recovery snapshots.
+- **File undo:** `track-file-changes` logs git hash before each edit. Restore: `git show {hash} > file`
+- **Full state reconstruction:** Combine task record + `_changes.log` + execution snapshots + git log
+- **Hook failures:** All hooks log to `.claude/reports/hook-failures.log`. Check at session start.
+
 ## Prompt Engineering
 - Include verification criteria (tests, expected output)
 - Plan mode for exploration, normal mode for implementation

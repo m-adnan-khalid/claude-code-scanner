@@ -179,6 +179,7 @@ HANDOFF:
   reason: [approved/blocked/escalated]
   artifacts: [validation report, test results]
   context: [what was checked, what passed/failed]
+  next_agent_needs: Approval/block decision, violation details, compliance checklist status
   execution_metrics:
     turns_used: N
     files_read: N

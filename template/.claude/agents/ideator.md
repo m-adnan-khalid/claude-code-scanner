@@ -95,6 +95,7 @@ HANDOFF:
     - .claude/project/IDEA_CANVAS.md
   context: |
     {summary of idea and key decisions}
+  next_agent_needs: Idea canvas location, key decisions made, target audience, competitive landscape
   execution_metrics:
     turns_used: N
     files_read: N

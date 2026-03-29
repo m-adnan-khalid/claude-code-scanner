@@ -112,6 +112,7 @@ HANDOFF:
     - {list of key files created}
   context: |
     {summary: generator used, manual additions, verification results}
+  next_agent_needs: Generated file paths, dependency list, setup commands, config locations
   execution_metrics:
     turns_used: N
     files_read: N

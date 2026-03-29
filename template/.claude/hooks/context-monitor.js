@@ -48,7 +48,7 @@ process.stdin.on('end', () => {
     if (fs.existsSync(stateFile)) {
       try {
         state = JSON.parse(fs.readFileSync(stateFile, 'utf-8'));
-      } catch (e) { /* reset if corrupt */ }
+      } catch (e) { logHookFailure("context-monitor", e.message); }
     }
 
     // Update counters

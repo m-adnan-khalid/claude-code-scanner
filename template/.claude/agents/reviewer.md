@@ -56,6 +56,7 @@ HANDOFF:
   reason: review complete — [APPROVE/REQUEST_CHANGES]
   artifacts: [review comments]
   context: [N critical issues, M suggestions]
+  next_agent_needs: Review comments with severity, files needing changes, patterns to fix, approved areas
   iteration: N/3
   execution_metrics:
     turns_used: N

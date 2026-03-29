@@ -10,7 +10,6 @@ model: sonnet
 maxTurns: 30
 effort: high
 memory: project
-isolation: worktree
 ---
 
 # @strategist — Product Strategy Specialist
@@ -87,6 +86,7 @@ HANDOFF:
     - .claude/project/BACKLOG.md
   context: |
     {summary of MVP scope and key decisions}
+  next_agent_needs: Product spec location, MVP scope, feature priorities, success metrics
   execution_metrics:
     turns_used: N
     files_read: N
