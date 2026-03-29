@@ -69,6 +69,8 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 | Process Coach | `@process-coach` | Read/Write docs — SDLC methodology selection and configuration |
 | Database | `@database` | Read/Write — schema design, migrations, query optimization |
 | Docs Writer | `@docs-writer` | Read/Write docs — READMEs, API docs, ADRs, changelogs |
+| CTO | `@cto` | Read-only — executive oversight, org health |
+| Output Validator | `@output-validator` | Read-only — validates agent output quality |
 
 ## Hook Registration
 - Root hooks (9): pre-tool-use, scope-guard, version-check, branch-conflict-check, branch-naming-check, post-tool-use, doc-drift-check, stop, pre-compact
@@ -169,31 +171,24 @@ Before creating any new file, function, class, or component:
 - `/clarify` — Q&A session to clear requirement doubts, ambiguities, gaps (works for new + existing projects)
 - `/brainstorm`, `/product-spec`, `/feature-map`, `/tech-stack`, `/architecture`, `/scaffold`, `/deploy-strategy` — individual phases
 
+## WORK SCOPE Rules
+- Never work outside your CURRENT_ROLE's permitted paths (enforced by scope-guard hook)
+- Never create duplicate code — search first, extend existing implementations
+- Never skip QA gate before merge — all roles must pass quality checks
+- Always check GLOSSARY.md before naming entities — use exact canonical terms
+
+## PROMPT INTELLIGENCE
+All prompts pass through the prompt intelligence pipeline (pre-tool-use hook + `/improve-prompt` skill):
+- **Scoring:** Prompts scored on specificity, role alignment, domain accuracy, standards compliance, destructive risk
+- **Improvement:** Low-scoring prompts improved with GLOSSARY terms, STANDARDS rules, MEMORY context
+- **Gating:** Destructive actions flagged; role violations blocked; user approval required before execution
+
 ## Real Environment Testing
-- `/e2e-browser` — Playwright/Cypress real headless browser E2E tests
-- `/e2e-mobile` — Maestro/Detox/Appium real emulator/device mobile tests
-- `/api-test` — Newman/Hurl/HTTPyac real HTTP API test suites
-- `/load-test` — k6/JMeter/Locust/Artillery real concurrent load tests
-- `/visual-regression` — Playwright/BackstopJS screenshot pixel-diff comparison
-- `/coverage-track` — Istanbul/c8/coverage.py real coverage parsing + delta tracking
+`/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
 
 ## Audit & Compliance
-- `/accessibility-audit` — WCAG 2.1 AA/AAA with axe-core, Pa11y, Lighthouse
-- `/privacy-audit` — GDPR/CCPA data flow mapping, PII detection, consent validation
-- `/performance-audit` — Lighthouse, Core Web Vitals, bundle size, performance budgets
-- `/infrastructure-audit` — SOC 2 controls, IaC scanning, container/network security
-- `/license-audit` — OSS license compliance, SPDX validation, copyleft risk
-- `/docs-audit` — README quality, API docs completeness, ADR validation, changelog
-- `/cicd-audit` — Pipeline secrets, deployment gates, supply chain security
-- `/incident-readiness` — DR plans, runbooks, backup/restore, monitoring, on-call
+`/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`
 
 ## Team Workflow
-- `/setup-workspace` — set your role, initialize session.env, verify setup
-- `/daily-sync` — pull latest, verify CLAUDE.md version, show team activity
-- `/feature-start` — create role-prefixed branch, set up task file
-- `/workflow new "task"` — full SDLC (intake -> impact -> design -> dev -> test -> review -> QA -> signoff -> deploy)
-- `/feature-done` — doc sync check, QA gate, lint, tests, prepare for PR
-- `/task-tracker status` — dashboard
-- `/org-report` — org health dashboard (CTO/Tech Lead only)
-- See `.claude/docs/commands-template.md` for complete reference
+`/setup-workspace`, `/daily-sync`, `/feature-start`, `/workflow new "task"`, `/feature-done`, `/task-tracker status`, `/org-report` — See `.claude/docs/commands-template.md` for full reference
 

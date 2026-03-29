@@ -32,6 +32,29 @@ Root owns the pipeline; template owns the product.
 - **Drift Detection** — CLAUDE.md version checking
 - **QA Gates** — Mandatory before merge
 
+## Service Boundaries
+- **Scanner Service** — Stateless; reads source files, emits TECH_MANIFEST JSON. No writes to target project.
+- **Generator Service** — Consumes TECH_MANIFEST, writes all artifacts to output directory. No network calls.
+- **Validator Service** — Read-only verification of generated output. Returns pass/fail with diagnostics.
+- **Smithery Service** — Network-dependent; queries MCP registry, installs servers. Isolated from generation.
+- **Hook Runtime** — Event-driven; each hook runs in its own subprocess with scoped env vars. No shared state between hooks.
+
+## Tech Stack
+- **Runtime:** Node.js (scripts, hooks), Bash (setup, CI glue)
+- **Configuration:** JSON (settings.json, package.json), Markdown (CLAUDE.md, rules, agents, skills)
+- **Template Engine:** Placeholder substitution (`{placeholder}` replaced from TECH_MANIFEST values)
+- **CI/CD:** GitHub Actions (lint, validate, version check)
+- **Testing:** Shell-based verification scripts, JSON schema validation
+- **MCP Integration:** Smithery registry for tool servers
+
+## Data Flow
+1. **Input** — User runs `/scan-codebase` on a target project directory.
+2. **Scan** — 6 parallel agents fingerprint the codebase, each writing partial results.
+3. **Manifest** — Partial results merge into a single `TECH_MANIFEST` JSON object.
+4. **Generate** — Generator reads TECH_MANIFEST, resolves all placeholders, writes artifacts to `/template/`.
+5. **Validate** — Validator reads generated files, checks line counts, JSON validity, hook permissions.
+6. **Deploy** — Validated artifacts are copied into the target project's `.claude/` directory.
+
 ## Architectural Decisions
 All decisions recorded in `/docs/adr/`. Create new ADRs with:
 - Context: why the decision was needed

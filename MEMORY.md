@@ -1,10 +1,10 @@
 # Project Memory
 
 ## Last Completed
-2026-03-29 — fix all 21 gaps: tests, CI/CD, error handling, templates, docs (commit d763c01)
+2026-03-29 — enterprise framework v1.0.0: RBAC, hooks, agents, docs, verification (commit 997cd8b)
 
 ## Next Step
-Publish to npm registry
+Publish to npm registry — run `npm publish` from root after verifying package.json name/version and running `npm pack --dry-run` to check included files
 
 ## Blockers
 None

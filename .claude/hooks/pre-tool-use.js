@@ -67,6 +67,22 @@ process.stdin.on('end', () => {
       }
     }
 
+    // Prompt quality check — flag vague prompts on user-facing tools
+    if (tool_name === 'Bash' && tool_input && tool_input.command) {
+      const cmd = tool_input.command;
+      // Detect destructive actions
+      const destructivePatterns = [/\bgit\s+reset\s+--hard\b/, /\bgit\s+push\s+--force\b/, /\bdrop\s+table\b/i, /\bDELETE\s+FROM\b/i];
+      for (const dp of destructivePatterns) {
+        if (dp.test(cmd)) {
+          const duration = Date.now() - startTime;
+          logToAudit(root, `${now}|${role}|${branch}|DESTRUCTIVE_FLAG|${cmd.substring(0, 60)}|warn|${duration}ms`);
+          process.stderr.write(`\n⚡ DESTRUCTIVE ACTION DETECTED: ${cmd.substring(0, 80)}\n`);
+          process.stderr.write(`   Consider creating a git checkpoint first.\n\n`);
+          break;
+        }
+      }
+    }
+
     // Log validation pass
     const detail = getDetail(tool_name, tool_input);
     const duration = Date.now() - startTime;

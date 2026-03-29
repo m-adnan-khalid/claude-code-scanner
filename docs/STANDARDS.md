@@ -27,7 +27,7 @@ All team members MUST read this before writing any code. Match exactly. Do not d
 5. Type-only imports last
 - Blank line between each group
 
-## 3. Errors
+## 3. Error Handling
 - Use custom error classes extending base Error (e.g., `NotFoundError`, `ValidationError`)
 - Never swallow errors silently — log then rethrow or handle explicitly
 - API errors return consistent shape: `{ error: { code, message, details? } }`
@@ -40,7 +40,7 @@ All team members MUST read this before writing any code. Match exactly. Do not d
 - Include: timestamp, level, message, service, requestId
 - Never log PII, secrets, tokens, passwords
 
-## 5. Tests
+## 5. Testing
 - File naming: `[module].test.ts` or `test_[module].py`
 - Structure: Arrange / Act / Assert (AAA pattern)
 - One assertion concept per test (multiple asserts OK if testing same concept)

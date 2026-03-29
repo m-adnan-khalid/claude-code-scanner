@@ -14,7 +14,7 @@ const { execSync } = require('child_process');
 const ROLE_PATHS = {
   'CTO':          ['*'], // Full access — full audit, framework upgrades via PR
   'Architect':    ['docs/', '.claude/agents/', '.claude/rules/'], // Approve CLAUDE.md PRs, define agents, modify hooks via PR (CLAUDE.md changes go through PR process, not direct write)
-  'TechLead':     ['*'], // Full access
+  'TechLead':     ['.claude/agents/', '.claude/hooks/', '.claude/rules/', 'docs/adr/', 'docs/'], // Owns .claude/agents/, .claude/hooks/, docs/adr/ — cannot write feature code (src/), bypass QA gate, or deploy directly
   'BackendDev':   ['src/api/', 'src/services/', 'src/db/', 'src/models/', 'tests/api/', 'tests/services/', 'tests/db/', 'migrations/'], // Feature branches only — src + tests + migrations
   'FrontendDev':  ['src/ui/', 'src/components/', 'src/styles/', 'src/pages/'], // Feature branches only — src/ui/, src/components/, src/styles/, src/pages/
   'FullStackDev': ['src/', 'tests/', 'docs/adr/'], // src/ full access + tests/ + docs/adr/, feature branches only
