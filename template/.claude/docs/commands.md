@@ -4,19 +4,40 @@
 
 ---
 
+## Where Do I Start? (Entry Point Guide)
+
+| Your Situation | Command | What Happens |
+|----------------|---------|-------------|
+| **I have just an idea** | `/new-project "your idea"` | 8-phase pipeline: brainstorm → spec → features → domain → tech → architecture → scaffold → deploy plan |
+| **I have existing PRDs/specs** | `/import-docs "path/"` then `/new-project --resume` | Imports docs, skips covered phases, continues from first gap |
+| **I have an existing codebase** | `/scan-codebase` → `/generate-environment` → `/validate-setup` | Scans tech stack, generates full Claude Code environment |
+| **I want to build one feature** | `/workflow new "feature description"` | 13-phase SDLC with requirements → dev → test → review → deploy |
+| **I have a production bug** | `/hotfix "critical issue"` | Fast-track: fix → test → deploy in minutes, skip design/business phases |
+| **I have a small bug** | `/fix-bug "description"` | 5-step: reproduce → diagnose → fix → test → review (< 50 lines, < 3 files) |
+| **I'm joining this project** | `/onboard` | Generates guide: architecture, conventions, setup, active work, how to contribute |
+| **I came back after a break** | Just start a session | Session-start hook shows active tasks, progress, what to resume |
+| **I want full automation** | `/idea-to-launch "idea"` | Idea → pre-dev → build all features → deploy → monitor |
+| **Something looks stale** | `/sync --check` | Detects drift between environment and codebase, auto-fixes with `--fix` |
+
+---
+
 ## Quick Reference — Command Flow
 
 ```
 NEW PROJECT:  /brainstorm → /product-spec → /feature-map → /domain-model → /tech-stack → /architecture → /scaffold → /deploy-strategy
               Or shorthand: /new-project "idea"  |  Full auto: /idea-to-launch "idea"
 
+WITH DOCS:    /import-docs "path/" → /new-project --resume (skips covered phases)
+
 EXISTING:     /scan-codebase → /generate-environment → /validate-setup → /setup-smithery
 
-DEVELOPMENT:  /mvp-kickoff next → /workflow new "feature" (13 phases) → /mvp-kickoff next (repeat)
+DEVELOPMENT:  /mvp-kickoff next → /workflow new "feature" (14 phases: Phase 0-13) → /mvp-kickoff next (repeat)
 
 LAUNCH:       /mvp-status --launch-ready → /launch-mvp --check → /launch-mvp
 
 MAINTENANCE:  /sync --check → /sync --fix → /context-check → /dependency-check
+
+JOINING:      /onboard → /standup → /workflow status
 ```
 
 ---
