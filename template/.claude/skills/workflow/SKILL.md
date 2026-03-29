@@ -274,6 +274,18 @@ User confirms.
 
 **State: APPROVED (after user confirms criteria)**
 
+## Pre-Phase 5 Gate: Task Brief (MANDATORY)
+Before development starts, create a Task Brief from `.claude/templates/task-brief.md`:
+1. Create `.claude/tasks/BRIEF-{TASK-id}.md`
+2. Fill ALL sections: Instruction, Understanding, Execution Plan, Tools, Boundaries
+3. If any ambiguity found → surface to user, WAIT for clarification
+4. Only proceed to Phase 5 when brief is complete and status is IN_PROGRESS
+
+The `audit-logger` hook will auto-log every tool call to the brief's Audit Log.
+After task completion, append the Completion Report.
+
+**State: BRIEFED**
+
 ## Phase 5: Development
 @team-lead assigns by scope. **Sub-steps are conditional:**
 

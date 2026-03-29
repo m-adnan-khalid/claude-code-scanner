@@ -85,11 +85,20 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "",
+        "matcher": "Read|Bash|Agent",
         "hooks": [
           {
             "type": "command",
             "command": "node .claude/hooks/context-monitor.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/audit-logger.js"
           }
         ]
       },

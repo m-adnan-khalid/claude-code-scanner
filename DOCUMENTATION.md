@@ -1,6 +1,6 @@
 # Claude Code Scanner — Complete Documentation
 
-> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 23 role-based agents, 67 workflow skills, 17 automation hooks, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 23 role-based agents, 68 workflow skills, 18 automation hooks, and full lifecycle support from idea to deployment.
 
 ---
 
@@ -12,10 +12,10 @@
 4. [How It Works (4-Phase Setup)](#4-how-it-works)
 4b. [New Project Mode (Idea to Launch)](#4b-new-project-mode)
 5. [The Agent Team (23 Roles)](#5-the-agent-team)
-6. [Skills Reference (67 Skills)](#6-skills-reference)
+6. [Skills Reference (68 Skills)](#6-skills-reference)
 7. [The Workflow Engine (13 Phases)](#7-the-workflow-engine)
 8. [Loop Flows & Circuit Breakers](#8-loop-flows--circuit-breakers)
-9. [Hooks & Automation (15 Hooks)](#9-hooks--automation)
+9. [Hooks & Automation (18 Hooks)](#9-hooks--automation)
 10. [Task Tracking System](#10-task-tracking-system)
 11. [Execution Reports & Scoring](#11-execution-reports--scoring)
 12. [Context Budget Management](#12-context-budget-management)
@@ -34,8 +34,8 @@ Claude Code Scanner is a tool that scans your existing codebase **or helps you s
 
 **What you get:**
 - 23 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
-- 67 workflow skills for common workflows (including 9 pre-development, 6 real-environment testing, 8 audit/compliance, 2 observability, and 8 utility skills)
-- 17 automation hooks that run behind the scenes
+- 68 workflow skills for common workflows (including 9 pre-development, 6 real-environment testing, 8 audit/compliance, 2 observability, and 8 utility skills)
+- 18 automation hooks that run behind the scenes
 - **NEW:** 8-phase pre-development pipeline (idea → product spec → features → tech stack → architecture → scaffolding → environment → launch plan)
 - A 13-phase SDLC workflow from task intake to production deployment
 - Execution analytics with success scoring and hallucination detection
@@ -1321,7 +1321,7 @@ your-project/
 │   │   ├── TECH_STACK.md                  # Technology decisions
 │   │   ├── ARCHITECTURE.md                # System architecture
 │   │   └── DEPLOY_STRATEGY.md             # Deployment strategy
-│   ├── skills/                            # 67 workflow skills
+│   ├── skills/                            # 68 workflow skills
 │   │   ├── workflow/SKILL.md
 │   │   ├── scan-codebase/SKILL.md
 │   │   ├── generate-environment/SKILL.md
@@ -1353,7 +1353,7 @@ your-project/
 │   │   ├── cost-estimate/SKILL.md
 │   │   ├── release-notes/SKILL.md
 │   │   └── mobile-audit/SKILL.md
-│   ├── hooks/                             # 17 automation scripts
+│   ├── hooks/                             # 18 automation scripts
 │   ├── rules/                             # Path-scoped coding rules
 │   ├── docs/                              # 11 reference documents
 │   ├── profiles/                          # Role-based developer guides
@@ -1495,8 +1495,8 @@ If the operation is legitimate, temporarily remove the hook from `settings.json`
 | Component | Count |
 |-----------|-------|
 | Agents | 23 (4 SDLC + 7 core + 5 dev + 7 pre-dev/utility) |
-| Skills | 67 (all with proper frontmatter) |
-| Hooks | 17 (covering 10 events) |
+| Skills | 68 (all with proper frontmatter) |
+| Hooks | 18 (covering 10 events) |
 | Docs | 9 (full protocol coverage) |
 | Profiles | 3 (backend, frontend, devops) |
 | Workflow Phases | 13 |

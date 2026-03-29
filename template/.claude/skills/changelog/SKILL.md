@@ -2,6 +2,7 @@
 name: changelog
 description: Maintain changelog from git history or manual entries. Uses keep-a-changelog format.
 user-invocable: true
+context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 argument-hint: "[--from-git|--add 'entry'] [--version X.Y.Z]"
 ---

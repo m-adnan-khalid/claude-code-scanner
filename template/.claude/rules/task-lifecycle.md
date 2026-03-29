@@ -5,6 +5,11 @@ paths:
 ---
 # Task Lifecycle Rules — MANDATORY
 
+## Rule 0: Every task MUST have a completed Task Brief before work begins
+Create `.claude/tasks/BRIEF-{TASK-id}.md` from `.claude/templates/task-brief.md`.
+All sections filled, no placeholders. Audit Log updated in real time by `audit-logger` hook.
+Completion Report appended when done. See `.claude/docs/task-brief-example.md` for reference.
+
 ## Rule 1: Every task MUST have subtasks before development starts
 Before Phase 5, decompose the task into subtasks:
 ```markdown
@@ -15,7 +20,6 @@ Before Phase 5, decompose the task into subtasks:
 | 2 | Unit + integration tests | @tester | DONE | 6 | 2026-03-28T11:00Z |
 | 3 | Code review | @reviewer | IN_PROGRESS | 7 | — |
 | 4 | QA automation run | @qa-automation | PENDING | 9 | — |
-| 5 | Documentation update | @docs-writer | PENDING | 12 | — |
 ```
 
 ## Rule 2: Phase advancement requires ALL subtasks for that phase to be DONE
@@ -41,9 +45,6 @@ Updates the subtask table + writes to timeline + saves to task memory.
 | 11→12 | Deploy DONE, health check green |
 | 12→13 | Monitoring period passed, docs updated, task CLOSED |
 
-## Rule 5: Nothing gets lost — persistent state
-- Every subtask completion → written to task file + changes.log
-- Every phase transition → written to timeline + execution report
-- Session end → pre-compact hook saves full state
-- Session start → post-compact hook restores state
-- Use `/workflow status` to see full picture at any time
+## Rule 5: Persistent state — nothing gets lost
+- Subtask/phase completions → task file + changes.log + execution report
+- Session boundaries → pre-compact saves, post-compact restores

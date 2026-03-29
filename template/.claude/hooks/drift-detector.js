@@ -39,6 +39,11 @@ if (fs.existsSync(manifestPath)) {
       const lastSync = new Date(manifest.last_sync);
       daysSinceSync = Math.floor((Date.now() - lastSync.getTime()) / (1000 * 60 * 60 * 24));
 
+      // Skip full drift check if manifest is fresh (< 7 days)
+      if (daysSinceSync < 7) {
+        process.exit(0); // No checks needed — recent sync
+      }
+
       if (daysSinceSync > 14) {
         warnings.push(`DRIFT: Last sync was ${daysSinceSync} days ago. Run /sync --check`);
       }

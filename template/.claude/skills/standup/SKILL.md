@@ -2,6 +2,7 @@
 name: standup
 description: Daily standup report — what was done, what's planned, any blockers. Reads task files for accurate status.
 user-invocable: true
+context: fork
 allowed-tools: Read, Grep, Glob
 argument-hint: "[--yesterday] [--team]"
 ---

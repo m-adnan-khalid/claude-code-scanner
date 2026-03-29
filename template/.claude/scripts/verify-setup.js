@@ -137,7 +137,8 @@ const heavySkills = [
   'accessibility-audit', 'privacy-audit', 'performance-audit',
   'infrastructure-audit', 'license-audit', 'docs-audit',
   'cicd-audit', 'incident-readiness',
-  'setup-observability', 'logging-audit'
+  'setup-observability', 'logging-audit',
+  'create-story'
 ];
 for (const skillName of heavySkills) {
   const skillMd = path.join(skillsDir, skillName, 'SKILL.md');

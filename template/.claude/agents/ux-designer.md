@@ -4,8 +4,8 @@ description: >
   User experience design specialist. Creates user flows, wireframe descriptions, information
   architecture, and interaction patterns using text and Mermaid diagrams. Use for Pre-Phase 2
   enrichment and when designing UI-heavy features.
-tools: Read, Write, Edit, Grep, Glob
-disallowedTools: Bash, NotebookEdit
+tools: Read, Grep, Glob
+disallowedTools: Edit, Write, Bash, NotebookEdit
 model: sonnet
 permissionMode: plan
 maxTurns: 15

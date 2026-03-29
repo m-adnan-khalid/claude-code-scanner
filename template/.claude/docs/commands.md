@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 67 commands organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 68 commands organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 

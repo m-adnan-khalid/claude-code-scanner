@@ -1,6 +1,15 @@
 ---
 paths:
-  - "**/*"
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.py"
+  - "**/*.go"
+  - "**/*.java"
+  - "**/*.rb"
+  - "**/*.cs"
+  - "**/*.md"
 ---
 # Prompt Efficiency — Mandatory
 

@@ -4,7 +4,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 
 ## What You Generate
 - `CLAUDE.md` (root + nested per module) | `.claude/rules/` (path-specific rules)
-- `.claude/agents/` (23 agents) | `.claude/skills/` (67 skills) | `.claude/hooks/` (17 hooks)
+- `.claude/agents/` (23 agents) | `.claude/skills/` (68 skills) | `.claude/hooks/` (18 hooks)
 - `.claude/project/` (pre-dev docs) | `.claude/templates/` | `.claude/profiles/`
 - `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands-template.md`
 
@@ -27,13 +27,14 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 ## Agent Team
 23 agents auto-discovered from `.claude/agents/`. Key roles: `@team-lead` (orchestrator), `@architect` (design), `@tester` (tests), `@qa-lead` (QA), `@security` (security review). See `.claude/docs/commands-template.md` for full roster.
 
-## Skills (67 total, auto-discovered)
+## Skills (68 total, auto-discovered)
 **Testing:** `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
 **Audit:** `/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`
 **Observability:** `/setup-observability`, `/logging-audit`
 **Workflow:** `/workflow new "task"`, `/methodology`, `/parallel-dev`, `/task-tracker status`
 **Sync:** `/sync --check`, `/sync --fix`, `/sync --full-rescan`
 
-## Rules (7, auto-scoped by file paths)
-**Always active:** context-budget, prompt-efficiency, accuracy, request-validation
-**Domain-specific:** logging (code files), task-lifecycle (task files), domain-terms (project docs)
+## Rules (8, auto-scoped by file paths)
+**Code files:** accuracy, prompt-efficiency, request-validation, logging
+**Workflow:** context-budget, task-brief, task-lifecycle
+**Project docs:** domain-terms

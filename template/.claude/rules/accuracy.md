@@ -1,6 +1,17 @@
 ---
 paths:
-  - "**/*"
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.py"
+  - "**/*.go"
+  - "**/*.java"
+  - "**/*.rb"
+  - "**/*.cs"
+  - "**/*.swift"
+  - "**/*.kt"
+  - "**/*.dart"
 ---
 # Accuracy Enforcement — Mandatory
 

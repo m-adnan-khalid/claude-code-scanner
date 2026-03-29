@@ -1,6 +1,14 @@
 ---
 paths:
-  - "**/*"
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.py"
+  - "**/*.go"
+  - "**/*.java"
+  - "**/*.rb"
+  - "**/*.cs"
 ---
 # Request Validation — Think Before You Code
 

@@ -1,6 +1,8 @@
 ---
 paths:
-  - "**/*"
+  - "CLAUDE.md"
+  - ".claude/**/*.md"
+  - ".claude/**/*.json"
 ---
 # Context Budget Enforcement
 
