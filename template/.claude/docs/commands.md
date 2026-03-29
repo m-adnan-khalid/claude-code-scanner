@@ -43,6 +43,7 @@ These commands run in sequence to take an idea from concept to a ready-to-code p
 | `/product-spec` | `--update` | Revise existing spec |
 | `/feature-map` | `--update` | Revise existing backlog |
 | `/domain-model` | `--from-code` | Extract from existing codebase |
+| `/domain-model` | `--sync TASK-id` | Incremental: scan feature code, merge new entities/rules |
 | `/tech-stack` | `--update` | Change decisions |
 | `/architecture` | `--update` | Revise design |
 | `/scaffold` | `--dry-run` | Preview without creating files |

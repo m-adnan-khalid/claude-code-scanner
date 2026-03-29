@@ -14,7 +14,7 @@ allowed-tools:
   - Grep
   - Glob
   - Agent
-argument-hint: '[--from-spec | --from-code | --from-docs "path"] [--update]'
+argument-hint: '[--from-spec | --from-code | --from-docs "path"] [--update] [--sync TASK-id]'
 effort: high
 ---
 
@@ -33,7 +33,19 @@ and team members use consistent terminology.
 /domain-model --from-docs "path/to/docs/"      # Extract from existing business documents
 /domain-model --from-docs "requirements.pdf"   # Extract from a single document
 /domain-model --update                         # Revise existing DOMAIN_MODEL.md
+/domain-model --sync TASK-id                   # Incremental: scan feature code, merge new entities/rules
 ```
+
+### Incremental Domain Sync (`--sync`)
+Used by Phase 13 of the workflow to keep the domain model current:
+1. Read the task record to find files created/modified in this feature
+2. Scan those files for: new models/types, new validation rules, new entity relationships
+3. Compare against current DOMAIN_MODEL.md — identify what's NEW
+4. Append new entities/rules to DOMAIN_MODEL.md under `## Changelog` section
+5. Update `.claude/rules/domain-terms.md` with any new glossary terms
+6. Output: summary of domain changes for this feature
+
+This creates a **living domain model** that evolves with each feature, not a static document.
 
 ## Process
 
