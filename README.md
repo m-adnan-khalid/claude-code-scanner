@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 23 role-based agents, 68 skills, 18 hooks, rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 23 role-based agents, 74 skills, 18 hooks, rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 

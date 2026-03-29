@@ -4,7 +4,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 
 ## What You Generate
 - `CLAUDE.md` (root + nested per module) | `.claude/rules/` (path-specific rules)
-- `.claude/agents/` (23 agents) | `.claude/skills/` (68 skills) | `.claude/hooks/` (18 hooks)
+- `.claude/agents/` (23 agents) | `.claude/skills/` (74 skills) | `.claude/hooks/` (18 hooks)
 - `.claude/project/` (pre-dev docs) | `.claude/templates/` | `.claude/profiles/`
 - `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands-template.md`
 

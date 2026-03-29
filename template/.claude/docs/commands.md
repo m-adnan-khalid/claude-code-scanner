@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 68 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 74 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 
@@ -240,6 +240,33 @@ Run these to set up Claude Code on an existing codebase.
 | `/release-notes [version]` | Generate release documentation | Release notes |
 | `/api-docs` | Generate/update OpenAPI specs from code | API documentation |
 | `/onboard` | Onboard new developer (structure, conventions, how-to) | Onboarding guide |
+
+---
+
+## 12. Internationalization, Versioning & Feature Management
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/manage-i18n extract` | Extract translatable strings, update locale files | @frontend |
+| `/manage-i18n status` | Translation coverage per locale (% complete, missing keys) | @frontend |
+| `/manage-i18n add-locale fr` | Add new locale with all keys | @frontend |
+| `/manage-i18n validate` | Missing keys, placeholder mismatches, RTL check | @frontend |
+| `/api-version add v2` | Create new API version, copy routes, update prefix | @api-builder |
+| `/api-version deprecate v1/users` | Mark endpoint deprecated with sunset date + migration path | @api-builder |
+| `/api-version validate` | Check backward compatibility between versions | @api-builder |
+| `/feature-flags add FLAG` | Add feature flag with guarded code block | @api-builder |
+| `/feature-flags remove FLAG` | Remove flag, clean dead code, run tests | @api-builder |
+| `/feature-flags cleanup` | Find stale flags (>30 days at 100% or 0%) | @api-builder |
+
+---
+
+## 13. Scaffolding Utilities
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/add-command "name"` | Scaffold CLI command with args, help, validation, tests | @api-builder |
+| `/add-template "name" --type email` | Scaffold email/notification/PDF/SMS template | @frontend |
+| `/seo-audit` | SEO audit: meta tags, structured data, sitemap, Core Web Vitals | @qa-automation |
 
 ---
 
