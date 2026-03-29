@@ -315,6 +315,16 @@ After task completion, append the Completion Report.
 
 **State: BRIEFED**
 
+## Pre-Phase 5 Gate: Smoke Test Baseline
+Before development starts, run the existing test suite to establish a baseline:
+1. Run `npm test` / `pytest` / `go test` (auto-detected from project)
+2. The `test-results-parser` hook auto-saves results to `.claude/reports/test-runs/latest.json`
+3. Copy to baseline: `cp .claude/reports/test-runs/latest.json .claude/reports/test-runs/baseline.json`
+4. This baseline is used for regression detection throughout Phase 5-9
+5. Every subsequent test run is compared against this baseline by the hook
+
+**If baseline tests already fail:** Log count in task record, these are pre-existing failures (not regressions).
+
 ## Phase 5: Development
 @team-lead assigns by scope. **Sub-steps are conditional:**
 
@@ -351,6 +361,8 @@ After task completion, append the Completion Report.
 Track: `dev-test-loop: N/5`, `coverage-baseline`, `coverage-current`, `fix-agent`, `last-failure`
 
 **Real testing skills available:** `/coverage-track` (parse coverage + enforce thresholds)
+
+**Automatic regression detection:** The `test-results-parser` hook compares every test run against the baseline saved in Pre-Phase 5. If regressions are detected (new failures, coverage drop, tests removed), a `=== REGRESSION DETECTED ===` warning is shown. **Do NOT advance to Phase 7 while regressions exist.** Fix them first.
 
 **State: DEV_TESTING**
 
@@ -440,6 +452,8 @@ Track: `qa-bug-loop` per bug, `total-bugs`, `regression-check-after-each-fix: tr
 - `/load-test` — verify performance under concurrent load
 - `/coverage-track` — verify coverage thresholds met
 
+**Regression enforcement:** After every bug fix, @tester runs full regression suite. The `test-results-parser` hook auto-compares against baseline. Any regression = new P1 bug filed immediately. Phase 9 cannot advance to Phase 10 with regressions.
+
 **State: QA_TESTING**
 
 ## Phase 10: Sign-offs (max 2 full rejection cycles)
@@ -493,7 +507,11 @@ Track: `deploy-loop: N/2`, `merge-sha`, `last-deploy-failure`, `rollback-execute
 **State: DEPLOYING**
 
 ## Phase 12: Post-Deploy
-Monitor 30min (hotfix: 15min). Close issues. Notify stakeholders.
+Monitor 30min (hotfix: 15min). Run smoke tests against production:
+1. @infra runs health check endpoints
+2. @tester runs smoke test suite (subset of E2E tests targeting critical paths)
+3. If smoke tests fail → immediate `/rollback deploy TASK-{id}` → new hotfix
+4. Close issues. Notify stakeholders.
 Production bugs: P0/P1 -> new hotfix workflow, P2/P3 -> new task.
 
 **State: MONITORING -> CLOSED**
