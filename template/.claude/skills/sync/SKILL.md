@@ -6,6 +6,8 @@ context: fork
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, Agent
 argument-hint: "[--check|--fix|--full-rescan] [--component agents|skills|rules|hooks|claude-md|all]"
 effort: high
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@team-lead, @explorer, @gatekeeper]
 ---
 
 # Sync: $ARGUMENTS

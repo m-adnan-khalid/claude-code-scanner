@@ -109,6 +109,20 @@ for (const file of files) {
 
     console.log('');
     console.log(`Full state: .claude/tasks/${file}`);
+    // Clear stale caches
+    const cacheFiles = [
+      path.join('.claude', 'reports', 'context-state.json'),
+      path.join('.claude', 'reports', 'tool-failures.json')
+    ];
+    for (const cacheFile of cacheFiles) {
+      try {
+        if (fs.existsSync(cacheFile)) {
+          fs.unlinkSync(cacheFile);
+          process.stderr.write(`  Cleared stale cache: ${cacheFile}\n`);
+        }
+      } catch (e) { /* ignore */ }
+    }
+
     console.log('=== END RECOVERY ===');
     break; // Only show the first active task
   } catch (e) {

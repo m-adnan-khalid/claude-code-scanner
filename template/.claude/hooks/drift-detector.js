@@ -29,7 +29,9 @@ process.stdin.on('error', () => {});
 setTimeout(() => process.exit(0), 5000).unref();
 
 const claudeDir = path.join(_projectRoot, '.claude');
-const manifestPath = path.join(claudeDir, 'manifest.json');
+const manifestPathLegacy = path.join(claudeDir, 'manifest.json');
+const manifestPathNew = path.join(claudeDir, 'TECH_MANIFEST.json');
+const manifestPath = fs.existsSync(manifestPathNew) ? manifestPathNew : manifestPathLegacy;
 
 // Only run if .claude/ exists (environment is set up)
 if (!fs.existsSync(claudeDir)) process.exit(0);
@@ -49,23 +51,19 @@ if (fs.existsSync(manifestPath)) {
       const lastSync = new Date(manifest.last_sync);
       daysSinceSync = Math.floor((Date.now() - lastSync.getTime()) / (1000 * 60 * 60 * 24));
 
-      // Skip full drift check if manifest is fresh (< 7 days)
-      if (daysSinceSync < 7) {
-        process.exit(0); // No checks needed — recent sync
-      }
-
+      // Recent sync — skip only the staleness warning, still run inventory checks below
       if (daysSinceSync > 14) {
         warnings.push(`DRIFT: Last sync was ${daysSinceSync} days ago. Run /sync --check`);
       }
     }
   } catch (e) {
-    warnings.push('DRIFT: manifest.json is corrupted. Run /sync --fix');
+    warnings.push('DRIFT: manifest/TECH_MANIFEST.json is corrupted. Run /sync --fix');
   }
 } else {
   // No manifest = never synced — only warn if environment looks established
   const agentsDir = path.join(claudeDir, 'agents');
   if (fs.existsSync(agentsDir) && fs.readdirSync(agentsDir).filter(f => f.endsWith('.md')).length > 0) {
-    warnings.push('DRIFT: No manifest.json found. Run /sync --check to create baseline');
+    warnings.push('DRIFT: No manifest.json/TECH_MANIFEST.json found. Run /sync --check to create baseline');
   }
 }
 
@@ -197,6 +195,55 @@ if (fs.existsSync(skillsDir)) {
       warnings.push(`DRIFT: Skill directory ${skill}/ exists but has no SKILL.md`);
     }
   }
+}
+
+// --- 7. Numeric inventory count validation ---
+try {
+  if (fs.existsSync(claudeMdPath)) {
+    const claudeMdContent = fs.readFileSync(claudeMdPath, 'utf-8');
+
+    // Check agent count
+    const agentCountMatch = claudeMdContent.match(/(\d+)\s*agents/i);
+    if (agentCountMatch) {
+      const statedAgents = parseInt(agentCountMatch[1]);
+      const agentsDirPath = path.join(claudeDir, 'agents');
+      if (fs.existsSync(agentsDirPath)) {
+        const actualAgents = fs.readdirSync(agentsDirPath).filter(f => f.endsWith('.md')).length;
+        if (statedAgents !== actualAgents) {
+          warnings.push(`DRIFT: CLAUDE.md states ${statedAgents} agents but found ${actualAgents} agent files`);
+        }
+      }
+    }
+
+    // Check skill count
+    const skillCountMatch = claudeMdContent.match(/(\d+)\s*skills/i);
+    if (skillCountMatch) {
+      const statedSkills = parseInt(skillCountMatch[1]);
+      const skillsDirPath = path.join(claudeDir, 'skills');
+      if (fs.existsSync(skillsDirPath)) {
+        const actualSkills = fs.readdirSync(skillsDirPath, { withFileTypes: true })
+          .filter(e => e.isDirectory()).length;
+        if (statedSkills !== actualSkills) {
+          warnings.push(`DRIFT: CLAUDE.md states ${statedSkills} skills but found ${actualSkills} skill directories`);
+        }
+      }
+    }
+
+    // Check hook count
+    const hookCountMatch = claudeMdContent.match(/(\d+)\s*hooks/i);
+    if (hookCountMatch) {
+      const statedHooks = parseInt(hookCountMatch[1]);
+      const hooksDirPath = path.join(claudeDir, 'hooks');
+      if (fs.existsSync(hooksDirPath)) {
+        const actualHooks = fs.readdirSync(hooksDirPath).filter(f => f.endsWith('.js')).length;
+        if (statedHooks !== actualHooks) {
+          warnings.push(`DRIFT: CLAUDE.md states ${statedHooks} hooks but found ${actualHooks} hook files`);
+        }
+      }
+    }
+  }
+} catch (e) {
+  // Non-fatal — skip inventory validation
 }
 
 // --- Output warnings ---

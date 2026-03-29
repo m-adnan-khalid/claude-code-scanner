@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob, Agent
 argument-hint: "[--full|--deps|--secrets|--owasp|--auth]"
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@security, @code-quality, @gatekeeper]
 ---
 
 # Security Audit: $ARGUMENTS

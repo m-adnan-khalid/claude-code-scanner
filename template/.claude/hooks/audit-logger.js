@@ -3,18 +3,20 @@
 /**
  * audit-logger.js — PostToolUse hook
  * Auto-logs every tool call to the active Task Brief's Audit Log section.
- * Format: [TIMESTAMP] [ACTION] [TOOL] [DETAIL] → [RESULT]
+ * Format: ISO-timestamp|ROLE|branch|ACTION|DETAIL|STATUS|duration_ms
  *
- * Also logs to .claude/reports/audit/session-audit.log for session-wide tracking.
+ * Logs are branch-scoped: .claude/reports/audit/audit-{branch}.log
  */
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 let input = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', (chunk) => { input += chunk; });
 process.stdin.on('end', () => {
+  const startMs = Date.now();
   try {
     const data = JSON.parse(input);
     const { tool_name, tool_input, tool_output } = data;
@@ -28,19 +30,39 @@ process.stdin.on('end', () => {
     }
 
     const now = new Date();
-    const timestamp = now.toISOString().replace('T', ' ').substring(0, 16);
+    const timestamp = now.toISOString();
 
-    // Build log line
+    // Read CURRENT_ROLE from session.env
+    let role = 'UNKNOWN';
+    try {
+      const envPath = path.join(root, '.claude', 'session.env');
+      if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf-8');
+        const match = envContent.match(/CURRENT_ROLE=(\S+)/);
+        if (match) role = match[1];
+      }
+    } catch (_) {}
+
+    // Read current git branch
+    let branch = 'detached';
+    try {
+      branch = execSync('git branch --show-current', { cwd: root, timeout: 3000 })
+        .toString().trim() || 'detached';
+    } catch (_) {}
+
+    // Build log line — pipe-delimited for structured parsing
     const action = getAction(tool_name);
     const detail = getDetail(tool_name, tool_input);
-    const result = getResult(tool_name, tool_output);
-    const logLine = `${timestamp} ${action.padEnd(14)} ${tool_name.padEnd(10)} ${detail} → ${result}`;
+    const status = getStatus(tool_name, tool_output);
+    const durationMs = Date.now() - startMs;
+    const logLine = `${timestamp}|${role}|${branch}|${action}|${detail}|${status}|${durationMs}ms`;
 
-    // 1. Append to session audit log
+    // 1. Append to branch-scoped audit log
     const auditDir = path.join(root, '.claude', 'reports', 'audit');
     fs.mkdirSync(auditDir, { recursive: true });
-    const sessionLog = path.join(auditDir, 'session-audit.log');
-    fs.appendFileSync(sessionLog, logLine + '\n');
+    const safeBranch = branch.replace(/[/\\:*?"<>|]/g, '-');
+    const branchLog = path.join(auditDir, `audit-${safeBranch}.log`);
+    fs.appendFileSync(branchLog, logLine + '\n');
 
     // 2. Find active Task Brief and append to its Audit Log
     const tasksDir = path.join(root, '.claude', 'tasks');
@@ -64,8 +86,7 @@ process.stdin.on('end', () => {
               fs.writeFileSync(lockPath, String(process.pid), { flag: 'wx' }); // exclusive create
             } catch (_) {
               // Lock exists — another hook is writing. Append to separate audit log instead.
-              const auditFallback = path.join(reportsDir, 'audit', 'session-audit.log');
-              fs.appendFileSync(auditFallback, logLine + '\n');
+              fs.appendFileSync(branchLog, logLine + '\n');
               break;
             }
             try {
@@ -124,7 +145,7 @@ function getDetail(toolName, input) {
   } catch (e) { return '—'; }
 }
 
-function getResult(toolName, output) {
+function getStatus(toolName, output) {
   if (!output) return 'ok';
   const str = typeof output === 'string' ? output : JSON.stringify(output);
   if (str.length < 50) return truncate(str, 50);

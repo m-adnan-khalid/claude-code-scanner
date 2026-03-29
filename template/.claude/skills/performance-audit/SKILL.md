@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--tool lighthouse|bundlesize|all] [--url "http://..."] [--budget "path"] [--pages "url1,url2"] [--threshold 90]'
+roles: [FrontendDev, FullStackDev, TechLead, QA]
+agents: [@frontend, @qa-automation, @code-quality]
 ---
 
 # Performance Audit: $ARGUMENTS

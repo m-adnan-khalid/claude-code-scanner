@@ -37,7 +37,8 @@
       "Bash(head -15 /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/agents/*.md)",
       "Bash(/tmp/gap_analysis.txt:*)",
       "Read(//tmp/**)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find /Users/muhammad.adnan/ai_projects/claude-code-scanner -name *.md -o -name *.json)"
     ]
   },
   "hooks": {

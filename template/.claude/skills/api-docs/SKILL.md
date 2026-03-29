@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[--generate|--update|--validate] [--format openapi|markdown]"
+roles: [BackendDev, FullStackDev, TechLead, Architect]
+agents: [@docs-writer, @api-builder]
 ---
 
 # API Docs: $ARGUMENTS

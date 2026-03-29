@@ -17,6 +17,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--full | --feature "name" | --phase N | --quick | --existing]'
 effort: high
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@product-owner, @architect, @explorer]
 ---
 
 # /clarify — Requirements Q&A & Gap Analysis

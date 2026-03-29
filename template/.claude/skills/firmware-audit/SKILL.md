@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Bash, Grep, Glob, Agent
 argument-hint: "[--memory | --rtos | --security | --power | --protocols | --full]"
 effort: high
+roles: [TechLead, Architect, CTO, DevOps]
+agents: [@security, @code-quality, @architect]
 ---
 
 # /firmware-audit $ARGUMENTS

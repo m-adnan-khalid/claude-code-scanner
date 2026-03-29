@@ -17,6 +17,8 @@ allowed-tools:
   - Agent
 argument-hint: '[next | "feature name" | --all | --status]'
 effort: high
+roles: [TechLead, PM, CTO, FullStackDev, BackendDev, FrontendDev]
+agents: [@team-lead, @product-owner, @process-coach]
 ---
 
 # /mvp-kickoff — Feature-to-Workflow Bridge

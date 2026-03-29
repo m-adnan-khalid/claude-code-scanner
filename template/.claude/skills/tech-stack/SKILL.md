@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-spec | "requirements summary"]'
 effort: high
+roles: [TechLead, Architect, CTO, PM]
+agents: [@architect, @team-lead, @strategist]
 ---
 
 # /tech-stack — Technology Stack Recommendation

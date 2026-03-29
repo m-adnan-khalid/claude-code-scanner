@@ -13,6 +13,8 @@ allowed-tools:
   - Glob
 argument-hint: '[--full | --deps | --quality | --launch-ready]'
 effort: medium
+roles: [CTO, TechLead, PM, QA]
+agents: [@team-lead, @product-owner, @qa-lead]
 ---
 
 # /mvp-status — MVP Progress Dashboard

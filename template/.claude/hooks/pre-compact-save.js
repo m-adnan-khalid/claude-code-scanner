@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Resolve project root (walk up to find .claude/hooks/)
 let _projectRoot = process.cwd();
@@ -58,6 +59,8 @@ for (const file of files) {
       task_id: id.trim(),
       title: title.trim(),
       status: status.trim(),
+      branch: (() => { try { return execSync('git branch --show-current', { cwd: _projectRoot, encoding: 'utf8', timeout: 2000 }).trim(); } catch (_) { return 'unknown'; } })(),
+      uncommitted_changes: (() => { try { return execSync('git diff --stat', { cwd: _projectRoot, encoding: 'utf8', timeout: 3000 }).trim(); } catch (_) { return ''; } })(),
       reason: 'Context approaching 95% — auto-compaction imminent',
       preserved: {
         loop_state: extractSection(content, 'Loop State'),

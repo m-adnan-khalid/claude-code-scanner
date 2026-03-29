@@ -147,6 +147,16 @@ try {
   if (toolFailures || agentTimeouts || sessionFailures) {
     console.log(`  Issues: ${toolFailures} tool failures, ${agentTimeouts} agent timeouts, ${sessionFailures} session failures`);
   }
+  // Token and context metrics
+  try {
+    const ctxPath = path.join('.claude', 'reports', 'context-state.json');
+    if (fs.existsSync(ctxPath)) {
+      const ctxData = JSON.parse(fs.readFileSync(ctxPath, 'utf8'));
+      process.stderr.write(`  Tokens used: ${ctxData.total_tokens || 'N/A'}\n`);
+      process.stderr.write(`  Context usage: ${ctxData.estimated_pct || 'N/A'}%\n`);
+    }
+  } catch (e) { /* ignore */ }
+
   console.log(`  Resume: /workflow resume ${taskId}`);
 
 } catch (err) {

@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: "[--compact] [--force]"
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@team-lead]
 ---
 
 # Context Check: $ARGUMENTS

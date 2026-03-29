@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Grep, Glob, Agent
 argument-hint: "[--select|--show|--adapt|--status] [model-name]"
+roles: [CTO, TechLead, PM, Architect]
+agents: [@process-coach, @team-lead]
 ---
 
 # Methodology Configuration: $ARGUMENTS

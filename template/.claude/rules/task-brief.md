@@ -6,7 +6,7 @@ paths:
 # Task Brief — Mandatory Pre-Work Gate
 
 ## The Rule
-**No work begins without a completed Task Brief.**
+**No work begins without a completed Task Brief** — except for changes touching fewer than 3 files, which may proceed after request validation per the request-validation rule.
 Before touching any file, running any tool, or writing any code — create `.claude/tasks/BRIEF-{slug}.md` from the template at `.claude/templates/task-brief.md`.
 
 ## 3-Phase Workflow

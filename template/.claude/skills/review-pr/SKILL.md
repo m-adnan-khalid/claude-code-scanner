@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob, Agent
 argument-hint: "[PR-number|branch-name]"
+roles: [TechLead, Architect, BackendDev, FrontendDev, FullStackDev]
+agents: [@reviewer, @security, @code-quality]
 ---
 
 # Review PR: $ARGUMENTS

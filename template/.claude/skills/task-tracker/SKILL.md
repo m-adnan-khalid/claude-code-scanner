@@ -5,6 +5,8 @@ user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 context: fork
 argument-hint: "create|status|update|report|dashboard|history|blockers|metrics [args]"
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@team-lead, @process-coach]
 ---
 
 # Task Tracker: $ARGUMENTS

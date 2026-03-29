@@ -31,6 +31,17 @@ function processInput(raw) {
 
     const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 
+    // Read CURRENT_ROLE from session.env
+    let role = 'unknown';
+    try {
+      const sessionEnvPath = path.join(_projectRoot, '.claude', 'session.env');
+      if (fs.existsSync(sessionEnvPath)) {
+        const envContent = fs.readFileSync(sessionEnvPath, 'utf-8');
+        const roleMatch = envContent.match(/^CURRENT_ROLE=(.+)$/m);
+        if (roleMatch) role = roleMatch[1].trim();
+      }
+    } catch (_) { /* ignore */ }
+
     // Get git hash of file before change (for undo capability)
     let gitHash = 'new-file';
     try {
@@ -58,7 +69,7 @@ function processInput(raw) {
           }
         }
         // Include git hash for undo: `git show {hash}` recovers the pre-edit version
-        fs.appendFileSync(logPath, `| ${timestamp} | file_changed | ${file} | pre:${gitHash} |\n`);
+        fs.appendFileSync(logPath, `| ${timestamp} | ${role} | file_changed | ${file} | pre:${gitHash} |\n`);
         break;
       }
     }

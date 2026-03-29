@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--platform github|gitlab|jenkins|circleci|all] [--scope full|secrets|gates|supply-chain] [--fix]'
+roles: [DevOps, TechLead, CTO, Architect]
+agents: [@infra, @security, @gatekeeper]
 ---
 
 # CI/CD Pipeline Audit: $ARGUMENTS

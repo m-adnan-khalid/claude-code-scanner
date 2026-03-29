@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--framework playwright|cypress] [--headed] [--spec "pattern"] [--browser chromium|firefox|webkit|all] [--base-url "http://..."] [--update-snapshots]'
+roles: [QA, TechLead, FrontendDev, FullStackDev]
+agents: [@qa-automation, @tester, @qa-lead, @frontend]
 ---
 
 # Browser E2E Testing: $ARGUMENTS

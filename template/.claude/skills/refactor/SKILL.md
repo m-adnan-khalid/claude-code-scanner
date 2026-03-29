@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"refactor description" [--scope path/to/module] [--type extract|rename|move|split]'
+roles: [BackendDev, FrontendDev, FullStackDev, TechLead]
+agents: [@code-quality, @reviewer, @tester]
 ---
 
 # Refactor: $ARGUMENTS

@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-canvas | "product description"]'
 effort: high
+roles: [PM, CTO, TechLead]
+agents: [@product-owner, @strategist, @ux-designer]
 ---
 
 # /product-spec — Product Specification Generator

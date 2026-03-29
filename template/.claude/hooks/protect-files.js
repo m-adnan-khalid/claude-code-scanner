@@ -15,16 +15,16 @@ function check(raw) {
     for (const p of PROTECTED_DIRS) {
       if (normalized.includes(p)) {
         process.stderr.write(`BLOCKED: ${file} is protected.\n`);
-        return 2;
+        return 1;
       }
     }
 
     const basename = path.basename(normalized);
-    const PROTECTED_EXACT = ['.env', '.env.local', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
+    const PROTECTED_EXACT = ['.env', '.env.local', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'Gemfile.lock', 'Cargo.lock', 'poetry.lock', 'go.sum'];
     for (const p of PROTECTED_EXACT) {
       if (basename === p) {
         process.stderr.write(`BLOCKED: ${file} is protected.\n`);
-        return 2;
+        return 1;
       }
     }
   } catch {

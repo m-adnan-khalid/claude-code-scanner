@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Grep, Glob, Agent, Bash, Write
 argument-hint: "[--role backend|frontend|mobile|fullstack] [--quick]"
 effort: high
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@explorer, @team-lead, @docs-writer]
 ---
 
 # Onboard: $ARGUMENTS

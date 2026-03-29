@@ -17,6 +17,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-architecture | --template web|api|cli]'
 effort: high
+roles: [TechLead, Architect, FullStackDev]
+agents: [@scaffolder, @architect, @team-lead]
 ---
 
 # /scaffold — Project Scaffolding Generator

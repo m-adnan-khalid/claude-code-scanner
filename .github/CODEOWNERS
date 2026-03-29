@@ -1,0 +1,10 @@
+# Protect critical framework files — require CTO + Tech Lead approval
+CLAUDE.md @cto @tech-lead
+.claude/settings.json @cto @tech-lead
+.claude/agents/ @tech-lead @architect
+.claude/hooks/ @tech-lead
+.claude/rules/ @tech-lead @architect
+template/.claude/agents/ @tech-lead @architect
+template/.claude/hooks/ @tech-lead
+template/.claude/rules/ @tech-lead
+template/.claude/settings.json @tech-lead

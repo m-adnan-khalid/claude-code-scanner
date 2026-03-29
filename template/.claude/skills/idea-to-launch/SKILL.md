@@ -16,6 +16,8 @@ allowed-tools:
   - Agent
 argument-hint: '"your idea" [--fast]'
 effort: high
+roles: [CTO, TechLead, PM]
+agents: [@team-lead, @product-owner, @strategist, @architect, @scaffolder, @infra]
 ---
 
 # /idea-to-launch — Complete Lifecycle Orchestrator

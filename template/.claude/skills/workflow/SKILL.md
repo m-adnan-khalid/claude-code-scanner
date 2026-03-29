@@ -7,6 +7,8 @@ context: fork
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, Agent
 argument-hint: "new|status|plan|dev|review|qa|deploy|resume [description|TASK-id] [--hotfix] [--spike]"
 effort: high
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@team-lead, @process-coach, @gatekeeper]
 ---
 
 # Workflow: $ARGUMENTS

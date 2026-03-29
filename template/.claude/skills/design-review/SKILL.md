@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Grep, Glob, Agent
 argument-hint: '"design description" [--scope backend|frontend|mobile|infra]'
+roles: [Architect, TechLead, CTO, Designer]
+agents: [@architect, @code-quality, @ux-designer, @reviewer]
 ---
 
 # Design Review: $ARGUMENTS

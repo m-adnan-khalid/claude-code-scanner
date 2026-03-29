@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"page name" [--route /path] [--auth required|public]'
+roles: [FrontendDev, FullStackDev, TechLead]
+agents: [@frontend, @tester, @scaffolder]
 ---
 
 # Add Page: $ARGUMENTS

@@ -35,12 +35,14 @@ Review: `/review-pr`, `/impact-analysis`, `/design-review`, `/qa-plan`
 Testing: `/e2e-browser [--framework playwright|cypress] [--browser all]`, `/e2e-mobile [--platform ios|android|flutter]`, `/api-test [--tool newman|hurl]`, `/load-test [--tool k6|jmeter|locust] [--vus 50]`, `/visual-regression [--tool playwright|backstop]`, `/coverage-track [--threshold 80]`
 Audit & Compliance: `/accessibility-audit [--level AA|AAA]`, `/privacy-audit [--regulation gdpr|ccpa]`, `/performance-audit [--threshold 90]`, `/infrastructure-audit [--framework soc2|iso27001]`, `/license-audit [--policy permissive]`, `/docs-audit [--scope full]`, `/cicd-audit [--platform github]`, `/incident-readiness [--scope full]`
 Observability: `/setup-observability [--stack elt|datadog|grafana] [--scope full|logging|tracing|metrics]`, `/logging-audit [--scope full|pii|levels|correlation]`
+
 Task Brief: Create `.claude/tasks/BRIEF-{slug}.md` from template before ANY work. Audit log auto-updated by hook. Completion report appended when done.
 Stories: `/create-story "description" [--type feature|bug|defect] [--scope frontend|backend|fullstack] [--priority P0-P3]` — auto-generates user story with BDD ACs + 15 role-based subtasks for all participating agents
 Reports: `/progress-report dev|qa|business|management|executive`, `/metrics velocity|quality|cycle-time|agents|all`, `/standup`, `/execution-report [task-id|last|all] [--phase N]`
 Sync: `/sync --check`, `/sync --fix`, `/sync --fix --component agents|skills|rules|hooks|claude-md`, `/sync --full-rescan`
 Deploy: `/signoff qa|business|tech`, `/deploy staging|production`, `/rollback deploy|code|phase [task-id]`
 Context: `/context-check`
+Prompt: `/prompt-intelligence "rough prompt"` — classify, score, improve, align, then execute with approval
 Smithery: `/discover-skills`
 
 ## 4. Agent Team (@-mentions)

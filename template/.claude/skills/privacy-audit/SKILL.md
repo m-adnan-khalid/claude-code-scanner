@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--regulation gdpr|ccpa|both] [--scope full|pii-scan|consent|retention|rights] [--fix]'
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@security, @code-quality]
 ---
 
 # Privacy & Compliance Audit: $ARGUMENTS

@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--stack elt|datadog|grafana|aws] [--scope full|logging|tracing|metrics|errors|health] [--library pino|winston|structlog|zap]'
+roles: [DevOps, TechLead, BackendDev, FullStackDev]
+agents: [@infra, @api-builder, @code-quality]
 ---
 
 # Observability Setup: $ARGUMENTS

@@ -16,6 +16,8 @@ allowed-tools:
   - Agent
 argument-hint: '"path/to/docs" [--type prd|requirements|business-plan|spec|auto]'
 effort: high
+roles: [PM, CTO, TechLead, Architect]
+agents: [@product-owner, @strategist, @docs-writer]
 ---
 
 # /import-docs — Document Scanner & Context Builder

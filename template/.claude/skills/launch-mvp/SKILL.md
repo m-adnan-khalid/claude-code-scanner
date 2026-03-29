@@ -17,6 +17,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--check | --force | --post-mvp]'
 effort: high
+roles: [CTO, TechLead, PM, DevOps]
+agents: [@team-lead, @qa-lead, @infra, @gatekeeper]
 ---
 
 # /launch-mvp — MVP Launch Orchestrator

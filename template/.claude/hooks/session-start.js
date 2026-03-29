@@ -65,6 +65,27 @@ try {
   logHookFailure('session-start:health-check', e.message);
 }
 
+// --- 1b. Read MEMORY.md and TODO.md for context injection ---
+try {
+  const memoryPath = path.join(_projectRoot, 'MEMORY.md');
+  if (fs.existsSync(memoryPath)) {
+    const memory = fs.readFileSync(memoryPath, 'utf8').trim();
+    if (memory) {
+      process.stderr.write(`\n📋 MEMORY.md:\n${memory.slice(0, 500)}\n`);
+    }
+  }
+
+  const todoPath = path.join(_projectRoot, 'TODO.md');
+  if (fs.existsSync(todoPath)) {
+    const todo = fs.readFileSync(todoPath, 'utf8').trim();
+    if (todo) {
+      process.stderr.write(`\n📝 TODO.md:\n${todo.slice(0, 500)}\n`);
+    }
+  }
+} catch (e) {
+  logHookFailure('session-start:context-inject', e.message);
+}
+
 // --- 2. Check new project pre-dev status ---
 try {
   const projectMd = path.join(_projectRoot, '.claude', 'project', 'PROJECT.md');

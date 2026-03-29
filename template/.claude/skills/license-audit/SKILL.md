@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 argument-hint: '[--policy permissive|copyleft-ok|custom] [--format json|csv|md] [--fail-on gpl|agpl|unknown]'
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@security, @code-quality]
 ---
 
 # License Compliance Audit: $ARGUMENTS

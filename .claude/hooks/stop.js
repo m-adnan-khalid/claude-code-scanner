@@ -31,33 +31,68 @@ try {
     if (match) nextStep = match[1];
   }
 
-  // Update MEMORY.md
+  // Update MEMORY.md — create with headers if missing
+  let content = '';
   if (fs.existsSync(memoryPath)) {
-    let content = fs.readFileSync(memoryPath, 'utf8');
-
-    // Update Last Completed
-    content = content.replace(
-      /## Last Completed\n.+/,
-      `## Last Completed\n${now} — ${lastCommit}`
-    );
-
-    // Update Next Step
-    content = content.replace(
-      /## Next Step\n.+/,
-      `## Next Step\n${nextStep}`
-    );
-
-    fs.writeFileSync(memoryPath, content);
+    content = fs.readFileSync(memoryPath, 'utf8');
   }
 
-  // Log to audit
-  const auditPath = path.join(root, 'AUDIT_LOG.md');
-  if (fs.existsSync(auditPath)) {
-    fs.appendFileSync(auditPath, `${now} | System | SESSION_STOP | Last: ${lastCommit} | Next: ${nextStep}\n`);
+  // Ensure headers exist before replacing
+  if (!content.includes('## Last Completed')) {
+    content += '\n\n## Last Completed\n(none)\n';
   }
+  if (!content.includes('## Next Step')) {
+    content += '\n\n## Next Step\n(none)\n';
+  }
+
+  // Update Last Completed
+  content = content.replace(
+    /## Last Completed\n.+/,
+    `## Last Completed\n${now} — ${lastCommit}`
+  );
+
+  // Update Next Step
+  content = content.replace(
+    /## Next Step\n.+/,
+    `## Next Step\n${nextStep}`
+  );
+
+  fs.writeFileSync(memoryPath, content);
+
+  // Log to branch-scoped audit log
+  const role = getRole(root);
+  const branch = getBranch(root);
+  const auditDir = path.join(root, '.claude', 'reports', 'audit');
+  fs.mkdirSync(auditDir, { recursive: true });
+  const safeBranch = branch.replace(/[/\\:*?"<>|]/g, '-');
+  const isoNow = new Date().toISOString();
+  fs.appendFileSync(
+    path.join(auditDir, `audit-${safeBranch}.log`),
+    `${isoNow}|${role}|${branch}|SESSION_STOP|Last: ${lastCommit}|ok|0ms\n`
+  );
 
 } catch (e) {
   // Never block session close
+}
+
+function getRole(root) {
+  try {
+    const envPath = path.join(root, '.claude', 'session.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      const match = content.match(/^CURRENT_ROLE=(.+)$/m);
+      if (match) return match[1].trim();
+    }
+  } catch (_) {}
+  return 'Unknown';
+}
+
+function getBranch(root) {
+  try {
+    return execSync('git branch --show-current', { cwd: root, encoding: 'utf8' }).trim();
+  } catch (_) {
+    return 'unknown';
+  }
 }
 
 function findProjectRoot() {

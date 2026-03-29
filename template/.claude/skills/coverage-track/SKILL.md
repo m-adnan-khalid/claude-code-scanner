@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 argument-hint: '[--threshold 80] [--compare "baseline|last"] [--format lcov|cobertura|clover|json] [--fail-under 70]'
+roles: [QA, TechLead]
+agents: [@tester, @qa-lead, @qa-automation]
 ---
 
 # Coverage Tracking: $ARGUMENTS

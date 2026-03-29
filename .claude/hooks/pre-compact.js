@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 try {
   const root = findProjectRoot();
@@ -24,7 +25,11 @@ try {
   // Read current state for archive
   const memoryContent = safeRead(path.join(root, 'MEMORY.md'));
   const todoContent = safeRead(path.join(root, 'TODO.md'));
-  const auditContent = safeRead(path.join(root, 'AUDIT_LOG.md'));
+  // Read from branch-scoped audit log
+  const branch = getBranch(root);
+  const safeBranch = branch.replace(/[/\\:*?"<>|]/g, '-');
+  const branchAuditPath = path.join(root, '.claude', 'reports', 'audit', `audit-${safeBranch}.log`);
+  const auditContent = safeRead(branchAuditPath);
 
   // Get recent audit entries (last 50 lines)
   const auditLines = auditContent.split('\n');
@@ -47,12 +52,15 @@ Archived by pre-compact hook at ${now.toISOString()}
 
   fs.writeFileSync(archivePath, archive);
 
-  // Log to audit
-  const auditPath = path.join(root, 'AUDIT_LOG.md');
-  if (fs.existsSync(auditPath)) {
-    const logTime = now.toISOString().replace('T', ' ').substring(0, 16);
-    fs.appendFileSync(auditPath, `${logTime} | System | PRE_COMPACT | Archived to ${path.basename(archivePath)}\n`);
-  }
+  // Log to branch-scoped audit log
+  const role = getRole(root);
+  const auditDir = path.join(root, '.claude', 'reports', 'audit');
+  fs.mkdirSync(auditDir, { recursive: true });
+  const isoNow = now.toISOString();
+  fs.appendFileSync(
+    path.join(auditDir, `audit-${safeBranch}.log`),
+    `${isoNow}|${role}|${branch}|PRE_COMPACT|Archived to ${path.basename(archivePath)}|ok|0ms\n`
+  );
 
 } catch (e) {
   // Never block compaction — exit cleanly
@@ -60,6 +68,26 @@ Archived by pre-compact hook at ${now.toISOString()}
 
 // Always exit 0 to not block compaction
 process.exit(0);
+
+function getRole(root) {
+  try {
+    const envPath = path.join(root, '.claude', 'session.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      const match = content.match(/^CURRENT_ROLE=(.+)$/m);
+      if (match) return match[1].trim();
+    }
+  } catch (_) {}
+  return 'Unknown';
+}
+
+function getBranch(root) {
+  try {
+    return execSync('git branch --show-current', { cwd: root, encoding: 'utf8' }).trim();
+  } catch (_) {
+    return 'unknown';
+  }
+}
 
 function findProjectRoot() {
   let root = process.cwd();

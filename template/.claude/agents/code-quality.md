@@ -294,9 +294,25 @@ HANDOFF:
 Receives: task_spec, file_paths_to_review, CLAUDE.md, rules/*.md, static_analysis_config
 
 ## Output Contract
-Returns: { result, files_changed: [], errors: [] }
+Returns: { result, files_changed: [], decisions_made: [], errors: [] }
 Parent merges result: parent writes to MEMORY.md after receiving output.
 Agent MUST NOT write directly to MEMORY.md.
+
+## Determinism Contract
+- Read /docs/GLOSSARY.md before naming anything
+- Read /docs/patterns/ before reviewing patterns
+- Read /docs/STANDARDS.md before reviewing code style
+- Read /docs/ARCHITECTURE.md before any structural decision
+- Never invent patterns not in /docs/patterns/
+- Never use terminology not in GLOSSARY.md
+- Output format: { result, files_changed: [], decisions_made: [], errors: [] }
+
+## File Scope
+- Allowed: * (read-only — quality audit agent)
+- Forbidden: Write access to any file
+
+## Access Control
+- Callable by: All roles
 
 ## Limitations
 - DO NOT write or modify code — only analyze and recommend

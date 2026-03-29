@@ -8,6 +8,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"command-name" [--flags "flag1,flag2"] [--subcommands "sub1,sub2"]'
 effort: high
+roles: [BackendDev, FullStackDev, TechLead]
+agents: [@api-builder, @tester, @scaffolder]
 ---
 
 # /add-command $ARGUMENTS

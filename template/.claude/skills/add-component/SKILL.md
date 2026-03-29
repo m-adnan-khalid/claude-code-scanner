@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"component name" [--type page|layout|widget|form]'
+roles: [FrontendDev, FullStackDev, TechLead]
+agents: [@frontend, @tester, @scaffolder]
 ---
 
 # Add Component: $ARGUMENTS

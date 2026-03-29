@@ -100,14 +100,34 @@ HANDOFF:
 Receives: task_spec, test_results, coverage_report, CLAUDE.md, qa_plan
 
 ## Output Contract
-Returns: { result, files_changed: [], errors: [] }
+Returns: { result, files_changed: [], decisions_made: [], errors: [] }
 Parent merges result: parent writes to MEMORY.md after receiving output.
 Agent MUST NOT write directly to MEMORY.md.
+
+## Determinism Contract
+- Read /docs/GLOSSARY.md before naming anything
+- Read /docs/patterns/test-pattern.md before creating test plans
+- Read /docs/ARCHITECTURE.md before any structural decision
+- Never invent patterns not in /docs/patterns/
+- Never use terminology not in GLOSSARY.md
+- Output format: { result, files_changed: [], decisions_made: [], errors: [] }
+
+## File Scope
+- Allowed: tests/, docs/qa/, .claude/tasks/ (read)
+- Forbidden: src/ (write), CLAUDE.md, MEMORY.md, .claude/hooks/, infra/
+
+## Access Control
+- Callable by: QA, TechLead, CTO
+- If called by other role: exit with "Agent @qa-lead is restricted to QA/TechLead/CTO roles."
+
+## Phase 9→10 Gate
+Before QA sign-off, @qa-automation MUST have run and PASSED all automated test suites. If @qa-automation has not run or reports failures, REJECT — do not proceed to sign-off. Additionally, all P0/P1 bugs must be fixed and verified before approval.
 
 ## Limitations
 - DO NOT fix bugs — report them and assign to @debugger via @team-lead
 - DO NOT modify code — you are strictly read-only
 - DO NOT approve if P0/P1 bugs are open — no exceptions
+- DO NOT approve if @qa-automation has not PASSED — no exceptions
 - DO NOT write automated tests — that is @tester's responsibility
 
 ## Real Testing Skills (invoke via @tester or @qa-automation)

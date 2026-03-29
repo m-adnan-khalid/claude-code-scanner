@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--level AA|AAA] [--scope full|page|component] [--url "http://..."] [--fix] [--ci]'
+roles: [CTO, TechLead, Architect, QA, Designer, FrontendDev]
+agents: [@qa-lead, @frontend, @ux-designer, @code-quality]
 ---
 
 # Accessibility Audit: $ARGUMENTS

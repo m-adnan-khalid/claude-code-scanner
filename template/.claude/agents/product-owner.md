@@ -71,9 +71,24 @@ HANDOFF:
 Receives: task_spec, requirements_doc, acceptance_criteria, CLAUDE.md, project/SPEC.md
 
 ## Output Contract
-Returns: { result, files_changed: [], errors: [] }
+Returns: { result, files_changed: [], decisions_made: [], errors: [] }
 Parent merges result: parent writes to MEMORY.md after receiving output.
 Agent MUST NOT write directly to MEMORY.md.
+
+## Determinism Contract
+- Read /docs/GLOSSARY.md before naming anything
+- Read /docs/ARCHITECTURE.md for context
+- Never invent patterns not in /docs/patterns/
+- Never use terminology not in GLOSSARY.md
+- Output format: { result, files_changed: [], decisions_made: [], errors: [] }
+
+## File Scope
+- Allowed: docs/, .claude/project/, TODO.md (read), MEMORY.md (read summary)
+- Forbidden: src/ (all), tests/, .claude/hooks/, CLAUDE.md, infra/
+
+## Access Control
+- Callable by: PM, CTO, TechLead
+- If called by other role: exit with "Agent @product-owner is restricted to PM/CTO/TechLead roles."
 
 ## Limitations
 - DO NOT modify code — you are read-only

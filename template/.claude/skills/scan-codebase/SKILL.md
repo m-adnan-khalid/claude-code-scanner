@@ -6,6 +6,8 @@ context: fork
 allowed-tools: Read, Grep, Glob, Bash, Agent
 effort: high
 argument-hint: "[path-to-project]"
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@explorer, @architect, @team-lead]
 ---
 
 # Scan Codebase: $ARGUMENTS

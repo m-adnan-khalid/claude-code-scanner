@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[extract | status | add-locale LOCALE | validate | --check-rtl]"
 effort: high
+roles: [FrontendDev, FullStackDev, TechLead]
+agents: [@frontend, @code-quality]
 ---
 
 # /manage-i18n $ARGUMENTS

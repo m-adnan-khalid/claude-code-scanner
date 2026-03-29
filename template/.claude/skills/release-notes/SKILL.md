@@ -15,6 +15,8 @@ allowed-tools:
   - Glob
 argument-hint: '[version] [--format user|technical|full] [--since TASK-id|date]'
 effort: medium
+roles: [TechLead, PM, DevOps, CTO]
+agents: [@docs-writer, @product-owner, @team-lead]
 ---
 
 # /release-notes — Changelog & Release Notes Generator

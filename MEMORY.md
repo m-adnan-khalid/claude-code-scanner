@@ -1,10 +1,10 @@
 # Project Memory
 
 ## Last Completed
-2026-03-29 — audit checkpoint — resolve all 23 system audit gaps (commit 45503fe)
+2026-03-29 — fix all 21 gaps: tests, CI/CD, error handling, templates, docs (commit d763c01)
 
 ## Next Step
-Add integration tests for CLI (bin/cli.js)
+Publish to npm registry
 
 ## Blockers
 None

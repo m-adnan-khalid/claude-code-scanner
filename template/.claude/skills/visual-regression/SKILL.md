@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--tool playwright|backstop|percy] [--update-baselines] [--pages "url1,url2"] [--viewports "1280x720,768x1024,375x812"] [--threshold 0.1]'
+roles: [QA, FrontendDev, FullStackDev, Designer]
+agents: [@qa-automation, @frontend, @ux-designer]
 ---
 
 # Visual Regression Testing: $ARGUMENTS

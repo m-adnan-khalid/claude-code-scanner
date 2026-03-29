@@ -8,19 +8,20 @@ function check(raw) {
     const cmd = (data.tool_input && data.tool_input.command) || '';
     if (!cmd) return 0;
 
-    const DANGEROUS_STRINGS = ['rm -rf /', ':(){ :|:& };:', '> /dev/sda', 'mkfs', 'dd if='];
+    const DANGEROUS_STRINGS = [':(){ :|:& };:', '> /dev/sda', 'mkfs', 'dd if='];
+    const DANGEROUS_PATTERNS_EXTRA = [/rm\s+-rf\b/];
     const DANGEROUS_PATTERNS = [/curl\s.*\|\s*bash/, /wget\s.*\|\s*bash/];
 
     for (const p of DANGEROUS_STRINGS) {
       if (cmd.includes(p)) {
         process.stderr.write('BLOCKED: Dangerous command.\n');
-        return 2;
+        return 1;
       }
     }
-    for (const rx of DANGEROUS_PATTERNS) {
+    for (const rx of [...DANGEROUS_PATTERNS, ...DANGEROUS_PATTERNS_EXTRA]) {
       if (rx.test(cmd)) {
         process.stderr.write('BLOCKED: Dangerous command.\n');
-        return 2;
+        return 1;
       }
     }
   } catch {

@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--scope full|pii|levels|correlation|coverage|observability] [--fix]'
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@code-quality, @security, @infra]
 ---
 
 # Logging Audit: $ARGUMENTS

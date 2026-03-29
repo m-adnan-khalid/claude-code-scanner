@@ -8,6 +8,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[add FLAG_NAME | remove FLAG_NAME | status | cleanup | rollout FLAG_NAME 50%]"
 effort: high
+roles: [BackendDev, FullStackDev, FrontendDev, TechLead, DevOps]
+agents: [@api-builder, @frontend, @infra, @tester]
 ---
 
 # /feature-flags $ARGUMENTS

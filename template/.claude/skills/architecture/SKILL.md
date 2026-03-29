@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-stack | "system description"]'
 effort: high
+roles: [Architect, TechLead, CTO]
+agents: [@architect, @team-lead, @database, @security]
 ---
 
 # /architecture — System Architecture Design

@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"bug description" [--file path] [--test]'
+roles: [BackendDev, FrontendDev, FullStackDev, TechLead]
+agents: [@debugger, @tester, @explorer]
 ---
 
 # Fix Bug: $ARGUMENTS

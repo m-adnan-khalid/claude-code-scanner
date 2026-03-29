@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob, Agent
 argument-hint: "[staging|production] [--dry-run] [--rollback]"
+roles: [DevOps, TechLead, CTO]
+agents: [@infra, @gatekeeper, @security]
 ---
 
 # Deploy: $ARGUMENTS

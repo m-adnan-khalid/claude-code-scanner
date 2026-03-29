@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--current | --projected | --optimize | --compare]'
 effort: medium
+roles: [CTO, TechLead, Architect, PM, DevOps]
+agents: [@infra, @architect, @strategist]
 ---
 
 # /cost-estimate — Infrastructure Cost Estimation

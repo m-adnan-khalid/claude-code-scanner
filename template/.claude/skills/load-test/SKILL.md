@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--tool k6|jmeter|locust|artillery] [--script "path"] [--vus 50] [--duration 30s] [--target "http://..."] [--thresholds "p95<500,errors<1%"]'
+roles: [QA, TechLead, DevOps]
+agents: [@qa-automation, @qa-lead, @infra]
 ---
 
 # Load/Performance Testing: $ARGUMENTS

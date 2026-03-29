@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--platform ios|android|flutter|rn] [--framework maestro|detox|appium|native] [--device "name"] [--record] [--flow "path"]'
+roles: [QA, TechLead, FullStackDev]
+agents: [@qa-automation, @mobile, @tester, @qa-lead]
 ---
 
 # Mobile E2E Testing: $ARGUMENTS

@@ -4,6 +4,8 @@ description: Analyze the blast radius of a proposed change. Use before making si
 user-invocable: true
 context: fork
 allowed-tools: Read, Grep, Glob, Bash, Agent
+roles: [Architect, TechLead, BackendDev, FrontendDev, FullStackDev]
+agents: [@explorer, @security, @architect]
 ---
 
 # Impact Analysis: $ARGUMENTS

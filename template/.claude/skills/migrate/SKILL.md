@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[create|run|rollback|status] [migration-name]"
+roles: [BackendDev, FullStackDev, TechLead]
+agents: [@database, @api-builder]
 ---
 
 # Database Migration: $ARGUMENTS

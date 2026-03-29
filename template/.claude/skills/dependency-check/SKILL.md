@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: "[--outdated|--vulnerabilities|--unused|--licenses]"
+roles: [TechLead, DevOps, Architect, BackendDev, FrontendDev, FullStackDev]
+agents: [@security, @infra, @code-quality]
 ---
 
 # Dependency Check: $ARGUMENTS

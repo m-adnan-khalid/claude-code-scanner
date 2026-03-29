@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"critical bug description" [--severity P0|P1]'
+roles: [BackendDev, FrontendDev, FullStackDev, TechLead, DevOps]
+agents: [@debugger, @tester, @infra, @gatekeeper]
 ---
 
 # Hotfix: $ARGUMENTS

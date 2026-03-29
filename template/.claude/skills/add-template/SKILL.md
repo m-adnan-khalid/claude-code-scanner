@@ -8,6 +8,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"template-name" --type email|notification|pdf|sms [--variables "name,order_id"]'
 effort: high
+roles: [FrontendDev, FullStackDev, BackendDev, TechLead]
+agents: [@frontend, @scaffolder, @tester]
 ---
 
 # /add-template $ARGUMENTS

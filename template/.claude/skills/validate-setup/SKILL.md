@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: "[--fix] [--verbose]"
+roles: [CTO, TechLead, DevOps]
+agents: [@team-lead, @gatekeeper, @output-validator]
 ---
 
 # Validate Setup

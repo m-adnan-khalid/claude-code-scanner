@@ -16,6 +16,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-spec | --from-code | --from-docs "path"] [--update] [--sync TASK-id]'
 effort: high
+roles: [Architect, TechLead, PM, CTO]
+agents: [@architect, @product-owner, @database, @explorer]
 ---
 
 # /domain-model — Domain Modeling & Business Context

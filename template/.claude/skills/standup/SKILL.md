@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Grep, Glob
 argument-hint: "[--yesterday] [--team]"
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@team-lead, @process-coach]
 ---
 
 # Standup: $ARGUMENTS

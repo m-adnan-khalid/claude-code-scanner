@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--tool newman|httpyac|hurl|bruno|supertest] [--collection "path"] [--env "staging|local"] [--base-url "http://..."] [--auth-token "token"]'
+roles: [QA, BackendDev, FullStackDev, TechLead]
+agents: [@tester, @qa-lead, @api-builder, @qa-automation]
 ---
 
 # API Testing: $ARGUMENTS

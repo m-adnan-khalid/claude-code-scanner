@@ -79,7 +79,7 @@ function check(raw) {
       }
     }
 
-    // WARN: Scope violations
+    // BLOCK: Scope violations (upgraded from warning to blocker)
     const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (fs.existsSync(tasksDir)) {
       const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
@@ -92,10 +92,10 @@ function check(raw) {
             const scope = scopeMatch[1].trim().toLowerCase();
             const fileLower = relative.toLowerCase();
             if (scope === 'backend' && (fileLower.includes('frontend') || fileLower.includes('web/'))) {
-              warnings.push(`Editing ${relative} but task scope is "${scope}".`);
+              blockers.push(`SCOPE VIOLATION: Editing ${relative} but task scope is "${scope}". Change task scope or work in the correct directory.`);
             }
             if (scope === 'frontend' && (fileLower.includes('backend') || fileLower.includes('app/api'))) {
-              warnings.push(`Editing ${relative} but task scope is "${scope}".`);
+              blockers.push(`SCOPE VIOLATION: Editing ${relative} but task scope is "${scope}". Change task scope or work in the correct directory.`);
             }
           }
           break;

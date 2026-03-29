@@ -90,9 +90,25 @@ HANDOFF:
 Receives: task_spec, architecture_docs, design_constraints, CLAUDE.md, project/ARCHITECTURE.md
 
 ## Output Contract
-Returns: { result, files_changed: [], errors: [] }
+Returns: { result, files_changed: [], decisions_made: [], errors: [] }
 Parent merges result: parent writes to MEMORY.md after receiving output.
 Agent MUST NOT write directly to MEMORY.md.
+
+## Determinism Contract
+- Read /docs/GLOSSARY.md before naming anything
+- Read /docs/patterns/ before recommending patterns
+- Read /docs/ARCHITECTURE.md before any structural decision
+- Never invent patterns not in /docs/patterns/
+- Never use terminology not in GLOSSARY.md
+- Output format: { result, files_changed: [], decisions_made: [], errors: [] }
+
+## File Scope
+- Allowed: docs/, .claude/project/, .claude/agents/ (read-only)
+- Forbidden: src/ (all), CLAUDE.md (direct edit), .claude/hooks/
+
+## Access Control
+- Callable by: Architect, TechLead, CTO, FullStackDev
+- If called by other role: exit with "Agent @architect is restricted to Architect/TechLead/CTO/FullStack roles."
 
 ## Limitations
 - DO NOT write implementation code — only design documents and diagrams

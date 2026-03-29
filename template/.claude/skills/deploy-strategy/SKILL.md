@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-architecture | "deployment requirements"]'
 effort: high
+roles: [DevOps, TechLead, Architect, CTO]
+agents: [@infra, @architect, @security]
 ---
 
 # /deploy-strategy — Deployment & Launch Planning

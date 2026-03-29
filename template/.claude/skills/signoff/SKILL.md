@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Bash, Grep, Glob, Agent
 argument-hint: "[tech|qa|business] [TASK-id]"
+roles: [TechLead, QA, PM, CTO]
+agents: [@team-lead, @qa-lead, @product-owner, @gatekeeper]
 ---
 
 # Sign-off: $ARGUMENTS
@@ -26,6 +28,15 @@ All criteria must pass before this task is marked complete.
 - **Success:** `/deploy staging` — approved task is ready for deployment
 - **Issues found:** `/fix-bug "rejection reason"` — address sign-off feedback
 - **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
+
+## 3-Way Gate Check
+Before marking the task as fully signed off:
+1. Read the task file and check for:
+   - `tech_signoff: APPROVED`
+   - `qa_signoff: APPROVED`
+   - `business_signoff: APPROVED`
+2. If ANY of the three is missing or REJECTED, the task CANNOT proceed to merge.
+3. All three must be APPROVED before PR merge is allowed.
 
 ## Rollback
 - **Undo changes:** Revoke approval by updating task file status back to pre-sign-off phase

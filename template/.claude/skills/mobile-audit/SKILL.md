@@ -5,6 +5,8 @@ user-invocable: true
 argument-hint: "[--platform ios|android|rn|flutter|kmp] [--scope full|performance|ux|store|security] [path/to/module]"
 context: fork
 allowed-tools: Read, Grep, Glob, Bash, Agent
+roles: [QA, TechLead, Architect]
+agents: [@mobile, @qa-automation, @security]
 ---
 
 # /mobile-audit — Mobile App Quality Audit

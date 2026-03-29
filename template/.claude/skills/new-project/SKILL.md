@@ -17,6 +17,8 @@ allowed-tools:
   - Agent
 argument-hint: '"your project idea" [--skip-brainstorm] [--fast] [--from-docs "path"] [--template web|api|cli|mobile]'
 effort: high
+roles: [CTO, TechLead, PM, Architect]
+agents: [@team-lead, @architect, @product-owner, @strategist, @ideator, @scaffolder]
 ---
 
 # /new-project — Full Pre-Development Orchestrator

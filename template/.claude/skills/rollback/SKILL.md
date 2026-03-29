@@ -6,6 +6,8 @@ disable-model-invocation: true
 allowed-tools: Read, Bash, Grep, Glob
 argument-hint: "[deploy|code|phase] [task-id] [--to-commit SHA]"
 context: fork
+roles: [DevOps, TechLead, CTO]
+agents: [@infra, @team-lead, @debugger]
 ---
 
 # Rollback: $ARGUMENTS

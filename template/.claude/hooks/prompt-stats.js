@@ -97,6 +97,35 @@ try {
     }
   } catch (e) { logHookFailure("prompt-stats", e.message); }
 
+  // 4b. Word count estimation from audit log
+  let sessionWordCount = 0;
+  try {
+    const auditDir = path.join(reportsDir, 'audit');
+    if (fs.existsSync(auditDir)) {
+      const auditFiles = fs.readdirSync(auditDir).filter(f => f.endsWith('.log'));
+      for (const f of auditFiles) {
+        const content = fs.readFileSync(path.join(auditDir, f), 'utf8');
+        sessionWordCount += content.split(/\s+/).length;
+      }
+    }
+  } catch (e) { /* ignore */ }
+
+  // 4c. Phase completion tracking
+  let phaseLines = [];
+  try {
+    const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
+    if (fs.existsSync(tasksDir)) {
+      const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
+      for (const tf of taskFiles) {
+        const content = fs.readFileSync(path.join(tasksDir, tf), 'utf8');
+        const phases = content.match(/## Phase \d+.*?(DONE|IN_PROGRESS|TODO)/g) || [];
+        if (phases.length > 0) {
+          phaseLines.push(`  Phase status (${tf}): ${phases.join(', ')}`);
+        }
+      }
+    }
+  } catch (e) { /* ignore */ }
+
   // 5. Build and output stats
   console.log('\n' + '='.repeat(50));
   console.log('SESSION EXECUTION STATS');
@@ -121,6 +150,16 @@ try {
     console.log(`\nTest Results:    ${icon} — ${testResults.passed}/${testResults.total} passed`);
     if (testResults.coverage) console.log(`Coverage:        ${testResults.coverage}%`);
     if (testResults.duration) console.log(`Duration:        ${testResults.duration}`);
+  }
+
+  if (sessionWordCount > 0) {
+    console.log(`\nSession Words:   ~${sessionWordCount}`);
+  }
+  if (phaseLines.length > 0) {
+    console.log('\nPhase Completion:');
+    for (const pl of phaseLines) {
+      console.log(pl);
+    }
   }
 
   console.log(`\nHallucination:   ${hallucinationRisk}`);

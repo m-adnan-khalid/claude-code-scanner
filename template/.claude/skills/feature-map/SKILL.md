@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '[--from-spec | "feature area to explore"]'
 effort: high
+roles: [PM, CTO, TechLead, Architect]
+agents: [@product-owner, @strategist, @ideator, @architect]
 ---
 
 # /feature-map — Feature Brainstorming & Prioritization

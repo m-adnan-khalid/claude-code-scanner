@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Grep, Glob, Bash
 argument-hint: "[velocity|quality|cycle-time|agents|blockers|all] [--period 7d|30d|90d]"
+roles: [CTO, TechLead, PM, QA]
+agents: [@team-lead, @qa-lead, @process-coach]
 ---
 
 # Metrics: $ARGUMENTS

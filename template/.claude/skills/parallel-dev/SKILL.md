@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[--analyze|--start|--status|--merge] [task-ids...]"
+roles: [TechLead, Architect, CTO]
+agents: [@team-lead, @architect]
 ---
 
 # Parallel Development Orchestrator: $ARGUMENTS

@@ -15,6 +15,8 @@ allowed-tools:
   - Agent
 argument-hint: '"your idea description"'
 effort: high
+roles: [PM, CTO, TechLead, Architect, Designer]
+agents: [@ideator, @strategist, @product-owner]
 ---
 
 # /brainstorm — Idea Brainstorming Session

@@ -51,3 +51,11 @@ if (process.platform === 'darwin') {
     tryExec(`notify-send "Claude Code" "${MSG}"`);
   }
 }
+
+// Log permission request and outcome
+try {
+  const logDir = path.join('.claude', 'reports');
+  if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+  const logLine = `${new Date().toISOString()}|NOTIFICATION|${MSG}|sent\n`;
+  fs.appendFileSync(path.join(logDir, 'approval-log.jsonl'), logLine);
+} catch (e) { /* fail-open */ }

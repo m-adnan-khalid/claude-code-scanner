@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Grep, Glob, Bash
 argument-hint: "[dev|qa|business|management|executive] [task-id|all]"
+roles: [CTO, TechLead, PM, QA, Architect, BackendDev, FrontendDev, FullStackDev, DevOps, Designer]
+agents: [@team-lead, @product-owner, @qa-lead]
 ---
 
 # Progress Report: $ARGUMENTS

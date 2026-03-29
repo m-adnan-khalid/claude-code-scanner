@@ -2,7 +2,7 @@
 
 /**
  * post-tool-use.js — PostToolUse hook
- * Writes an entry to AUDIT_LOG.md on every tool call.
+ * Writes an entry to .claude/reports/audit/audit-{branch}.log on every tool call.
  * Entry format: timestamp | tool | action | result
  */
 
@@ -20,28 +20,35 @@ process.stdin.on('end', () => {
     if (!tool_name) process.exit(0);
 
     const root = findProjectRoot();
-    const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    const now = new Date().toISOString();
 
     const action = getAction(tool_name);
     const detail = getDetail(tool_name, tool_input);
     const result = getResult(tool_name, tool_output);
 
-    const logLine = `${now} | ${tool_name} | ${action} | ${detail} | ${result}`;
+    // Get role and branch for structured logging
+    const role = getRole(root);
+    const branch = getBranch(root);
+    const startTime = process.env.TOOL_START_TIME ? parseInt(process.env.TOOL_START_TIME) : Date.now();
+    const duration = Date.now() - startTime;
 
-    // Write to AUDIT_LOG.md
-    const auditPath = path.join(root, 'AUDIT_LOG.md');
-    if (fs.existsSync(auditPath)) {
-      fs.appendFileSync(auditPath, logLine + '\n');
-    }
+    const logLine = `${now}|${role}|${branch}|${action}|${detail}|${result}|${duration}ms`;
+
+    // Write to branch-scoped audit log
+    const auditDir = path.join(root, '.claude', 'reports', 'audit');
+    fs.mkdirSync(auditDir, { recursive: true });
+    const safeBranch = branch.replace(/[/\\:*?"<>|]/g, '-');
+    fs.appendFileSync(path.join(auditDir, `audit-${safeBranch}.log`), logLine + '\n');
 
     process.exit(0);
   } catch (e) {
     // Log error to audit if possible, never block
     try {
       const root = findProjectRoot();
-      const auditPath = path.join(root, 'AUDIT_LOG.md');
-      const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
-      fs.appendFileSync(auditPath, `${now} | System | HOOK_ERROR | post-tool-use: ${e.message}\n`);
+      const now = new Date().toISOString();
+      const auditDir = path.join(root, '.claude', 'reports', 'audit');
+      fs.mkdirSync(auditDir, { recursive: true });
+      fs.appendFileSync(path.join(auditDir, 'audit-errors.log'), `${now}|System|unknown|HOOK_ERROR|post-tool-use: ${e.message}|error|0ms\n`);
     } catch (_) {}
     process.exit(0);
   }
@@ -80,6 +87,27 @@ function getResult(toolName, output) {
   const str = typeof output === 'string' ? output : JSON.stringify(output);
   if (str.length < 50) return truncate(str, 50);
   return 'ok';
+}
+
+function getRole(root) {
+  try {
+    const envPath = path.join(root, '.claude', 'session.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      const match = content.match(/^CURRENT_ROLE=(.+)$/m);
+      if (match) return match[1].trim();
+    }
+  } catch (_) {}
+  return 'Unknown';
+}
+
+function getBranch(root) {
+  try {
+    const { execSync } = require('child_process');
+    return execSync('git branch --show-current', { cwd: root, encoding: 'utf8' }).trim();
+  } catch (_) {
+    return 'unknown';
+  }
 }
 
 function truncate(str, max) {

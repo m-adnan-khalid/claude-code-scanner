@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[add-content-type NAME | add-plugin NAME | migrate FROM TO | audit | theme]"
 effort: high
+roles: [FullStackDev, BackendDev, FrontendDev, TechLead]
+agents: [@api-builder, @frontend, @database, @scaffolder]
 ---
 
 # /cms-manage $ARGUMENTS

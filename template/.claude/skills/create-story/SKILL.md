@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"story description" [--type feature|bug|defect|refactor|hotfix] [--scope frontend|backend|fullstack|mobile|infra] [--priority P0|P1|P2|P3]'
+roles: [PM, TechLead, CTO, Architect, BackendDev, FrontendDev, FullStackDev, QA]
+agents: [@product-owner, @team-lead, @strategist]
 ---
 
 # Create Story: $ARGUMENTS

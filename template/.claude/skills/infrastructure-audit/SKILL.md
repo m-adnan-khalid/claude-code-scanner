@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--framework soc2|iso27001|cis|all] [--scope full|iac|containers|network|secrets] [--cloud aws|azure|gcp]'
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@infra, @security, @gatekeeper]
 ---
 
 # Infrastructure Security & Compliance Audit: $ARGUMENTS

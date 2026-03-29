@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[define SERVICE | test | map | validate | breaking-change SERVICE]"
 effort: high
+roles: [BackendDev, FullStackDev, TechLead, Architect]
+agents: [@api-builder, @architect, @tester]
 ---
 
 # /service-contract $ARGUMENTS

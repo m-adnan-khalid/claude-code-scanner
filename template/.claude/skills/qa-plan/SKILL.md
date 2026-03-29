@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Grep, Glob, Agent
 argument-hint: '"feature name" [--task TASK-id]'
+roles: [QA, TechLead]
+agents: [@qa-lead, @tester, @qa-automation]
 ---
 
 # QA Plan: $ARGUMENTS

@@ -25,7 +25,10 @@ process.stdin.on('end', () => {
     if (!tool_name) process.exit(0);
 
     const root = findProjectRoot();
-    const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    const now = new Date().toISOString();
+    const role = getRole(root);
+    const branch = getBranch(root);
+    const startTime = Date.now();
 
     // Protected files — block direct writes
     const protectedFiles = [
@@ -34,11 +37,11 @@ process.stdin.on('end', () => {
       '.claude/settings.local.json'
     ];
 
-    if (tool_name === 'Write' && tool_input && tool_input.file_path) {
+    if (['Write', 'Edit'].includes(tool_name) && tool_input && tool_input.file_path) {
       const relPath = path.relative(root, tool_input.file_path);
       if (protectedFiles.includes(relPath)) {
-        const msg = `${now} BLOCKED | ${tool_name} | Attempted write to protected file: ${relPath}`;
-        logToAudit(root, msg);
+        const duration = Date.now() - startTime;
+        logToAudit(root, `${now}|${role}|${branch}|BLOCKED|Attempted write to protected file: ${relPath}|blocked|${duration}ms`);
         console.error(`BLOCKED: Cannot directly overwrite protected file: ${relPath}`);
         process.exit(1); // Halt — do not silently pass
       }
@@ -48,14 +51,16 @@ process.stdin.on('end', () => {
     if (tool_name === 'Bash' && tool_input && tool_input.command) {
       const cmd = tool_input.command;
       const dangerous = [
-        /rm\s+-rf\s+\/(?!\S)/, // rm -rf /
-        /rm\s+-rf\s+~/, // rm -rf ~
+        /rm\s+-rf\b/, // rm -rf (any target)
         /:\s*\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}/, // fork bomb
+        /curl\s+.*\|\s*(?:ba)?sh/, // curl | bash / curl | sh
+        /wget\s+.*\|\s*(?:ba)?sh/, // wget | bash / wget | sh
+        /\bmkfs\b/, // mkfs — format filesystem
       ];
       for (const pattern of dangerous) {
         if (pattern.test(cmd)) {
-          const msg = `${now} BLOCKED | ${tool_name} | Dangerous command: ${cmd.substring(0, 60)}`;
-          logToAudit(root, msg);
+          const duration = Date.now() - startTime;
+          logToAudit(root, `${now}|${role}|${branch}|BLOCKED|Dangerous command: ${cmd.substring(0, 60)}|blocked|${duration}ms`);
           console.error(`BLOCKED: Dangerous command detected`);
           process.exit(1);
         }
@@ -64,16 +69,18 @@ process.stdin.on('end', () => {
 
     // Log validation pass
     const detail = getDetail(tool_name, tool_input);
-    const msg = `${now} VALIDATED | ${tool_name} | ${detail}`;
-    logToAudit(root, msg);
+    const duration = Date.now() - startTime;
+    logToAudit(root, `${now}|${role}|${branch}|VALIDATED|${tool_name}: ${detail}|ok|${duration}ms`);
 
     process.exit(0);
   } catch (e) {
     // On error, log but do NOT silently pass — log the failure
     try {
       const root = findProjectRoot();
-      const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
-      logToAudit(root, `${now} HOOK_ERROR | pre-tool-use | ${e.message}`);
+      const now = new Date().toISOString();
+      const role = getRole(root);
+      const branch = getBranch(root);
+      logToAudit(root, `${now}|${role}|${branch}|HOOK_ERROR|pre-tool-use: ${e.message}|error|0ms`);
     } catch (_) {}
     // Exit 0 to not block on hook internal errors, but error is logged
     process.exit(0);
@@ -88,11 +95,39 @@ function findProjectRoot() {
   return root;
 }
 
+function getRole(root) {
+  try {
+    const envPath = path.join(root, '.claude', 'session.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      const match = content.match(/^CURRENT_ROLE=(.+)$/m);
+      if (match) return match[1].trim();
+    }
+  } catch (_) {}
+  return 'Unknown';
+}
+
+function getBranch(root) {
+  try {
+    const { execSync } = require('child_process');
+    return execSync('git branch --show-current', { cwd: root, timeout: 3000 })
+      .toString().trim() || 'detached';
+  } catch (_) { return 'detached'; }
+}
+
 function logToAudit(root, line) {
-  const auditPath = path.join(root, 'AUDIT_LOG.md');
-  if (fs.existsSync(auditPath)) {
-    fs.appendFileSync(auditPath, line + '\n');
-  }
+  try {
+    const { execSync } = require('child_process');
+    let branch = 'detached';
+    try {
+      branch = execSync('git branch --show-current', { cwd: root, timeout: 3000 })
+        .toString().trim() || 'detached';
+    } catch (_) {}
+    const auditDir = path.join(root, '.claude', 'reports', 'audit');
+    fs.mkdirSync(auditDir, { recursive: true });
+    const safeBranch = branch.replace(/[/\\:*?"<>|]/g, '-');
+    fs.appendFileSync(path.join(auditDir, `audit-${safeBranch}.log`), line + '\n');
+  } catch (_) {}
 }
 
 function getDetail(toolName, input) {

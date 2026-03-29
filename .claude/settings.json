@@ -4,12 +4,32 @@
       {
         "matcher": ".*",
         "command": "node .claude/hooks/pre-tool-use.js"
+      },
+      {
+        "matcher": "Edit|Write",
+        "command": "node .claude/hooks/scope-guard.js"
+      },
+      {
+        "matcher": ".*",
+        "command": "node .claude/hooks/version-check.js"
+      },
+      {
+        "matcher": "Edit|Write",
+        "command": "node .claude/hooks/branch-conflict-check.js"
+      },
+      {
+        "matcher": ".*",
+        "command": "node .claude/hooks/branch-naming-check.js"
       }
     ],
     "PostToolUse": [
       {
         "matcher": ".*",
         "command": "node .claude/hooks/post-tool-use.js"
+      },
+      {
+        "matcher": "Edit|Write",
+        "command": "node .claude/hooks/doc-drift-check.js"
       }
     ],
     "Stop": [
@@ -20,6 +40,11 @@
     "PreCompact": [
       {
         "command": "node .claude/hooks/pre-compact.js"
+      }
+    ],
+    "PostCompact": [
+      {
+        "command": "echo 'Post-compact: context restored'"
       }
     ]
   }

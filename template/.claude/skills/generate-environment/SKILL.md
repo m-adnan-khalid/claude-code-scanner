@@ -5,6 +5,8 @@ user-invocable: true
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 context: fork
 effort: high
+roles: [CTO, TechLead, Architect, DevOps]
+agents: [@team-lead, @architect, @scaffolder]
 ---
 
 # Generate Environment: $ARGUMENTS
@@ -16,6 +18,8 @@ Before generating, verify `.claude/scan-results.md` exists. If NOT found:
 3. Exit with instructions to run `/scan-codebase` first.
 
 Read `.claude/scan-results.md` (from /scan-codebase). Replace ALL `{placeholders}` with actual values. If a value wasn't found, OMIT that section — never leave placeholders.
+
+**Post-Generation Placeholder Gate:** After generating all files, run `grep -r '{[a-z_]*}' .claude/` to verify zero remaining placeholders. If ANY are found, fix them immediately before proceeding to validation. This is a hard gate — generation is not complete until zero placeholders remain.
 
 **Reference files in this skill directory:**
 - `artifact-templates.md` — full CLAUDE.md template, rule templates, settings.json, hook scripts, profiles, code template extraction instructions
@@ -55,8 +59,10 @@ Only for monorepo packages or distinct modules.
 **Always generate (SDLC roles — 4):** team-lead, architect, product-owner, qa-lead
 **Always generate (core — 6):** explorer, reviewer, security, debugger, tester, code-quality
 **Always generate (pre-dev — 4):** ideator, strategist, scaffolder, ux-designer
+**Always generate (governance — 5):** cto, gatekeeper, output-validator, process-coach, docs-writer
+**Always generate (data — 2):** database, qa-automation
 **Generate if layer exists (dev — 4):** frontend, api-builder, infra, mobile
-**Total: 18 agents (14 always + 4 conditional)**
+**Total: 25 agents (21 always + 4 conditional)**
 
 All agents MUST include:
 - `memory: project` for cross-session persistence

@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"endpoint description" [--method GET|POST|PUT|DELETE] [--path /api/v1/...]'
+roles: [BackendDev, FullStackDev, TechLead]
+agents: [@api-builder, @tester, @scaffolder]
 ---
 
 # Add Endpoint: $ARGUMENTS

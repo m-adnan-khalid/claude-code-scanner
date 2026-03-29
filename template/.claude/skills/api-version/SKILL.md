@@ -8,6 +8,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[add v2 | deprecate v1/endpoint | status | migrate v1-to-v2 | validate]"
 effort: high
+roles: [BackendDev, FullStackDev, TechLead, Architect]
+agents: [@api-builder, @architect, @docs-writer]
 ---
 
 # /api-version $ARGUMENTS

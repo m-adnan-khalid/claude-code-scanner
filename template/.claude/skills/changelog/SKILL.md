@@ -5,6 +5,8 @@ user-invocable: true
 context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 argument-hint: "[--from-git|--add 'entry'] [--version X.Y.Z]"
+roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, DevOps, PM, Designer]
+agents: [@docs-writer, @team-lead]
 ---
 
 # Changelog: $ARGUMENTS

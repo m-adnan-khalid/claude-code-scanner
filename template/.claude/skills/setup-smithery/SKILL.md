@@ -5,6 +5,8 @@ user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read, Bash, Grep
 context: fork
+roles: [TechLead, DevOps, CTO]
+agents: [@team-lead, @infra]
 ---
 
 # Setup Smithery: $ARGUMENTS

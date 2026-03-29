@@ -8,6 +8,8 @@ context: fork
 allowed-tools: Read, Bash, Grep, Glob, Agent
 argument-hint: "[--technical | --content | --full] [--url URL]"
 effort: high
+roles: [FrontendDev, FullStackDev, TechLead, Designer]
+agents: [@frontend, @code-quality, @ux-designer]
 ---
 
 # /seo-audit $ARGUMENTS

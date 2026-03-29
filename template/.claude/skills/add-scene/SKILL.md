@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '"scene-name" [--type level|menu|loading|cutscene] [--with physics,input,audio,ui]'
 effort: high
+roles: [FullStackDev, TechLead]
+agents: [@scaffolder, @tester, @architect]
 ---
 
 # /add-scene $ARGUMENTS

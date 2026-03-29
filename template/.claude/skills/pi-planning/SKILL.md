@@ -9,6 +9,8 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: "[plan PI-NAME | board | dependencies | capacity | status]"
 effort: high
+roles: [CTO, TechLead, PM, Architect]
+agents: [@process-coach, @team-lead, @product-owner]
 ---
 
 # /pi-planning $ARGUMENTS
