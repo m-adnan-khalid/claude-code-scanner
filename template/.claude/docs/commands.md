@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 74 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 79 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 
@@ -315,7 +315,54 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 16. Maintenance & Context
+## 16. Microservices
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/service-contract define payments` | Define service boundary, owned entities, exposed/consumed APIs | @architect |
+| `/service-contract test` | Run consumer-driven contract tests (Pact, Spring Cloud Contract) | @tester |
+| `/service-contract map` | Generate service dependency graph (sync + async) | @architect |
+| `/service-contract validate` | Check all contracts satisfied, no orphan consumers | @tester |
+| `/service-contract breaking-change payments` | Impact analysis of API change on all consumers | @explorer |
+
+---
+
+## 17. Game Development
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/add-scene "Level1" --type level --with physics,input` | Scaffold game scene (Unity/Godot/Bevy/Phaser) | @frontend |
+| `/add-scene --add-entity "Player" --components transform,sprite,physics` | Add ECS entity to scene | @frontend |
+| `/add-scene --add-system "CollisionSystem"` | Add ECS system with update loop | @frontend |
+
+---
+
+## 18. Embedded/IoT & CMS
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/firmware-audit` | Memory safety, RTOS patterns, power management, security | @security |
+| `/firmware-audit --memory` | Stack overflow, heap fragmentation, buffer overflow scan | @security |
+| `/cms-manage add-content-type "BlogPost"` | Define CMS content type (WordPress/Strapi/Sanity/Payload) | @api-builder |
+| `/cms-manage add-plugin "seo"` | Scaffold CMS plugin with hooks and admin UI | @api-builder |
+| `/cms-manage migrate wordpress strapi` | Plan content migration between CMS platforms | @api-builder |
+| `/cms-manage audit` | CMS health: security patches, plugin conflicts, performance | @security |
+
+---
+
+## 19. Enterprise Scale
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/pi-planning plan "PI-2026-Q2"` | Create PI plan: objectives, features, team assignments, iterations | @team-lead |
+| `/pi-planning board` | Generate program board (features × iterations × teams) | @team-lead |
+| `/pi-planning dependencies` | Map cross-team dependencies, identify risks | @architect |
+| `/pi-planning capacity` | Calculate team capacity per iteration | @team-lead |
+| `/pi-planning status` | PI progress dashboard with RAG status | @team-lead |
+
+---
+
+## 20. Maintenance & Context
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
@@ -327,7 +374,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 17. Git Workflow (Built Into `/workflow`)
+## 21. Git Workflow (Built Into `/workflow`)
 
 ```
 Phase 1:  git checkout -b feature/TASK-{id}/{slug}     ← Branch from main/dev
@@ -343,7 +390,7 @@ Phase 11: @infra deploys                                 ← Production deployme
 
 ---
 
-## 18. Agent Team (23 Agents)
+## 22. Agent Team (23 Agents)
 
 | Agent | Role | Access | Use For |
 |-------|------|--------|---------|

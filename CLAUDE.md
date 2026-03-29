@@ -7,7 +7,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `.claude/rules/` — path-specific rules
 - `.claude/agents/` — role-based agent team (23 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
-- `.claude/skills/` — workflow skills (74 skills including 6 real-environment testing, 8 audit/compliance, and 2 observability skills)
+- `.claude/skills/` — workflow skills (79 skills including 6 real-environment testing, 8 audit/compliance, and 2 observability skills)
 - `.claude/settings.json` — permissions, hooks
 - `.claude/hooks/` — automation scripts
 - `.claude/templates/` — code scaffolding templates
