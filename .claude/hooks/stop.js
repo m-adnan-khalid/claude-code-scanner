@@ -59,6 +59,32 @@ try {
 
   fs.writeFileSync(memoryPath, content);
 
+  // Auto-advance TODO.md — mark matching items complete
+  if (fs.existsSync(todoPath)) {
+    let todoContent = fs.readFileSync(todoPath, 'utf8');
+    const commitMsg = lastCommit.toLowerCase();
+    // If the commit message contains words matching an active TODO, mark it done
+    const todoLines = todoContent.split('\n');
+    let changed = false;
+    for (let i = 0; i < todoLines.length; i++) {
+      const match = todoLines[i].match(/^- \[ \] (.+)/);
+      if (match) {
+        const item = match[1].toLowerCase();
+        // Check if commit message words overlap with TODO item
+        const itemWords = item.split(/\s+/).filter(w => w.length > 4);
+        const commitWords = commitMsg.split(/\s+/).filter(w => w.length > 4);
+        const overlap = itemWords.filter(w => commitWords.includes(w));
+        if (overlap.length >= 2) {
+          todoLines[i] = todoLines[i].replace('- [ ]', '- [x]');
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      fs.writeFileSync(todoPath, todoLines.join('\n'));
+    }
+  }
+
   // Log to branch-scoped audit log
   const role = getRole(root);
   const branch = getBranch(root);

@@ -178,10 +178,10 @@ Before creating any new file, function, class, or component:
 - Always check GLOSSARY.md before naming entities — use exact canonical terms
 
 ## PROMPT INTELLIGENCE
-All prompts pass through the prompt intelligence pipeline (pre-tool-use hook + `/improve-prompt` skill):
-- **Scoring:** Prompts scored on specificity, role alignment, domain accuracy, standards compliance, destructive risk
-- **Improvement:** Low-scoring prompts improved with GLOSSARY terms, STANDARDS rules, MEMORY context
-- **Gating:** Destructive actions flagged; role violations blocked; user approval required before execution
+Two-layer prompt intelligence: automated safety (hook) + manual quality improvement (skill):
+- **Automated (pre-tool-use hook):** Protected file blocking, dangerous command detection, destructive action flagging, scope enforcement, audit logging
+- **Manual (`/improve-prompt` skill):** Run before complex tasks. Scores specificity, role alignment, domain accuracy, standards compliance. Improves with GLOSSARY terms, STANDARDS rules, MEMORY context. Requires user approval (A/B/C/D) before execution
+- **Gating:** Destructive actions auto-flagged; scope violations auto-blocked; `/improve-prompt` for quality improvement
 
 ## Real Environment Testing
 `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`

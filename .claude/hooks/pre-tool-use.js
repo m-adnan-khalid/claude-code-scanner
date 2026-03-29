@@ -30,6 +30,21 @@ process.stdin.on('end', () => {
     const branch = getBranch(root);
     const startTime = Date.now();
 
+    // Block non-CTO direct writes on main/master branch
+    if (['Write', 'Edit'].includes(tool_name) && tool_input && tool_input.file_path) {
+      const protectedBranches = ['main', 'master'];
+      if (protectedBranches.includes(branch) && role !== 'CTO') {
+        const relPath = path.relative(root, tool_input.file_path);
+        // Allow docs and config edits on main, block src/ changes
+        if (relPath.startsWith('src/')) {
+          const duration = Date.now() - startTime;
+          logToAudit(root, `${now}|${role}|${branch}|BLOCKED|Direct write to ${relPath} on ${branch} branch|blocked|${duration}ms`);
+          console.error(`BLOCKED: Role "${role}" cannot write to src/ directly on ${branch}. Use a feature branch.`);
+          process.exit(1);
+        }
+      }
+    }
+
     // Protected files — block direct writes
     const protectedFiles = [
       'CLAUDE.md',
