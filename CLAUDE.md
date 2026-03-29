@@ -89,67 +89,67 @@ Before creating any new file, function, class, or component:
 4. If similar exists: EXTEND or REUSE — never duplicate
 5. Read /docs/STANDARDS.md before writing any code. Match exactly.
 
-### CTO / VP Engineering
+### ROLE: CTO / VP Engineering
 - **Permissions:** Full audit, framework upgrades via PR only
 - **Owns:** CLAUDE.md, /docs/strategy/, /docs/adr/ approval
 - **Commands:** /audit-system, /org-report, /sync --full-rescan, /progress-report executive
 - **Agents:** @team-lead, @architect, @gatekeeper, @process-coach
 - **Cannot:** Commit to main directly, bypass PR on CLAUDE.md
 
-### Architect
+### ROLE: Architect
 - **Permissions:** Read-only docs, approve architecture PRs
 - **Owns:** /docs/ARCHITECTURE.md, /docs/adr/
 - **Commands:** /architecture, /design-review, /dependency-check, /impact-analysis
 - **Agents:** @architect, @code-quality, @security, @explorer
 - **Cannot:** Write feature code, modify hooks, bypass QA gate, deploy directly
 
-### Tech Lead
+### ROLE: Tech Lead
 - **Permissions:** Approve CLAUDE.md PRs, define agents, modify hooks via PR
 - **Owns:** .claude/agents/, .claude/hooks/, /docs/adr/
 - **Commands:** /architecture, /design-review, /dependency-check, /impact-analysis, /org-report
 - **Agents:** @team-lead, @architect, @code-quality, @security, @explorer
 - **Cannot:** Write feature code, bypass QA gate, deploy directly
 
-### Backend Dev
+### ROLE: Backend Dev
 - **Permissions:** Feature branches only — src/api/, src/services/, src/db/, src/models/, tests/api/, tests/services/, tests/db/, migrations/
 - **Commands:** /add-endpoint, /api-test, /fix-bug, /migrate
 - **Agents:** @api-builder, @debugger, @tester, @database
 - **Cannot:** Touch src/ui/, modify hooks, merge without QA gate
 
-### Frontend Dev
+### ROLE: Frontend Dev
 - **Permissions:** Feature branches only — src/ui/, src/components/, src/styles/, src/pages/
 - **Commands:** /add-component, /add-page, /e2e-browser, /visual-regression
 - **Agents:** @frontend, @debugger, @tester, @ux-designer
 - **Cannot:** Touch src/api/, src/services/, modify hooks
 
-### Full Stack Dev
+### ROLE: Full Stack Dev
 - **Permissions:** src/ full access, feature branches only
 - **Commands:** All dev commands + /impact-analysis, /api-test, /e2e-browser
 - **Agents:** @api-builder, @frontend, @debugger, @tester, @database
 - **Cannot:** Modify hooks, merge without QA gate, touch /infra/
 - **Extra:** Must file ADR for any cross-layer architectural change
 
-### QA / SDET
+### ROLE: QA / SDET
 - **Permissions:** tests/ full, src/ read-only
 - **Commands:** /qa-plan, /e2e-browser, /e2e-mobile, /api-test, /coverage-track, /load-test
 - **Agents:** @qa-lead, @tester, @qa-automation, @gatekeeper
 - **Cannot:** Merge PRs, modify source code, touch /infra/, touch hooks
 - **QA Gate Output:** { pass: bool, coverage_pct, failures[], gaps[] }
 
-### DevOps / Platform
+### ROLE: DevOps / Platform
 - **Permissions:** infra/, .github/, scripts/, Dockerfile, docker-compose.yml
 - **Commands:** /deploy, /infrastructure-audit, /cicd-audit, /incident-readiness
 - **Agents:** @infra, @security, @gatekeeper
 - **Cannot:** Touch src/, approve feature PRs, modify CLAUDE.md
 - **Owns:** .claude/CLAUDE.ci.md for headless pipeline sessions
 
-### Product Owner / PM
+### ROLE: Product Owner / PM
 - **Permissions:** READ docs/, TODO.md, MEMORY.md summary | WRITE docs/requirements/
 - **Commands:** /product-spec, /feature-map, /progress-report, /clarify, /brainstorm
 - **Agents:** @product-owner, @strategist, @ideator
 - **Cannot:** Run code agents, touch source files, modify hooks, read raw AUDIT_LOG
 
-### Designer / UX
+### ROLE: Designer / UX
 - **Permissions:** src/styles/ full, src/ui/ + src/components/ READ, docs/design/ WRITE
 - **Commands:** /design-review, /accessibility-audit, /visual-regression
 - **Agents:** @ux-designer, @frontend (read-only), @code-quality
@@ -178,10 +178,10 @@ Before creating any new file, function, class, or component:
 - Always check GLOSSARY.md before naming entities — use exact canonical terms
 
 ## PROMPT INTELLIGENCE
-Two-layer prompt intelligence: automated safety (hook) + manual quality improvement (skill):
-- **Automated (pre-tool-use hook):** Protected file blocking, dangerous command detection, destructive action flagging, scope enforcement, audit logging
-- **Manual (`/improve-prompt` skill):** Run before complex tasks. Scores specificity, role alignment, domain accuracy, standards compliance. Improves with GLOSSARY terms, STANDARDS rules, MEMORY context. Requires user approval (A/B/C/D) before execution
-- **Gating:** Destructive actions auto-flagged; scope violations auto-blocked; `/improve-prompt` for quality improvement
+All tool calls pass through the prompt intelligence pipeline (pre-tool-use hook + `/improve-prompt` skill):
+- **Automated (pre-tool-use hook):** 5-pass scoring on every mutating tool call — specificity, role alignment, domain/GLOSSARY, memory context, risk assessment. Strong prompts pass through. Weak prompts flagged with warnings. Destructive actions auto-flagged with checkpoint.
+- **Manual (`/improve-prompt` skill):** Full 5-pass improvement with GLOSSARY terms, STANDARDS rules, MEMORY context. Requires user approval (A/B/C/D) before execution. Cancelled prompts logged to audit.
+- **Gating:** Destructive actions auto-flagged; role violations detected; scope violations blocked; `/improve-prompt` for deep improvement
 
 ## Real Environment Testing
 `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
