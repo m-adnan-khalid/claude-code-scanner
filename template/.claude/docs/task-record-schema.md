@@ -172,6 +172,7 @@ BACKLOG -> INTAKE -> ANALYZING -> DESIGNING -> APPROVED -> DEVELOPING
   -> DEPLOYING -> MONITORING -> CLOSED
 
 Phase-to-state mapping:
+  Phase 0  = REQUIREMENTS_CLEAR (requirement gathering, story creation, gap analysis)
   Phase 1  = INTAKE
   Phase 2  = ANALYZING
   Phase 3  = DESIGNING

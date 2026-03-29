@@ -248,6 +248,55 @@ Phase 1 (Intake: type=spike) -> create task record, NO branch
 
 ---
 
+## Phase 0: Requirement Validation (MANDATORY for features)
+**This phase ensures requirements are clear BEFORE any code work begins.**
+Skip condition: type == hotfix OR type == bugfix (these have known requirements by definition).
+
+### Step 0a: Requirement Gathering
+If user provided just a description (not a story):
+1. Ask structured clarifying questions:
+   - **WHAT:** What exactly should change? (specific behavior, not vague goals)
+   - **WHO:** Who is the user? What role/persona?
+   - **WHY:** What problem does this solve? What's the business value?
+   - **SCOPE:** What's explicitly OUT of scope?
+   - **DONE:** How will we know it's done? (observable behavior)
+2. If any answer is vague → ask follow-up. Do NOT proceed with "I'll figure it out."
+3. If `.claude/project/PRODUCT_SPEC.md` exists → cross-reference user journeys for this feature
+
+### Step 0b: Story Creation
+Create a proper story (or verify one exists):
+1. **User Story:** "As a {role}, I want {action}, So that {outcome}"
+2. **Acceptance Criteria:** GIVEN/WHEN/THEN format (minimum 3: happy path, edge case, error case)
+3. **Out of Scope:** Explicitly list what this story does NOT include
+4. If `.claude/project/BACKLOG.md` exists → link to backlog entry with `<!-- task-id: TASK-{id} -->`
+5. Validate ACs against PRODUCT_SPEC.md user journeys (if exists) — flag gaps
+
+### Step 0c: Gap Analysis & Impact Preview
+Before creating the task record, surface risks:
+1. **Ambiguities:** List anything unclear. If any exist → ask user, WAIT for answer.
+2. **Assumptions:** List what you're assuming. User must confirm each.
+3. **Dependencies:** Other features/systems this depends on.
+4. **Impacted areas:** Quick scan of likely affected files/modules (lightweight, not full Phase 2).
+5. **Risk flags:** Auth changes? DB schema changes? Public API changes? Flag for user.
+
+### Step 0d: User Confirmation Gate
+Present the story + ACs + gaps + assumptions to the user:
+- "Here's what I understand. Is this correct?"
+- User must explicitly confirm before Phase 1 begins.
+- If user says "not quite" → loop back to Step 0a with their feedback.
+- **Do NOT skip this gate.** Unclear requirements caught here save 10x rework at Phase 10.
+
+### Phase 0 Exit Criteria
+- [ ] Story created with GIVEN/WHEN/THEN acceptance criteria
+- [ ] All ambiguities resolved (none left as "TBD")
+- [ ] Assumptions confirmed by user
+- [ ] Impact areas identified (even if lightweight)
+- [ ] User explicitly confirmed "yes, proceed"
+
+**State: REQUIREMENTS_CLEAR**
+
+---
+
 ## Phase 1: Task Intake
 **Drift check (automatic):** Run `/sync --check` silently. If drift detected:
 - Minor drift (1-3 items): log warning in task record, continue
@@ -255,7 +304,7 @@ Phase 1 (Intake: type=spike) -> create task record, NO branch
 - If user says yes: run `/sync --fix`, then continue intake
 - If user says no: continue with warning logged
 
-Classify type (feature/bugfix/refactor/hotfix/spike), scope (frontend/backend/fullstack/infra), complexity (small/medium/large). Log to `.claude/tasks/TASK-{id}.md`.
+Classify type (feature/bugfix/refactor/hotfix/spike), scope (frontend/backend/fullstack/infra), complexity (small/medium/large). Log to `.claude/tasks/TASK-{id}.md`. Include the story + ACs from Phase 0 in the task record.
 
 ### Branch Creation (except spike)
 1. Identify the base branch: `main` or `dev` (read from CLAUDE.md or git config)
@@ -272,10 +321,10 @@ Classify type (feature/bugfix/refactor/hotfix/spike), scope (frontend/backend/fu
 
 ### Phase 1 Exit Criteria
 - [ ] Task record created at `.claude/tasks/TASK-{id}.md`
+- [ ] Story + acceptance criteria included (from Phase 0)
 - [ ] Type, scope, complexity classified
 - [ ] Branch created and logged in task record (except spike)
 - [ ] Drift check completed
-- [ ] User confirmed task description
 
 **State: INTAKE**
 
@@ -283,7 +332,10 @@ Classify type (feature/bugfix/refactor/hotfix/spike), scope (frontend/backend/fu
 Run @explorer + @security in PARALLEL (spike: @explorer only).
 - Files affected, blast radius, test coverage, security flags
 - Risk: LOW/MEDIUM/HIGH/CRITICAL
+- If `.claude/project/` exists: check impact on PRODUCT_SPEC, ARCHITECTURE, DOMAIN_MODEL
 - Exit: impact report generated
+
+**If risk == HIGH or CRITICAL:** Mandatory Phase 3 (no auto-skip). Surface to user: "High risk detected. Architecture review required."
 
 **State: ANALYZING**
 
@@ -295,7 +347,10 @@ If NOT skipped: @architect designs solution. Then @code-quality reviews the desi
 **State: DESIGNING -> APPROVED (on user approval)**
 
 ## Phase 4: Business Analysis
-@product-owner generates acceptance criteria (GIVEN/WHEN/THEN). User reviews.
+@product-owner validates acceptance criteria from Phase 0 against implementation plan:
+- Are the ACs from Phase 0 still correct given the architecture from Phase 3?
+- Any new edge cases discovered during impact analysis or design?
+- @product-owner updates ACs if needed. User reviews.
 **If user rejects criteria:** @product-owner revises based on feedback → user re-reviews (max 2 iterations).
 **If iteration 2 rejected:** escalate to @team-lead for mediation.
 User confirms.
@@ -307,8 +362,11 @@ User confirms.
 Before development starts, create a Task Brief from `.claude/templates/task-brief.md`:
 1. Create `.claude/tasks/BRIEF-{TASK-id}.md`
 2. Fill ALL sections: Instruction, Understanding, Execution Plan, Tools, Boundaries
-3. If any ambiguity found → surface to user, WAIT for clarification
-4. Only proceed to Phase 5 when brief is complete and status is IN_PROGRESS
+3. **Section 2 (Understanding) MUST have:**
+   - Goal: clear definition of done (from Phase 0 ACs)
+   - Assumptions: all confirmed by user in Phase 0
+   - Ambiguities: must be "None" — if any remain, STOP and ask user
+4. Only proceed to Phase 5 when brief is complete and Section 2 shows zero ambiguities
 
 The `audit-logger` hook will auto-log every tool call to the brief's Audit Log.
 After task completion, append the Completion Report.
@@ -556,7 +614,7 @@ When `/workflow cancel TASK-id`:
 
 ## Task State Machine
 ```
-BACKLOG -> INTAKE -> ANALYZING -> DESIGNING -> APPROVED -> DEVELOPING
+BACKLOG -> REQUIREMENTS_CLEAR -> INTAKE -> ANALYZING -> DESIGNING -> APPROVED -> DEVELOPING
   -> DEV_TESTING -> REVIEWING -> CI_PENDING -> QA_TESTING
   -> QA_SIGNOFF -> BIZ_SIGNOFF -> TECH_SIGNOFF
   -> DEPLOYING -> MONITORING -> CLOSED
