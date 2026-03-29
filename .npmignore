@@ -1,6 +1,5 @@
 # Dev/project files (not needed by end users)
 .claude/
-scripts/
 .github/
 .git/
 .gitignore

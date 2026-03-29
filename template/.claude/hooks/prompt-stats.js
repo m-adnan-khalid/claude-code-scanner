@@ -13,6 +13,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// Resolve project root
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
 
 const reportsDir = path.join(_projectRoot, '.claude', 'reports');
 function logHookFailure(hookName, error) {
@@ -20,7 +25,7 @@ function logHookFailure(hookName, error) {
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
     fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
       `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
-  } catch (e) { logHookFailure("prompt-stats", e.message); }
+  } catch (_) {}
 }
 
 // Drain stdin
@@ -30,13 +35,7 @@ process.stdin.on('error', () => {});
 setTimeout(() => process.exit(0), 5000).unref();
 
 try {
-  // Resolve project root
-  let root = process.cwd();
-  while (!fs.existsSync(path.join(root, '.claude', 'hooks')) && root !== path.dirname(root)) {
-    root = path.dirname(root);
-  }
-
-  const reportsDir = path.join(root, '.claude', 'reports');
+  const root = _projectRoot;
 
   // 1. Read context state
   const contextFile = path.join(reportsDir, 'context-state.json');

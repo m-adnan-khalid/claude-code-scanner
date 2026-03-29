@@ -108,10 +108,17 @@ function init() {
   header('Claude Code Scanner — Environment Setup');
   log(`Target: ${cwd}\n`);
 
-  // Check if already initialized
-  if (fs.existsSync(path.join(cwd, 'CLAUDE.md')) && !force) {
-    warn('CLAUDE.md already exists. Use --force to overwrite.');
-    log('  Or run: npx claude-code-scanner update');
+  // Check if already initialized (check both CLAUDE.md and .claude/ directory)
+  const hasClaudeMd = fs.existsSync(path.join(cwd, 'CLAUDE.md'));
+  const hasClaudeDir = fs.existsSync(path.join(cwd, '.claude'));
+  if ((hasClaudeMd || hasClaudeDir) && !force) {
+    if (hasClaudeDir && !hasClaudeMd) {
+      warn('Partial .claude/ directory found (missing CLAUDE.md).');
+      warn('Use --force to overwrite, or delete .claude/ first.');
+    } else {
+      warn('CLAUDE.md already exists. Use --force to overwrite.');
+      log('  Or run: npx claude-code-scanner update');
+    }
     process.exit(1);
   }
 
@@ -498,6 +505,16 @@ function verify() {
 }
 
 function update() {
+  const cwd = process.cwd();
+  warn('UPDATE will overwrite template files (agents, skills, hooks, rules, scripts).');
+  warn('Custom modifications to these files will be lost.');
+  log('  Your task files (.claude/tasks/) and project files (.claude/project/) are preserved.');
+  log('  Your settings.local.json is preserved.');
+  log('');
+  log('  To proceed, re-run with: npx claude-code-scanner update --force');
+  if (!flags.includes('--force') && !flags.includes('-f')) {
+    process.exit(0);
+  }
   flags.push('--force');
   init();
 }

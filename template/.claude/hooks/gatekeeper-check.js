@@ -119,13 +119,13 @@ function check(raw) {
       fs.appendFileSync(path.join(logDir, 'gatekeeper.log'), entry);
     }
 
-    // Output blockers (shown prominently)
+    // Output blockers (shown prominently — PostToolUse can't prevent the edit but agent MUST fix it)
     if (blockers.length > 0) {
-      console.log('\n=== GATEKEEPER BLOCKED ===');
+      console.log('\n=== GATEKEEPER: CRITICAL ISSUE DETECTED ===');
       for (const b of blockers) {
-        console.log(`  BLOCK: ${b}`);
+        console.log(`  FIX REQUIRED: ${b}`);
       }
-      console.log('Fix the issue above before proceeding.');
+      console.log('The edit went through but you MUST fix this before advancing to the next phase.');
       console.log('=== END GATEKEEPER ===\n');
     }
 
