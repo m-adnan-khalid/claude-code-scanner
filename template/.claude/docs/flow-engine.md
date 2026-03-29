@@ -17,18 +17,31 @@ HANDOFF:
     - path/to/file-produced.md
     - path/to/test-results.json
   context: |
-    Summary of what was done, key decisions made,
-    and anything the next agent needs to know
+    Summary of what was done and key decisions made
+  next_agent_needs: |
+    What the receiving agent must verify/read before starting.
+    Includes: files to check, known issues, patterns to follow.
   iteration: N/max (if in a loop)
   status: complete | blocked | escalating
 ```
 
 ### Handoff Rules
 1. Every agent output MUST end with a HANDOFF block
-2. The receiving agent MUST read all listed artifacts before starting
-3. If `status: blocked`, route to @team-lead for resolution
-4. If `status: escalating`, route to user with options
-5. ALL routing goes through the orchestrator — agents NEVER invoke each other directly
+2. The `next_agent_needs` field is MANDATORY — tells the next agent what to verify/read
+3. The receiving agent MUST read all listed artifacts before starting
+4. If `status: blocked`, route to @team-lead for resolution
+5. If `status: escalating`, route to user with options
+6. ALL routing goes through the orchestrator — agents NEVER invoke each other directly
+
+### Mandatory Phase-Entry Checklist
+Before ANY agent starts work in a new phase, the orchestrator MUST:
+1. Read the task record and extract current `## Loop State`
+2. Read the last HANDOFF entry and extract `next_agent_needs`
+3. Verify all `artifacts` from the handoff still exist (Glob check)
+4. Pass loop state + next_agent_needs + artifact paths to the agent's invocation prompt
+5. If previous phase had an execution report, check for hallucination/regression flags
+
+This ensures agents never start blind or rebuild context from scratch.
 
 ---
 

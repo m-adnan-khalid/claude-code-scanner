@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // PostToolUseFailure hook: track tool failures for debugging and execution reports
-// Logs every tool failure with context so patterns can be identified
+// Now: counts consecutive failures, escalates after 3, logs to hook-failures.log
 
 const fs = require('fs');
 const path = require('path');
@@ -11,6 +11,38 @@ while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRo
   _projectRoot = path.dirname(_projectRoot);
 }
 
+const reportsDir = path.join(_projectRoot, '.claude', 'reports');
+const failureCountFile = path.join(reportsDir, '.consecutive-failures.json');
+
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (_) {}
+}
+
+function getConsecutiveFailures() {
+  try {
+    if (fs.existsSync(failureCountFile)) {
+      const data = JSON.parse(fs.readFileSync(failureCountFile, 'utf-8'));
+      // Reset if last failure was more than 5 minutes ago (different operation)
+      if (Date.now() - new Date(data.last_failure).getTime() > 5 * 60 * 1000) {
+        return { count: 0, tool: null, last_failure: null };
+      }
+      return data;
+    }
+  } catch (_) {}
+  return { count: 0, tool: null, last_failure: null };
+}
+
+function saveConsecutiveFailures(data) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.writeFileSync(failureCountFile, JSON.stringify(data));
+  } catch (_) {}
+}
+
 // ── Processing logic ────────────────────────────────────────────────
 function processInput(raw) {
   try {
@@ -18,20 +50,23 @@ function processInput(raw) {
     const toolName = data.tool_name || 'unknown';
     const error = data.tool_error || data.error || 'unknown error';
     const toolInput = data.tool_input || {};
+    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 
     // Log to failure tracking file
-    const reportsDir = path.join(_projectRoot, '.claude', 'reports');
-    if (!fs.existsSync(reportsDir)) {
-      fs.mkdirSync(reportsDir, { recursive: true });
-    }
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
     const logPath = path.join(reportsDir, 'tool-failures.log');
-    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
     const entry = `| ${timestamp} | ${toolName} | ${String(error).substring(0, 200).replace(/\n/g, ' ')} | ${JSON.stringify(toolInput).substring(0, 200)} |\n`;
-
     fs.appendFileSync(logPath, entry);
 
-    // Also log to active task's changes log if one exists
+    // Track consecutive failures
+    const failures = getConsecutiveFailures();
+    failures.count = (failures.tool === toolName) ? failures.count + 1 : 1;
+    failures.tool = toolName;
+    failures.last_failure = timestamp;
+    saveConsecutiveFailures(failures);
+
+    // Also log to active task's changes log
     const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (fs.existsSync(tasksDir)) {
       const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
@@ -46,9 +81,19 @@ function processInput(raw) {
       }
     }
 
-    // Output warning to stderr (visible to user)
-    process.stderr.write(`Tool failure tracked: ${toolName} — ${String(error).substring(0, 100)}\n`);
-  } catch {}
+    // Escalate after 3 consecutive failures of the same tool
+    if (failures.count >= 3) {
+      console.log(`\nTOOL FAILURE ESCALATION: ${toolName} has failed ${failures.count} times consecutively`);
+      console.log(`Last error: ${String(error).substring(0, 150)}`);
+      console.log('Consider: different approach, check permissions, or ask user for guidance');
+      // Reset counter after escalation
+      saveConsecutiveFailures({ count: 0, tool: null, last_failure: null });
+    } else {
+      process.stderr.write(`Tool failure tracked: ${toolName} (${failures.count}/3) — ${String(error).substring(0, 100)}\n`);
+    }
+  } catch (e) {
+    logHookFailure('tool-failure-tracker', e.message);
+  }
 }
 
 // ── Robust stdin reader (4-layer) ───────────────────────────────────

@@ -96,15 +96,21 @@ PENDING → IN_PROGRESS → DONE → VERIFIED
 | Process Coach | @process-coach | SDLC methodology selection and configuration |
 | Docs Writer | @docs-writer | READMEs, API docs, ADRs, changelogs |
 
-## Pre-Development Context
-If `.claude/project/PROJECT.md` exists and has status `READY_FOR_DEV`, read these project docs before starting Phase 1:
-- `.claude/project/PRODUCT_SPEC.md` — use for acceptance criteria baseline in Phase 4
-- `.claude/project/ARCHITECTURE.md` — reference in Phase 3 instead of designing from scratch
-- `.claude/project/BACKLOG.md` — pre-populate scope/complexity in Phase 1 if feature matches a backlog entry
-- `.claude/project/DEPLOY_STRATEGY.md` — reference in Phase 11 for deployment approach
-- `.claude/project/TECH_STACK.md` — reference for technology constraints
+## Pre-Development Context (Mandatory Bridge)
+If `.claude/project/PROJECT.md` exists and has status `READY_FOR_DEV`, the orchestrator MUST read ALL project docs before starting Phase 1. This is NOT optional — skipping causes agents to redesign what was already decided.
 
-This enriches the workflow with decisions already made during pre-development. If these files don't exist, the workflow proceeds normally (backward compatible).
+**Required reads (in order):**
+1. `.claude/project/DOMAIN_MODEL.md` — bounded contexts, glossary, business rules (prevents domain violations)
+2. `.claude/project/ARCHITECTURE.md` — reference in Phase 3 instead of designing from scratch
+3. `.claude/project/TECH_STACK.md` — technology constraints and rationale
+4. `.claude/project/PRODUCT_SPEC.md` — use for acceptance criteria baseline in Phase 4
+5. `.claude/project/BACKLOG.md` — pre-populate scope/complexity in Phase 1, write `<!-- task-id: TASK-{id} -->` to link
+6. `.claude/project/DEPLOY_STRATEGY.md` — reference in Phase 11 for deployment approach
+7. `.claude/project/FEATURES_BUILT.md` — if exists, inherit conventions from previous features
+
+**What to pass to Phase 1 agent:** Domain glossary terms, API patterns from architecture, tech constraints, and any cross-feature conventions from FEATURES_BUILT.md.
+
+If these files don't exist, the workflow proceeds normally (backward compatible).
 
 **Validation (only when PROJECT.md status = READY_FOR_DEV):**
 If project docs exist but contain only template placeholders (e.g., `{project-name}`), warn:
@@ -113,13 +119,24 @@ This is a warning, not a blocker — user can proceed or fix first.
 
 ## Cross-Feature Context
 When starting a new workflow and completed features exist (previous TASK-{id} files with status CLOSED):
-- Read each completed task's Phase 5 details for: files created, API patterns, component patterns, shared code
-- Inject a "Previous Features Summary" into Phase 1 context:
-  - API conventions established (error format, pagination, auth patterns)
-  - Shared components/services created
-  - Test patterns used
-  - Key file paths to reference (not redesign)
-- This ensures consistency across features built in sequence.
+1. Read each completed task's Phase 5 details for: files created, API patterns, component patterns, shared code
+2. **Build the Previous Features Summary** and save to `.claude/project/FEATURES_BUILT.md`:
+   ```markdown
+   # Features Built
+   Last updated: {ISO timestamp}
+
+   ## TASK-{id}: {title}
+   - **APIs:** endpoints created, error format, pagination pattern
+   - **Components:** shared components/services created
+   - **Test patterns:** testing approach, coverage strategy
+   - **Key files:** file paths to reference (not redesign)
+   - **Decisions:** key architectural decisions made during this feature
+   ```
+3. Inject this summary into Phase 1 context so the new task inherits conventions
+4. **On Phase 13 (CLOSED):** Append the completed task's summary to `FEATURES_BUILT.md`
+
+This file is the cross-feature memory — it ensures consistency across features built in sequence.
+If `FEATURES_BUILT.md` already exists, READ it at Phase 1 instead of re-scanning all closed tasks.
 
 ## Backlog Synchronization
 When a workflow reaches Phase 13 (CLOSED) and `.claude/project/BACKLOG.md` exists:
@@ -128,14 +145,17 @@ When a workflow reaches Phase 13 (CLOSED) and `.claude/project/BACKLOG.md` exist
 BEFORE generating the execution report. This is NOT a hook — it runs inline in the workflow.
 
 **Steps:**
-1. Find the feature entry in BACKLOG.md that matches this task's title (fuzzy match)
+1. Find the feature entry in BACKLOG.md using the `task-id` field (exact match on TASK-{id}).
+   If no `task-id` field exists, fall back to title fuzzy match.
+   At Phase 1, when linking to a backlog entry, WRITE the task-id into BACKLOG.md: `<!-- task-id: TASK-{id} -->`
 2. Update its status: `IN_PROGRESS` → `COMPLETE`
 3. Update PROJECT.md "Features In Development" table with TASK-id + completion date
-4. Check if all Must-Have features are now COMPLETE:
+4. Append feature summary to `.claude/project/FEATURES_BUILT.md` (cross-feature context)
+5. Check if all Must-Have features are now COMPLETE:
    - If YES → output: "All MVP features complete! Run /launch-mvp to finalize."
    - If NO → output: "Feature complete. N/M MVP features done. Run /mvp-kickoff next."
 
-**If no match found:** Warn: "Could not find matching feature in BACKLOG.md. Update manually."
+**If no match found:** Warn: "Could not find matching feature in BACKLOG.md for TASK-{id}. Update manually."
 **If BACKLOG.md missing:** Skip silently (backward compatible with non-pre-dev projects).
 
 ## Handoff Protocol
@@ -149,8 +169,11 @@ HANDOFF:
     - list of files/docs produced
   context: |
     Summary of what was done and key decisions
+  next_agent_needs: |
+    What the receiving agent must know/verify before starting
   iteration: N/max (if in a loop)
 ```
+The `next_agent_needs` field is MANDATORY. It tells the next agent exactly what to check, preventing context rebuilds.
 
 ## Context Budget Protocol
 **Note:** This workflow runs in `context: fork`. The `/context-check` skill measures the fork's own context, not the parent. Between heavy phases, compact the fork's context:
@@ -160,11 +183,17 @@ HANDOFF:
 
 ---
 
-## Prerequisite Validation
-Before advancing ANY phase, check:
-1. **Dependencies:** If task has `depends-on: TASK-X`, verify TASK-X has reached at least Phase 8 (CI_PENDING). If not, BLOCK with reason.
-2. **Task record exists:** `.claude/tasks/TASK-{id}.md` must exist and be readable.
+## Prerequisite Validation (Mandatory Phase-Entry Briefing)
+Before advancing ANY phase, the orchestrator MUST perform this checklist:
+1. **Task record exists:** `.claude/tasks/TASK-{id}.md` must exist and be readable.
+2. **Dependencies:** If task has `depends-on: TASK-X`, verify TASK-X has reached at least Phase 8 (CI_PENDING). If not, BLOCK with reason.
 3. **Previous phase exit criteria met:** Read task record, confirm previous phase output sections are populated.
+4. **Loop state loaded:** Read `## Loop State` section and pass current counters to the entering agent.
+5. **Last handoff consumed:** Read the last HANDOFF entry from the Handoff Log. Pass its `next_agent_needs` to the entering agent.
+6. **Artifacts validated:** Verify all files listed in the last handoff's `artifacts` still exist (Glob check).
+7. **Execution report checked:** If previous phase generated an execution report, check for `hallucination_flags` or `regression_flags` — block entry if either is non-clean.
+
+**This checklist prevents agents from rebuilding context.** The orchestrator passes all extracted context as part of the agent invocation prompt, so the agent starts with full situational awareness.
 
 ---
 
@@ -548,8 +577,38 @@ All criteria must pass before task status moves to CLOSED.
 - **Resume paused task:** `/workflow resume TASK-{id}`
 - **Jump to phase:** `/workflow [plan|dev|review|qa|deploy] TASK-{id}`
 
-## Rollback
+## Rollback & Undo
 - **Revert deployment:** `/rollback deploy TASK-{id}`
 - **Revert to previous phase:** `/rollback phase TASK-{id}`
 - **Revert code changes:** `/rollback code TASK-{id}` (git revert)
+- **Undo specific file edit:** Check `_changes.log` for `pre:{hash}` entries, then `git show {hash} > file` to restore
 - **Cancel task:** `/workflow cancel TASK-{id}` — moves to CANCELLED state
+
+## Disaster Recovery
+When task state is corrupted, lost, or inconsistent:
+
+1. **State reconstruction:** Read snapshots from `.claude/reports/executions/TASK-{id}_*.json` (sorted by timestamp) to rebuild timeline
+2. **Changes log:** `.claude/tasks/TASK-{id}_changes.log` has every file edit, tool failure, agent completion, and session failure
+3. **Git history:** `git log --all --oneline` shows all commits on feature branch — code is never lost if committed
+4. **Pre-compact snapshots:** `.claude/reports/executions/TASK-{id}_precompact_*.json` capture loop state before compaction
+5. **Interrupted snapshots:** `*_interrupted_*.json` capture state at session failure with recovery action
+
+**Recovery steps:**
+1. Run `/workflow status TASK-{id}` to see current state
+2. If task file missing: reconstruct from latest snapshot + git log
+3. If loop state lost: read latest `_precompact_` or `_snapshot_` JSON
+4. If changes unclear: read `_changes.log` for full edit history with git hashes
+5. If agent timed out: check `_agent_timeout_*.json` for what was in progress
+
+## Resilience Events (auto-handled by hooks)
+| Event | Hook | What Happens |
+|-------|------|-------------|
+| Session crash | `stop-failure-handler` | Saves recovery manifest, marks timeline as INTERRUPTED |
+| Agent timeout | `subagent-tracker` | Saves checkpoint, warns user, counts as +1 loop iteration |
+| Tool failure x3 | `tool-failure-tracker` | Escalates after 3 consecutive failures of same tool |
+| Context ~95% | `pre-compact-save` | Saves loop state + handoff snapshot before compaction |
+| Post-compaction | `post-compact-recovery` | Restores loop state, handoff, bugs, resume action |
+| Session start | `session-start` | Detects crashed tasks (>6h stale), orphaned subtasks, hook health |
+| Session stop | `execution-report` | Saves comprehensive snapshot with all loop/agent/failure counts |
+| File edit | `track-file-changes` | Logs git hash before edit for per-file undo capability |
+| Hook failure | All hooks | Logged to `.claude/reports/hook-failures.log` |

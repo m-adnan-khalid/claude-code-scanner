@@ -20,6 +20,14 @@ setTimeout(() => process.exit(0), 5000).unref();
 const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
 const reportsDir = path.join(_projectRoot, '.claude', 'reports');
 
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (_) {}
+}
+
 if (!fs.existsSync(tasksDir)) process.exit(0);
 
 const files = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
@@ -83,7 +91,7 @@ for (const file of files) {
     saved = true;
     break;
   } catch (e) {
-    // Skip unreadable task files
+    logHookFailure('pre-compact-save', `Task ${file}: ${e.message}`);
     continue;
   }
 }

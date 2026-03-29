@@ -1,12 +1,25 @@
 #!/usr/bin/env node
 // Post-tool hook: track file changes for active task
+// Now: logs file state before edit (git hash) for undo capability
+
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Resolve project root (walk up to find .claude/hooks/)
 let _projectRoot = process.cwd();
 while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
   _projectRoot = path.dirname(_projectRoot);
+}
+
+const reportsDir = path.join(_projectRoot, '.claude', 'reports');
+
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (_) {}
 }
 
 // ── Processing logic ────────────────────────────────────────────────
@@ -15,6 +28,17 @@ function processInput(raw) {
     const data = JSON.parse(raw);
     const file = (data.tool_input && data.tool_input.file_path) || '';
     if (!file) return;
+
+    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+
+    // Get git hash of file before change (for undo capability)
+    let gitHash = 'new-file';
+    try {
+      gitHash = execSync(`git hash-object "${file}" 2>/dev/null`, { cwd: _projectRoot, timeout: 2000 })
+        .toString().trim().substring(0, 8) || 'untracked';
+    } catch (_) {
+      gitHash = 'untracked';
+    }
 
     const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (!fs.existsSync(tasksDir)) return;
@@ -25,12 +49,14 @@ function processInput(raw) {
       const content = fs.readFileSync(taskPath, 'utf-8');
       if (/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING)/.test(content)) {
         const logPath = taskPath.replace(/\.md$/, '_changes.log');
-        const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
-        fs.appendFileSync(logPath, `| ${timestamp} | file_changed | ${file} |\n`);
+        // Include git hash for undo: `git show {hash}` recovers the pre-edit version
+        fs.appendFileSync(logPath, `| ${timestamp} | file_changed | ${file} | pre:${gitHash} |\n`);
         break;
       }
     }
-  } catch {}
+  } catch (e) {
+    logHookFailure('track-file-changes', e.message);
+  }
 }
 
 // ── Robust stdin reader (4-layer) ───────────────────────────────────

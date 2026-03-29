@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Stop hook: collect execution metadata and prompt for execution report generation
-// Runs on session Stop to capture final execution state
+// Now: richer state for disaster recovery, hook failure logging, session chain tracking
 
 const fs = require('fs');
 const path = require('path');
@@ -17,109 +17,140 @@ process.stdin.on('data', () => {});
 process.stdin.on('error', () => {});
 setTimeout(() => process.exit(0), 5000).unref();
 
-const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
-const reportsDir = path.join(_projectRoot, '.claude', 'reports', 'executions');
+const reportsDir = path.join(_projectRoot, '.claude', 'reports');
 
-// Find active task
-let activeTask = null;
-let activeTaskPath = null;
+function logHookFailure(hookName, error) {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    fs.appendFileSync(path.join(reportsDir, 'hook-failures.log'),
+      `| ${new Date().toISOString()} | ${hookName} | ${String(error).substring(0, 300)} |\n`);
+  } catch (_) {}
+}
+
+const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
+const execDir = path.join(reportsDir, 'executions');
 
 try {
   // Ensure reports directory exists
-if (!fs.existsSync(reportsDir)) {
-  fs.mkdirSync(reportsDir, { recursive: true });
-}
+  if (!fs.existsSync(execDir)) fs.mkdirSync(execDir, { recursive: true });
 
-if (fs.existsSync(tasksDir)) {
-  const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
-  for (const tf of taskFiles) {
-    const taskPath = path.join(tasksDir, tf);
-    const content = fs.readFileSync(taskPath, 'utf-8');
-    if (/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING)/.test(content)) {
-      activeTask = content;
-      activeTaskPath = taskPath;
-      break;
+  // Find active task
+  let activeTask = null;
+  let activeTaskPath = null;
+
+  if (fs.existsSync(tasksDir)) {
+    const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
+    for (const tf of taskFiles) {
+      const taskPath = path.join(tasksDir, tf);
+      const content = fs.readFileSync(taskPath, 'utf-8');
+      if (/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING|QA_SIGNOFF|BIZ_SIGNOFF|TECH_SIGNOFF|DEPLOYING|MONITORING)/.test(content)) {
+        activeTask = content;
+        activeTaskPath = taskPath;
+        break;
+      }
     }
   }
-}
 
-if (!activeTask) {
-  // No active task — output minimal execution snapshot
+  if (!activeTask) {
+    const snapshot = { timestamp: new Date().toISOString(), task: 'none', status: 'no active task found' };
+    console.log(`EXECUTION SNAPSHOT: ${JSON.stringify(snapshot)}`);
+    process.exit(0);
+  }
+
+  // Extract task metadata
+  const taskId = (activeTask.match(/^id:\s*(.+)$/m) || [])[1]?.trim() || 'UNKNOWN';
+  const taskTitle = (activeTask.match(/^title:\s*(.+)$/m) || [])[1]?.trim() || 'UNKNOWN';
+  const taskStatus = (activeTask.match(/^status:\s*(.+)$/m) || [])[1]?.trim() || 'UNKNOWN';
+  const phase = (activeTask.match(/^phase:\s*(.+)$/m) || [])[1]?.trim() || 'unknown';
+  const assignedTo = (activeTask.match(/^assigned-to:\s*(.+)$/m) || [])[1]?.trim() || 'unassigned';
+
+  // Count handoffs
+  const handoffMatches = activeTask.match(/\| \d{4}-\d{2}-\d{2}T.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|/g);
+  const handoffCount = handoffMatches ? handoffMatches.length : 0;
+
+  // Count loop iterations
+  const devTestLoop = activeTask.match(/dev-test-loop:\s*iteration\s*(\d+)/);
+  const reviewLoop = activeTask.match(/review-loop:\s*iteration\s*(\d+)/);
+  const qaBugLoop = activeTask.match(/qa-bug-loop:\s*iteration\s*(\d+)/);
+  const ciFixLoop = activeTask.match(/ci-fix-loop:\s*iteration\s*(\d+)/);
+  const deployLoop = activeTask.match(/deploy-loop:\s*iteration\s*(\d+)/);
+  const signoffCycle = activeTask.match(/signoff-rejection-cycle:\s*(\d+)/);
+
+  // Count agents
+  const agentMentions = activeTask.match(/@[\w-]+/g) || [];
+  const agentCounts = {};
+  for (const agent of agentMentions) agentCounts[agent] = (agentCounts[agent] || 0) + 1;
+
+  // Read changes log
+  const changesLogPath = activeTaskPath.replace(/\.md$/, '_changes.log');
+  let filesChanged = 0;
+  let toolFailures = 0;
+  let agentTimeouts = 0;
+  let sessionFailures = 0;
+
+  if (fs.existsSync(changesLogPath)) {
+    const changesLog = fs.readFileSync(changesLogPath, 'utf-8');
+    const lines = changesLog.split('\n').filter(l => l.trim());
+    filesChanged = lines.filter(l => l.includes('file_changed')).length;
+    toolFailures = lines.filter(l => l.includes('TOOL_FAILURE')).length;
+    agentTimeouts = lines.filter(l => l.includes('AGENT_TIMEOUT')).length;
+    sessionFailures = lines.filter(l => l.includes('SESSION_FAILURE')).length;
+  }
+
+  // Extract loop state for recovery
+  const loopSection = activeTask.match(/## Loop State\n([\s\S]*?)(?=\n##|\n$|$)/);
+  const loopState = loopSection ? loopSection[1].trim().split('\n').filter(l => l.trim().startsWith('-')).map(l => l.trim()).join('; ') : null;
+
+  // Build comprehensive snapshot (serves as disaster recovery manifest)
   const snapshot = {
     timestamp: new Date().toISOString(),
-    task: 'none',
-    status: 'no active task found'
+    event: 'session_stop',
+    task_id: taskId,
+    title: taskTitle,
+    status: taskStatus,
+    phase,
+    assigned_to: assignedTo,
+    agents_used: Object.keys(agentCounts).length,
+    agent_breakdown: agentCounts,
+    handoffs: handoffCount,
+    loops: {
+      dev_test: devTestLoop ? parseInt(devTestLoop[1]) : 0,
+      review: reviewLoop ? parseInt(reviewLoop[1]) : 0,
+      qa_bug: qaBugLoop ? parseInt(qaBugLoop[1]) : 0,
+      ci_fix: ciFixLoop ? parseInt(ciFixLoop[1]) : 0,
+      deploy: deployLoop ? parseInt(deployLoop[1]) : 0,
+      signoff_cycle: signoffCycle ? parseInt(signoffCycle[1]) : 0
+    },
+    loop_state_raw: loopState,
+    files_changed: filesChanged,
+    resilience: {
+      tool_failures: toolFailures,
+      agent_timeouts: agentTimeouts,
+      session_failures: sessionFailures
+    },
+    recovery: {
+      task_file: `.claude/tasks/${path.basename(activeTaskPath)}`,
+      changes_log: fs.existsSync(changesLogPath) ? changesLogPath : null,
+      resume_command: `/workflow resume ${taskId}`
+    }
   };
-  console.log(`EXECUTION SNAPSHOT: ${JSON.stringify(snapshot)}`);
-  process.exit(0);
-}
 
-// Extract task metadata
-const idMatch = activeTask.match(/^id:\s*(.+)$/m);
-const titleMatch = activeTask.match(/^title:\s*(.+)$/m);
-const statusMatch = activeTask.match(/^status:\s*(.+)$/m);
-const taskId = idMatch ? idMatch[1].trim() : 'UNKNOWN';
-const taskTitle = titleMatch ? titleMatch[1].trim() : 'UNKNOWN';
-const taskStatus = statusMatch ? statusMatch[1].trim() : 'UNKNOWN';
+  // Save execution snapshot
+  const snapshotPath = path.join(execDir, `${taskId}_snapshot_${Date.now()}.json`);
+  fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
 
-// Count handoffs from handoff log
-const handoffMatches = activeTask.match(/\| \d{4}-\d{2}-\d{2}T.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|/g);
-const handoffCount = handoffMatches ? handoffMatches.length : 0;
-
-// Count loop iterations
-const devTestLoop = activeTask.match(/dev-test-loop:\s*iteration\s*(\d+)/);
-const reviewLoop = activeTask.match(/review-loop:\s*iteration\s*(\d+)/);
-const qaBugLoop = activeTask.match(/qa-bug-loop:\s*iteration\s*(\d+)/);
-
-// Count agents mentioned in handoff log
-const agentMentions = activeTask.match(/@[\w-]+/g) || [];
-const agentCounts = {};
-for (const agent of agentMentions) {
-  agentCounts[agent] = (agentCounts[agent] || 0) + 1;
-}
-
-// Read changes log
-const changesLogPath = activeTaskPath.replace(/\.md$/, '_changes.log');
-let filesChanged = 0;
-let changesLog = '';
-if (fs.existsSync(changesLogPath)) {
-  changesLog = fs.readFileSync(changesLogPath, 'utf-8');
-  filesChanged = changesLog.split('\n').filter(l => l.trim()).length;
-}
-
-// Build execution snapshot
-const snapshot = {
-  timestamp: new Date().toISOString(),
-  task_id: taskId,
-  title: taskTitle,
-  status: taskStatus,
-  agents_used: Object.keys(agentCounts).length,
-  agent_breakdown: agentCounts,
-  handoffs: handoffCount,
-  loops: {
-    dev_test: devTestLoop ? parseInt(devTestLoop[1]) : 0,
-    review: reviewLoop ? parseInt(reviewLoop[1]) : 0,
-    qa_bug: qaBugLoop ? parseInt(qaBugLoop[1]) : 0
-  },
-  files_changed: filesChanged
-};
-
-// Save execution snapshot
-const snapshotPath = path.join(reportsDir, `${taskId}_snapshot_${Date.now()}.json`);
-fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
-
-// Output summary for the Stop prompt hook to consume
-console.log(`\nEXECUTION SNAPSHOT for ${taskId}: ${taskTitle}`);
-console.log(`  Status: ${taskStatus}`);
-console.log(`  Agents used: ${Object.keys(agentCounts).length} (${Object.keys(agentCounts).join(', ')})`);
-console.log(`  Handoffs: ${handoffCount}`);
-console.log(`  Loops: dev-test=${snapshot.loops.dev_test}, review=${snapshot.loops.review}, qa-bug=${snapshot.loops.qa_bug}`);
-console.log(`  Files changed: ${filesChanged}`);
-console.log(`  Snapshot saved: ${snapshotPath}`);
-console.log(`\nRun /execution-report ${taskId} for full analysis with success scoring, hallucination check, and regression impact.`);
+  // Output summary
+  console.log(`\nEXECUTION SNAPSHOT for ${taskId}: ${taskTitle}`);
+  console.log(`  Status: ${taskStatus} | Phase: ${phase} | Assigned: ${assignedTo}`);
+  console.log(`  Agents: ${Object.keys(agentCounts).length} | Handoffs: ${handoffCount} | Files: ${filesChanged}`);
+  console.log(`  Loops: dev-test=${snapshot.loops.dev_test}, review=${snapshot.loops.review}, qa-bug=${snapshot.loops.qa_bug}`);
+  if (toolFailures || agentTimeouts || sessionFailures) {
+    console.log(`  Issues: ${toolFailures} tool failures, ${agentTimeouts} agent timeouts, ${sessionFailures} session failures`);
+  }
+  console.log(`  Resume: /workflow resume ${taskId}`);
 
 } catch (err) {
-  // Non-fatal — don't block session stop
+  logHookFailure('execution-report', err.message);
   console.log(`EXECUTION REPORT HOOK: non-fatal error — ${err.message}`);
 }
 

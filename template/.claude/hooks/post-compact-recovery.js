@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // PostCompact hook: re-inject critical workflow state after context compaction
 // Compaction can lose loop counters, phase state, and active handoffs — this restores them
+// Now consumes pre-compact snapshots for richer recovery context
 
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +19,7 @@ process.stdin.on('error', () => {});
 setTimeout(() => process.exit(0), 5000).unref();
 
 const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
+const executionsDir = path.join(_projectRoot, '.claude', 'reports', 'executions');
 if (!fs.existsSync(tasksDir)) process.exit(0);
 
 const files = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
@@ -35,13 +37,28 @@ for (const file of files) {
     const title = (content.match(/^title:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
     const status = (content.match(/^status:\s*(.+)$/m) || [])[1] || 'UNKNOWN';
     const assignedTo = (content.match(/^assigned-to:\s*(.+)$/m) || [])[1] || 'unassigned';
+    const phase = (content.match(/^phase:\s*(.+)$/m) || [])[1] || 'unknown';
+
+    // Try to load pre-compact snapshot for richer context
+    let snapshot = null;
+    if (fs.existsSync(executionsDir)) {
+      const snapshots = fs.readdirSync(executionsDir)
+        .filter(f => f.startsWith(id.trim() + '_precompact_') && f.endsWith('.json'))
+        .sort()
+        .reverse();
+      if (snapshots.length > 0) {
+        try {
+          snapshot = JSON.parse(fs.readFileSync(path.join(executionsDir, snapshots[0]), 'utf-8'));
+        } catch (_) { /* ignore parse errors */ }
+      }
+    }
 
     console.log('');
     console.log('=== CONTEXT RECOVERY (post-compaction) ===');
     console.log(`ACTIVE TASK: ${id} — ${title.trim()}`);
-    console.log(`STATUS: ${status.trim()} | ASSIGNED: ${assignedTo.trim()}`);
+    console.log(`STATUS: ${status.trim()} | PHASE: ${phase.trim()} | ASSIGNED: ${assignedTo.trim()}`);
 
-    // Extract and re-inject loop state
+    // Extract and re-inject loop state (prefer snapshot, fall back to task file)
     const loopSection = content.match(/## Loop State\n([\s\S]*?)(?=\n##|\n$|$)/);
     if (loopSection) {
       console.log('');
@@ -52,12 +69,20 @@ for (const file of files) {
       }
     }
 
-    // Extract last handoff
+    // Extract last handoff with next_agent_needs
     const handoffLines = content.match(/\| \d{4}-\d{2}-\d{2}T.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|/g);
     if (handoffLines && handoffLines.length > 0) {
       const lastHandoff = handoffLines[handoffLines.length - 1];
       console.log('');
       console.log(`LAST HANDOFF: ${lastHandoff.trim()}`);
+    }
+
+    // Extract the last HANDOFF block's next_agent_needs
+    const needsMatch = content.match(/next_agent_needs:\s*\|?\n([\s\S]*?)(?=\n\s*iteration:|HANDOFF:|$)/);
+    if (needsMatch) {
+      console.log('');
+      console.log('NEXT ACTION NEEDED:');
+      console.log(`  ${needsMatch[1].trim().split('\n').map(l => l.trim()).join('\n  ')}`);
     }
 
     // Extract blockers
@@ -72,6 +97,14 @@ for (const file of files) {
     if (bugMatches) {
       console.log('');
       console.log(`OPEN BUGS: ${bugMatches.join(', ')}`);
+    }
+
+    // Provide actionable next step based on phase
+    console.log('');
+    console.log('RESUME ACTION:');
+    console.log(`  Read .claude/tasks/${file} then continue Phase ${phase.trim()} for ${assignedTo.trim()}`);
+    if (snapshot && snapshot.preserved && snapshot.preserved.loop_state) {
+      console.log(`  Pre-compact snapshot available at .claude/reports/executions/`);
     }
 
     console.log('');
