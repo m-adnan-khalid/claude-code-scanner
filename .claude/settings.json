@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "command": "node .claude/hooks/pre-tool-use.js"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "command": "node .claude/hooks/post-tool-use.js"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "node .claude/hooks/stop.js"
+      }
+    ],
+    "PreCompact": [
+      {
+        "command": "node .claude/hooks/pre-compact.js"
+      }
+    ]
+  }
+}

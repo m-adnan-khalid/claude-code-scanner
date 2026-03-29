@@ -1,9 +1,10 @@
 # TODO
 
 ## Active
-- [ ] Run full system audit and resolve all remaining gaps
-- [ ] Add integration tests for CLI (`bin/cli.js`)
-- [ ] Add CI/CD pipeline (GitHub Actions)
+- [x] Run full system audit and resolve all remaining gaps (2026-03-29)
+- [x] Add integration tests for CLI (`bin/cli.js`) — 18 tests, 2 suites (2026-03-29)
+- [x] Add CI/CD pipeline (GitHub Actions) — ci.yml + publish.yml (2026-03-29)
+- [x] Fix all 21 gaps from deep scan (2026-03-29)
 
 ## Backlog
 - [ ] Publish to npm registry

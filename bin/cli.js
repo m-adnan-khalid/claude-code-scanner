@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+process.on('unhandledRejection', (err) => {
+  console.error(`\x1b[31m✗\x1b[0m Unhandled error: ${err.message || err}`);
+  process.exit(1);
+});
+
 const fs = require('fs');
 const path = require('path');
 
@@ -66,7 +71,7 @@ function warn(msg) { log(`${YELLOW}!${RESET} ${msg}`); }
 function error(msg) { log(`${RED}✗${RESET} ${msg}`); }
 function header(msg) { log(`\n${BOLD}${CYAN}${msg}${RESET}`); }
 
-function copyDir(src, dest, overwrite = false) {
+function copyDir(src, dest, overwrite = false, _depth = 0) {
   if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
 
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -78,7 +83,7 @@ function copyDir(src, dest, overwrite = false) {
     const destPath = path.join(dest, entry.name);
 
     if (entry.isDirectory()) {
-      const result = copyDir(srcPath, destPath, overwrite);
+      const result = copyDir(srcPath, destPath, overwrite, _depth + 1);
       copied += result.copied;
       skipped += result.skipped;
     } else {
@@ -89,7 +94,12 @@ function copyDir(src, dest, overwrite = false) {
         copied++;
       }
     }
+    // Show progress for large copies at top level
+    if (_depth === 0 && copied > 0 && copied % 50 === 0) {
+      process.stdout.write(`\r  ${copied} files copied...`);
+    }
   }
+  if (_depth === 0 && copied >= 50) process.stdout.write('\r' + ' '.repeat(30) + '\r');
   return { copied, skipped };
 }
 
@@ -102,6 +112,14 @@ function init() {
   // Validate template directory exists
   if (!fs.existsSync(templateDir)) {
     error('Template directory not found. Package may be corrupted — reinstall with: npm install -g claude-code-scanner');
+    process.exit(1);
+  }
+
+  // Check directory is writable
+  try {
+    fs.accessSync(cwd, fs.constants.W_OK);
+  } catch (e) {
+    error(`Directory is not writable: ${cwd}`);
     process.exit(1);
   }
 
@@ -125,25 +143,47 @@ function init() {
   // Copy CLAUDE.md to root
   log('Installing files...\n');
 
+  // Track created paths for rollback on failure
+  const created = [];
+  function rollback() {
+    for (const p of created.reverse()) {
+      try {
+        if (fs.statSync(p).isDirectory()) fs.rmSync(p, { recursive: true });
+        else fs.unlinkSync(p);
+      } catch (_) {}
+    }
+  }
+
   const claudeMdSrc = path.join(templateDir, 'CLAUDE.md');
   const claudeMdDest = path.join(cwd, 'CLAUDE.md');
   try {
+    const existed = fs.existsSync(claudeMdDest);
     fs.copyFileSync(claudeMdSrc, claudeMdDest);
+    if (!existed) created.push(claudeMdDest);
     success('CLAUDE.md');
   } catch (err) {
     error(`Failed to copy CLAUDE.md: ${err.message}`);
     error('Check directory permissions and try again.');
+    rollback();
     process.exit(1);
   }
 
   // Copy .claude/ directory structure
+  const claudeDirExisted = fs.existsSync(path.join(cwd, '.claude'));
   const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles', 'project'];
   for (const dir of dirs) {
     const src = path.join(templateDir, '.claude', dir);
     const dest = path.join(cwd, '.claude', dir);
     if (fs.existsSync(src)) {
-      const result = copyDir(src, dest, force);
-      success(`.claude/${dir}/ (${result.copied} files${result.skipped ? `, ${result.skipped} skipped` : ''})`);
+      try {
+        const result = copyDir(src, dest, force);
+        success(`.claude/${dir}/ (${result.copied} files${result.skipped ? `, ${result.skipped} skipped` : ''})`);
+      } catch (err) {
+        error(`Failed to copy .claude/${dir}/: ${err.message}`);
+        if (!claudeDirExisted) { created.push(path.join(cwd, '.claude')); }
+        rollback();
+        process.exit(1);
+      }
     }
   }
 
@@ -190,7 +230,7 @@ function init() {
     for (const file of fs.readdirSync(hooksDir)) {
       if (file.endsWith('.sh') || file.endsWith('.js')) {
         const hookPath = path.join(hooksDir, file);
-        try { fs.chmodSync(hookPath, 0o755); } catch (e) { /* Windows — not needed for .js */ }
+        try { fs.chmodSync(hookPath, 0o755); } catch (e) { if (process.platform !== 'win32') warn(`Could not set executable permission on ${file}`); }
       }
     }
     success('Hook scripts ready');
@@ -210,7 +250,8 @@ function init() {
       ? fs.readFileSync(gitignorePath, 'utf-8')
       : '';
 
-    const newEntries = gitignoreEntries.filter(e => !gitignoreContent.includes(e));
+    const existingLines = new Set(gitignoreContent.split('\n').map(l => l.trim()));
+    const newEntries = gitignoreEntries.filter(e => !existingLines.has(e));
     if (newEntries.length > 0) {
       gitignoreContent += '\n# Claude Code local files\n' + newEntries.join('\n') + '\n';
       fs.writeFileSync(gitignorePath, gitignoreContent);
@@ -262,6 +303,12 @@ function newProject() {
     }
     if (projectName.includes('..')) {
       error(`Invalid project name "${projectName}". Path traversal ("..") is not allowed.`);
+      process.exit(1);
+    }
+    // Validate resolved path stays under cwd
+    const resolved = path.resolve(process.cwd(), projectName);
+    if (!resolved.startsWith(process.cwd())) {
+      error(`Invalid project name "${projectName}". Target must be inside the current directory.`);
       process.exit(1);
     }
     if (projectName.startsWith('.')) {
@@ -389,7 +436,7 @@ function newProject() {
   if (fs.existsSync(hooksDir)) {
     for (const file of fs.readdirSync(hooksDir)) {
       if (file.endsWith('.sh') || file.endsWith('.js')) {
-        try { fs.chmodSync(path.join(hooksDir, file), 0o755); } catch (e) { /* Windows */ }
+        try { fs.chmodSync(path.join(hooksDir, file), 0o755); } catch (e) { if (process.platform !== 'win32') warn(`Could not set executable permission on ${file}`); }
       }
     }
     success('Hook scripts ready');
@@ -699,7 +746,8 @@ switch (command) {
   case 'update': update(); break;
   case 'help': case '--help': case '-h': help(); break;
   case '--version': case '-v': case '-V': case 'version':
-    log(require('../package.json').version);
+    try { log(require('../package.json').version); }
+    catch (e) { error('Could not read package.json version'); process.exit(1); }
     break;
   default:
     error(`Unknown command: ${command}`);

@@ -407,6 +407,20 @@ npx claude-code-scanner new my-app --here    # New project in current directory
    - Mandatory execution report with scoring after every phase
    - Context budget enforcement between every phase transition
 
+## Uninstalling
+
+To remove the Claude Code environment from a project:
+```bash
+rm CLAUDE.md
+rm -rf .claude/
+# Also remove the gitignore entries added by the scanner
+```
+
+To uninstall the CLI globally:
+```bash
+npm uninstall -g claude-code-scanner
+```
+
 ## License
 
 MIT

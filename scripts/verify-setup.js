@@ -221,10 +221,18 @@ console.log(`  CLAUDE.md: ${clLines} lines | Rules: ${rlLines} lines | Total: ${
 check('Combined under 200 lines', (clLines + rlLines) <= 200);
 
 // --- Summary ---
-console.log(`\n=== PASS: ${PASS} | FAIL: ${FAIL} | WARN: ${WARN} ===`);
-if (FAIL === 0) {
-  console.log('STATUS: ALL CHECKS PASSED');
+const total = PASS + FAIL + WARN;
+console.log(`\n${'='.repeat(50)}`);
+console.log(`RESULTS: ${PASS}/${total} passed | ${FAIL} failed | ${WARN} warnings`);
+console.log(`${'='.repeat(50)}`);
+if (FAIL === 0 && WARN === 0) {
+  console.log(`${GREEN}STATUS: ALL CHECKS PASSED ✓${RESET}`);
+  console.log('Your Claude Code environment is ready to use.');
+} else if (FAIL === 0) {
+  console.log(`${YELLOW}STATUS: PASSED WITH ${WARN} WARNINGS${RESET}`);
+  console.log('Environment is usable but has minor issues. Run /sync --fix to resolve.');
 } else {
-  console.log(`STATUS: ${FAIL} FAILURES — fix before using`);
+  console.log(`${RED}STATUS: ${FAIL} FAILURES — fix before using${RESET}`);
+  console.log('Run: npx claude-code-scanner init --force');
   process.exit(1);
 }

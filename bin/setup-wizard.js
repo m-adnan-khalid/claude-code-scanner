@@ -120,6 +120,7 @@ function confirm(question, defaultYes = true) {
 // ─── Project Scanner (Auto-detect) ─────────────────────────────────────
 
 function scanProject(cwd) {
+  try { fs.accessSync(cwd, fs.constants.R_OK); } catch { return null; }
   const scan = {
     name: path.basename(cwd),
     desc: '',
@@ -291,7 +292,11 @@ function displayScanResults(scan) {
 
 async function stepProjectInfo(scan) {
   sectionHeader(1, 'Project Info', 'Confirm or customize detected settings');
-  const name = await ask('Project name', scan ? scan.name : path.basename(process.cwd()));
+  let name = await ask('Project name', scan ? scan.name : path.basename(process.cwd()));
+  if (!name || !name.trim()) {
+    name = path.basename(process.cwd());
+    console.log(`  ${C.dim}Using directory name: ${name}${C.reset}`);
+  }
   const desc = await ask('Short description', scan ? scan.desc : '');
 
   const typeOptions = [
