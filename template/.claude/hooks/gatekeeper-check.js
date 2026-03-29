@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// PostToolUse hook: gatekeeper checks after code changes
-// BLOCKS: hardcoded secrets, disabled tests in dev phases
-// WARNS: console.log, TODOs, scope violations
+// PreToolUse hook: gatekeeper that BLOCKS dangerous edits before they happen
+// Exit code 2 = BLOCK the edit | Exit code 0 = ALLOW
+// Checks the INCOMING edit content (tool_input.new_string) not the file on disk
 // For deep review, invoke @gatekeeper agent directly
 
 const fs = require('fs');
@@ -23,6 +23,9 @@ function logHookFailure(hookName, error) {
   } catch (_) {}
 }
 
+// Track exit code — 0 = allow, 2 = block
+let exitCode = 0;
+
 // ── Gatekeeper logic ────────────────────────────────────────────────
 function check(raw) {
   try {
@@ -38,52 +41,45 @@ function check(raw) {
 
     const warnings = [];
     const blockers = [];
+    const ext = path.extname(file).toLowerCase();
+    const codeExts = ['.js', '.ts', '.jsx', '.tsx', '.py', '.dart', '.go', '.rs', '.java', '.kt', '.swift'];
 
-    // 1. Check if file content has danger signals
-    if (fs.existsSync(resolved)) {
-      const content = fs.readFileSync(resolved, 'utf-8');
-      const ext = path.extname(file).toLowerCase();
-      const codeExts = ['.js', '.ts', '.jsx', '.tsx', '.py', '.dart', '.go', '.rs', '.java', '.kt', '.swift'];
+    // Check INCOMING content (what's about to be written), not file on disk
+    const newContent = data.tool_input?.new_string || data.tool_input?.content || '';
 
-      if (codeExts.includes(ext)) {
-        // BLOCK: Hardcoded secrets
-        if (/(?:password|secret|api_key|apikey|token|private_key)\s*[:=]\s*['"][^'"]{8,}['"]/i.test(content)) {
-          // Exclude test files and example configs
-          if (!relative.includes('test') && !relative.includes('spec') && !relative.includes('example') && !relative.includes('mock')) {
-            blockers.push('SECURITY: Hardcoded secret detected. Use environment variables. This edit is flagged.');
-          }
+    if (codeExts.includes(ext) && newContent) {
+      // BLOCK: Hardcoded secrets in incoming content
+      if (/(?:password|secret|api_key|apikey|token|private_key)\s*[:=]\s*['"][^'"]{8,}['"]/i.test(newContent)) {
+        if (!relative.includes('test') && !relative.includes('spec') && !relative.includes('example') && !relative.includes('mock')) {
+          blockers.push('Hardcoded secret detected. Use environment variables instead.');
         }
+      }
 
-        // BLOCK: Disabled tests during development phases (indicates regression hiding)
-        if (data.tool_name === 'Edit') {
-          const editContent = data.tool_input?.new_string || '';
-          if (/@pytest\.mark\.skip|\.skip\(|xit\(|xdescribe\(|test\.skip|\.only\(/.test(editContent)) {
-            blockers.push('REGRESSION: Adding test skip/disable/only. This hides regressions. Remove skip or add justification comment.');
-          }
-        }
-
-        // WARN: Console.log left in production code (not test files)
-        if (!relative.includes('test') && !relative.includes('spec') && !relative.includes('__test')) {
-          if (/console\.(log|debug|info)\(/.test(content) && ['.js', '.ts', '.jsx', '.tsx'].includes(ext)) {
-            warnings.push('QUALITY: console.log found in production code. Remove before merge.');
-          }
-        }
-
-        // WARN: TODO/FIXME/HACK markers
-        const todoCount = (content.match(/\/\/\s*(TODO|FIXME|HACK|XXX):/gi) || []).length;
-        if (todoCount > 2) {
-          warnings.push(`QUALITY: ${todoCount} TODO/FIXME markers found. Track these in the task file.`);
-        }
-
-        // WARN: Large file changes (>300 lines changed could impact many things)
-        const lineCount = content.split('\n').length;
-        if (lineCount > 500 && data.tool_name === 'Write') {
-          warnings.push(`SCOPE: Large file write (${lineCount} lines). Consider splitting into smaller files.`);
-        }
+      // BLOCK: Disabling tests (skip, only, xit)
+      if (/@pytest\.mark\.skip|\.skip\(|xit\(|xdescribe\(|test\.skip|\.only\(/.test(newContent)) {
+        blockers.push('Test skip/disable/only detected. This hides regressions. Remove or add justification.');
       }
     }
 
-    // 2. Check scope against active task
+    // Also check existing file for accumulated issues (warnings only)
+    if (fs.existsSync(resolved) && codeExts.includes(ext)) {
+      const existingContent = fs.readFileSync(resolved, 'utf-8');
+
+      // WARN: Console.log in production code
+      if (!relative.includes('test') && !relative.includes('spec')) {
+        if (/console\.(log|debug|info)\(/.test(existingContent) && ['.js', '.ts', '.jsx', '.tsx'].includes(ext)) {
+          warnings.push('console.log in production code. Remove before merge.');
+        }
+      }
+
+      // WARN: TODO/FIXME accumulation
+      const todoCount = (existingContent.match(/\/\/\s*(TODO|FIXME|HACK|XXX):/gi) || []).length;
+      if (todoCount > 2) {
+        warnings.push(`${todoCount} TODO/FIXME markers. Track in task file.`);
+      }
+    }
+
+    // WARN: Scope violations
     const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
     if (fs.existsSync(tasksDir)) {
       const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
@@ -95,14 +91,11 @@ function check(raw) {
           if (scopeMatch) {
             const scope = scopeMatch[1].trim().toLowerCase();
             const fileLower = relative.toLowerCase();
-            if (scope === 'backend' && (fileLower.includes('frontend') || fileLower.includes('web/') || fileLower.includes('lib/'))) {
-              warnings.push(`SCOPE: Editing ${relative} but task scope is "${scope}". Is this intentional?`);
+            if (scope === 'backend' && (fileLower.includes('frontend') || fileLower.includes('web/'))) {
+              warnings.push(`Editing ${relative} but task scope is "${scope}".`);
             }
-            if (scope === 'frontend' && (fileLower.includes('backend') || fileLower.includes('app/api') || fileLower.includes('lib/features'))) {
-              warnings.push(`SCOPE: Editing ${relative} but task scope is "${scope}". Is this intentional?`);
-            }
-            if (scope === 'mobile' && (fileLower.includes('backend') || fileLower.includes('web/'))) {
-              warnings.push(`SCOPE: Editing ${relative} but task scope is "${scope}". Is this intentional?`);
+            if (scope === 'frontend' && (fileLower.includes('backend') || fileLower.includes('app/api'))) {
+              warnings.push(`Editing ${relative} but task scope is "${scope}".`);
             }
           }
           break;
@@ -110,45 +103,45 @@ function check(raw) {
       }
     }
 
-    // Log blockers and warnings to gatekeeper report
+    // Log to gatekeeper report
     if (blockers.length > 0 || warnings.length > 0) {
       const logDir = path.join(reportsDir, 'gatekeeper');
       if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-      const timestamp = new Date().toISOString();
-      const entry = `| ${timestamp} | ${relative} | ${blockers.length} blockers, ${warnings.length} warnings | ${[...blockers, ...warnings].join('; ').substring(0, 300)} |\n`;
+      const ts = new Date().toISOString();
+      const entry = `| ${ts} | ${relative} | ${blockers.length} blocked, ${warnings.length} warned | ${[...blockers, ...warnings].join('; ').substring(0, 300)} |\n`;
       fs.appendFileSync(path.join(logDir, 'gatekeeper.log'), entry);
     }
 
-    // Output blockers (shown prominently — PostToolUse can't prevent the edit but agent MUST fix it)
+    // BLOCK: exit(2) prevents the edit from happening
     if (blockers.length > 0) {
-      console.log('\n=== GATEKEEPER: CRITICAL ISSUE DETECTED ===');
+      process.stderr.write('\nGATEKEEPER BLOCKED:\n');
       for (const b of blockers) {
-        console.log(`  FIX REQUIRED: ${b}`);
+        process.stderr.write(`  ${b}\n`);
       }
-      console.log('The edit went through but you MUST fix this before advancing to the next phase.');
-      console.log('=== END GATEKEEPER ===\n');
+      process.stderr.write('Fix the issue and retry the edit.\n');
+      exitCode = 2;
     }
 
-    // Output warnings (informational)
+    // WARN: exit(0) allows but shows warnings
     if (warnings.length > 0) {
-      process.stderr.write('\n');
       for (const w of warnings) {
         process.stderr.write(`GATEKEEPER: ${w}\n`);
       }
     }
   } catch (e) {
     logHookFailure('gatekeeper-check', e.message);
+    // On error, allow the edit (fail-open, not fail-closed)
   }
 }
 
-// ── Robust stdin reader (4-layer) ───────────────────────────────────
+// ── Robust stdin reader ───────────────────────────────────────────
 let done = false;
 let buf = '';
 
 function finish() {
   if (done) return;
   done = true;
-  process.exit(0); // PostToolUse hooks — blockers are logged, agent sees warning
+  process.exit(exitCode); // 0 = allow, 2 = block
 }
 
 setTimeout(() => finish(), 5000).unref();
@@ -158,6 +151,7 @@ const graceTimer = setTimeout(() => {
 }, 300);
 
 process.stdin.setEncoding('utf-8');
+process.stdin.resume();
 process.stdin.on('data', chunk => {
   clearTimeout(graceTimer);
   buf += chunk;
@@ -173,4 +167,3 @@ process.stdin.on('end', () => {
   finish();
 });
 process.stdin.on('error', () => finish());
-process.stdin.resume();

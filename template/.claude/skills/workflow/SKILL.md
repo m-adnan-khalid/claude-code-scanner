@@ -345,6 +345,13 @@ Before development starts, run the existing test suite to establish a baseline:
 
 **If one parallel agent finishes early:** It waits. The orchestrator does NOT advance that agent to Phase 6 independently — both must complete Phase 5 before either enters Phase 6.
 
+**Agent timeout handling (maxTurns):** If an agent hits maxTurns during Phase 5:
+1. `subagent-tracker` hook saves a checkpoint with partial work completed
+2. Orchestrator checks the checkpoint — if >70% of subtasks are done, re-invoke with remaining scope only
+3. If <70% done, split the work: create new subtasks for the incomplete portion and re-invoke
+4. Each re-invocation counts as +1 loop iteration toward the Phase 6 circuit breaker
+5. **Never re-invoke with the full original scope** — always narrow to what's left
+
 **State: DEVELOPING**
 
 ## Phase 6: Dev Self-Testing

@@ -70,6 +70,11 @@
           {
             "type": "command",
             "command": "node .claude/hooks/protect-files.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gatekeeper-check.js",
+            "statusMessage": "Checking for secrets and regressions..."
           }
         ]
       },
@@ -122,11 +127,6 @@
           {
             "type": "command",
             "command": "node .claude/hooks/track-file-changes.js"
-          },
-          {
-            "type": "command",
-            "command": "node .claude/hooks/gatekeeper-check.js",
-            "statusMessage": "Validating change..."
           }
         ]
       }

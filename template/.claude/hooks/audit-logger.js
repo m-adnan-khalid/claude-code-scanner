@@ -58,16 +58,29 @@ process.stdin.on('end', () => {
         if (/Status:\s*(PENDING|IN_PROGRESS)/.test(content)) {
           // Find the Audit Log section and append
           if (content.includes('## 8. Audit Log')) {
-            // Append before the Completion Report section
-            const completionIdx = content.indexOf('# Completion Report');
-            if (completionIdx > 0) {
-              const before = content.substring(0, completionIdx).trimEnd();
-              const after = content.substring(completionIdx);
-              const updated = before + '\n' + logLine + '\n\n' + after;
-              fs.writeFileSync(briefPath, updated);
-            } else {
-              // No completion section yet — append at end
-              fs.appendFileSync(briefPath, logLine + '\n');
+            // Simple lockfile to prevent concurrent read-modify-write corruption
+            const lockPath = briefPath + '.lock';
+            try {
+              fs.writeFileSync(lockPath, String(process.pid), { flag: 'wx' }); // exclusive create
+            } catch (_) {
+              // Lock exists — another hook is writing. Append to separate audit log instead.
+              const auditFallback = path.join(reportsDir, 'audit', 'session-audit.log');
+              fs.appendFileSync(auditFallback, logLine + '\n');
+              break;
+            }
+            try {
+              // Re-read to get latest (another hook may have written between our first read and lock)
+              const freshContent = fs.readFileSync(briefPath, 'utf-8');
+              const completionIdx = freshContent.indexOf('# Completion Report');
+              if (completionIdx > 0) {
+                const before = freshContent.substring(0, completionIdx).trimEnd();
+                const after = freshContent.substring(completionIdx);
+                fs.writeFileSync(briefPath, before + '\n' + logLine + '\n\n' + after);
+              } else {
+                fs.appendFileSync(briefPath, logLine + '\n');
+              }
+            } finally {
+              try { fs.unlinkSync(lockPath); } catch (_) {}
             }
           }
           break; // only update the most recent active brief

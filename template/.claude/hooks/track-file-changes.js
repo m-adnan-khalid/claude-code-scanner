@@ -49,6 +49,14 @@ function processInput(raw) {
       const content = fs.readFileSync(taskPath, 'utf-8');
       if (/status:\s*(DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING)/.test(content)) {
         const logPath = taskPath.replace(/\.md$/, '_changes.log');
+        // Rotate log if over 5000 lines (keep last 3000)
+        if (fs.existsSync(logPath)) {
+          const lines = fs.readFileSync(logPath, 'utf-8').split('\n');
+          if (lines.length > 5000) {
+            const rotated = lines.slice(-3000).join('\n');
+            fs.writeFileSync(logPath, rotated + '\n');
+          }
+        }
         // Include git hash for undo: `git show {hash}` recovers the pre-edit version
         fs.appendFileSync(logPath, `| ${timestamp} | file_changed | ${file} | pre:${gitHash} |\n`);
         break;
