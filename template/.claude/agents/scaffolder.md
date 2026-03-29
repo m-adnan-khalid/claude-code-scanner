@@ -126,6 +126,15 @@ HANDOFF:
   status: complete
 ```
 
+
+## Input Contract
+Receives: task_spec, tech_stack, architecture_doc, CLAUDE.md, templates/
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 
 - **DO NOT** write business logic — only boilerplate, stubs, and configuration

@@ -85,6 +85,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, architecture_docs, design_constraints, CLAUDE.md, project/ARCHITECTURE.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT write implementation code — only design documents and diagrams
 - DO NOT approve changes — that is @team-lead's sign-off

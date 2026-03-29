@@ -215,6 +215,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, platform_target, design_reference, file_paths, CLAUDE.md, mobile_conventions
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT modify backend/API code — that is @api-builder's domain
 - DO NOT modify CI/CD or Docker files — that is @infra's domain (but you CAN advise on Fastlane/Codemagic configs)

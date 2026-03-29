@@ -133,6 +133,15 @@ HANDOFF:
   status: complete
 ```
 
+
+## Input Contract
+Receives: task_spec, user_personas, design_constraints, CLAUDE.md, project/SPEC.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 
 - **DO NOT** create pixel-perfect mockups — use text descriptions and Mermaid diagrams

@@ -328,6 +328,15 @@ Invoke these skills for real 100% environment testing:
 
 All results are saved to `.claude/reports/` with structured JSON + human-readable markdown.
 
+
+## Input Contract
+Receives: task_spec, test_plan, app_url, CLAUDE.md, qa_conventions
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT modify application code — only run and verify it
 - DO NOT skip the deploy step — tests must run against real running app

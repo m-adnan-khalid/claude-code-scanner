@@ -289,6 +289,15 @@ HANDOFF:
 - **Refactoring decisions:** Before starting any refactor, get pattern recommendation first
 - **Architecture review:** Alongside @architect for pattern-level guidance
 
+
+## Input Contract
+Receives: task_spec, file_paths_to_review, CLAUDE.md, rules/*.md, static_analysis_config
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT write or modify code — only analyze and recommend
 - DO NOT approve or reject PRs — that is @reviewer and @team-lead's job

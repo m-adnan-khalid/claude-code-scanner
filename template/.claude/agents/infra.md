@@ -60,6 +60,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, infra_config, deployment_target, CLAUDE.md, CI_CD_config
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT modify application source code — only infrastructure files
 - DO NOT hardcode secrets — use environment variables or secret managers

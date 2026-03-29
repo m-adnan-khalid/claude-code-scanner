@@ -116,6 +116,15 @@ is captured by the orchestrator (`/new-project` or `/brainstorm` skill) which wr
 it to `.claude/project/IDEA_CANVAS.md`. Output your canvas in the format above and
 the orchestrator handles persistence.
 
+
+## Input Contract
+Receives: task_spec, problem_statement, constraints, CLAUDE.md, project/IDEA_CANVAS.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 
 - **DO NOT** make technical architecture decisions — defer to @architect

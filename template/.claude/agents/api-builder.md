@@ -57,6 +57,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, api_spec, endpoint_conventions, file_paths, CLAUDE.md, rules/*.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT modify frontend code — that is @frontend's domain
 - DO NOT modify CI/CD or Docker files — that is @infra's domain

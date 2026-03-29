@@ -147,6 +147,15 @@ After each phase completes, run `/execution-report TASK-{id} --phase N` to gener
 - Hallucination check (0-3)
 - Regression impact (0-3)
 
+
+## Input Contract
+Receives: task_spec, active_tasks, agent_status, CLAUDE.md, project/*.md, rules/*.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT write application code directly — delegate to dev agents
 - DO NOT approve your own code changes — use @reviewer

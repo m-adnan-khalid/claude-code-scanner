@@ -90,6 +90,15 @@ The `test-results-parser` hook automatically captures pass/fail counts,
 coverage %, and duration from any test command output. Results are saved
 to `.claude/reports/test-runs/latest.json` and appended to history.
 
+
+## Input Contract
+Receives: task_spec, file_paths_to_test, test_conventions, CLAUDE.md, rules/testing.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT fix application code — only write tests (report failures to @debugger via @team-lead)
 - DO NOT lower coverage thresholds to make checks pass

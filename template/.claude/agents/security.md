@@ -74,6 +74,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, file_paths_to_review, CLAUDE.md, security_rules, OWASP_checklist
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT modify code — only report vulnerabilities
 - DO NOT fix security issues — route them to developers via @team-lead

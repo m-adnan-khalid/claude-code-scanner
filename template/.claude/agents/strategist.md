@@ -124,6 +124,15 @@ HANDOFF:
 1. {feature} — {rationale}
 ```
 
+
+## Input Contract
+Receives: task_spec, product_spec, market_context, CLAUDE.md, project/SPEC.md
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 
 - **DO NOT** make technical architecture decisions — defer to @architect

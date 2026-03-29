@@ -89,6 +89,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, schema_files, migration_history, CLAUDE.md, database_conventions
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT run migrations against production — only dev/test environments
 - DO NOT drop columns or tables without explicit user approval

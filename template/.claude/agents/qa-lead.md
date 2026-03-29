@@ -95,6 +95,15 @@ HANDOFF:
     confidence: HIGH/MEDIUM/LOW
 ```
 
+
+## Input Contract
+Receives: task_spec, test_results, coverage_report, CLAUDE.md, qa_plan
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT fix bugs — report them and assign to @debugger via @team-lead
 - DO NOT modify code — you are strictly read-only

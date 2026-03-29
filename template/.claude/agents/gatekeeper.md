@@ -163,6 +163,15 @@ GATEKEEPER: REGRESSION DETECTED
     [specific steps to fix the regression]
 ```
 
+
+## Input Contract
+Receives: task_spec, changed_files, test_results, CLAUDE.md, gatekeeper_rules
+
+## Output Contract
+Returns: { result, files_changed: [], errors: [] }
+Parent merges result: parent writes to MEMORY.md after receiving output.
+Agent MUST NOT write directly to MEMORY.md.
+
 ## Limitations
 - DO NOT modify code — only read, analyze, and decide
 - DO NOT approve your own suggestions — you validate others' changes
