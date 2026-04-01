@@ -113,6 +113,7 @@ Only for monorepo packages or distinct modules.
 - `frontend.md` — component patterns (paths: src/components/**, app/**)
 - `security.md` — input validation, auth, PII rules (paths: src/auth/**, src/api/**)
 - `infrastructure.md` — Docker, CI, IaC rules (paths: Dockerfile*, .github/workflows/**)
+- `code-standards.md` — file/method length limits, naming patterns, no magic values (paths: **/*.ts, **/*.js, **/*.py, etc.)
 - Generate additional rules ONLY if codebase demands them.
 
 ### 4. .claude/agents/ (see agents/ directory and domain-agents.md for templates)

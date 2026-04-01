@@ -9,10 +9,10 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 
 ## What You Generate
 - `CLAUDE.md` (root + nested per module)
-- `.claude/rules/` — path-specific rules (8 rules)
-- `.claude/agents/` — role-based agent team (25 agents)
+- `.claude/rules/` — path-specific rules (9 rules)
+- `.claude/agents/` — role-based agent team (27 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
-- `.claude/skills/` — workflow skills (86 skills including 6 real-environment testing, 8 audit/compliance, 2 observability, and 1 prompt skill)
+- `.claude/skills/` — workflow skills (88 skills including 6 real-environment testing, 8 audit/compliance, 2 observability, and 1 prompt skill)
 - `.claude/settings.json` — permissions, hooks
 - `.claude/hooks/` — automation scripts (9 root + 18 template = 27 hooks)
 - `.claude/templates/` — code scaffolding templates

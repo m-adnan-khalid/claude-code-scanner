@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 27 role-based agents, 88 skills, 35 hooks, rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 27 role-based agents, 88 skills, 18 automation hooks, 10 RBAC profiles, 9 rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -57,8 +57,11 @@ irm https://raw.githubusercontent.com/m-adnan-khalid/claude-code-scanner/master/
 git clone https://github.com/m-adnan-khalid/claude-code-scanner.git /tmp/scanner
 cp /tmp/scanner/template/CLAUDE.md ./CLAUDE.md
 cp -r /tmp/scanner/template/.claude ./.claude
+chmod 755 .claude/hooks/*.js              # Make hooks executable
+mkdir -p .claude/tasks .claude/reports/daily .claude/reports/executions
 rm -rf /tmp/scanner
 ```
+> **Note:** Method 1 (`npx`) is preferred — it also creates `session.env`, updates `.gitignore`, and merges VS Code settings automatically.
 
 ### Method 4: Global install
 ```bash
@@ -78,8 +81,10 @@ Works on **Windows**, **macOS**, and **Linux**. All hooks and scripts use Node.j
 cd /path/to/your-project
 npx claude-code-scanner init
 claude
-/scan-codebase              # Scan your tech stack (2-5 min)
-/generate-environment       # Generate all Claude Code files
+/setup-workspace             # Set your role (each team member)
+/scan-codebase               # Scan your tech stack (2-5 min)
+/generate-environment        # Generate all Claude Code files
+/validate-setup              # Verify everything works
 ```
 
 ### New Project (idea to launch)
@@ -87,6 +92,7 @@ claude
 npx claude-code-scanner new my-project
 cd my-project
 claude
+/setup-workspace             # Set your role (each team member)
 /new-project "Build a SaaS invoicing tool for freelancers"
 ```
 
@@ -126,6 +132,7 @@ your-project/
 ├── .claude/
 │   ├── settings.json             <- Permissions + 10 hook events
 │   ├── settings.local.json       <- Your env vars (gitignored)
+│   ├── session.env               <- Your role (gitignored, set via /setup-workspace)
 │   ├── rules/                    <- Path-specific coding rules
 │   ├── agents/                   <- 27 role-based AI agents
 │   │   ├── team-lead.md          <- Orchestrator, assigns work, tech sign-off
@@ -179,7 +186,7 @@ your-project/
 │   │   ├── release-notes/        <- /release-notes — Release documentation
 │   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
 │   │   └── ...                   <- + more utility skills
-│   ├── hooks/                    <- 35 automation scripts (10 events)
+│   ├── hooks/                    <- 18 automation hooks (10 events)
 │   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
@@ -195,6 +202,7 @@ your-project/
 | Agent | Role | Access | Model |
 |-------|------|--------|-------|
 | `@team-lead` | Orchestrator — assigns work, resolves blockers, tech sign-off | Read/Write | opus |
+| `@cto` | Executive oversight — org health, framework governance | Read-only | opus |
 | `@architect` | Architecture design & review | Read-only | opus |
 | `@product-owner` | Acceptance criteria, business sign-off | Read-only | opus |
 | `@qa-lead` | QA planning, QA sign-off, bug triage | Read-only | sonnet |
@@ -233,8 +241,30 @@ your-project/
 | `@process-coach` | SDLC methodology selection and configuration | Read/Write (project docs) | opus |
 | `@database` | Schema design, migrations, query optimization | Read/Write + worktree | sonnet |
 | `@docs-writer` | READMEs, API docs, ADRs, changelogs | Read/Write (docs only) | sonnet |
+| `@output-validator` | Validates agent output quality, consistency checks | Read-only | sonnet |
+| `@analyst` | Data analysis, reporting, insights extraction | Read-only | sonnet |
+| `@version-manager` | Version bumps, release management, changelog maintenance | Read/Write | sonnet |
 
 All agents include: structured handoff protocol with execution metrics, explicit limitations, cross-session memory, and self-check for hallucinations and regressions.
+
+## Team Setup & RBAC
+
+Every team member runs `/setup-workspace` on their first session to set their role. The role is stored in `.claude/session.env` (gitignored — per-developer).
+
+| Role | Allowed Paths | Key Commands |
+|------|---------------|-------------|
+| **CTO** | Full audit, framework governance | `/audit-system`, `/org-report`, `/progress-report executive` |
+| **Architect** | Read-only docs, architecture PRs | `/architecture`, `/design-review`, `/impact-analysis` |
+| **Tech Lead** | Agents, hooks, ADRs (via PR) | `/architecture`, `/org-report`, `/dependency-check` |
+| **Backend Dev** | `src/api/`, `src/services/`, `tests/` | `/add-endpoint`, `/api-test`, `/fix-bug`, `/migrate` |
+| **Frontend Dev** | `src/ui/`, `src/components/`, `src/styles/` | `/add-component`, `/add-page`, `/e2e-browser` |
+| **Full Stack Dev** | `src/` full access | All dev commands + `/impact-analysis` |
+| **QA / SDET** | `tests/` full, `src/` read-only | `/qa-plan`, `/e2e-browser`, `/api-test`, `/load-test` |
+| **DevOps** | `infra/`, `.github/`, `scripts/` | `/deploy`, `/infrastructure-audit`, `/cicd-audit` |
+| **PM** | Read docs, write requirements | `/product-spec`, `/feature-map`, `/progress-report` |
+| **Designer** | `src/styles/`, read UI | `/design-review`, `/accessibility-audit`, `/visual-regression` |
+
+Role-based scope is enforced by the `scope-guard` hook on every tool call.
 
 ## Commands After Setup
 
@@ -259,6 +289,16 @@ All agents include: structured handoff protocol with execution metrics, explicit
 /launch-mvp                                # Final launch pipeline
 ```
 
+### Team Workflow Skills
+```bash
+/setup-workspace                           # Set your role (REQUIRED per team member)
+/daily-sync                                # Pull latest, check version, show next step
+/feature-start "add notifications"         # Create branch + task + scope
+/feature-done                              # QA gate, lint, tests, prepare PR
+/standup                                   # Daily standup report
+/org-report                                # Organization health (CTO/Tech Lead)
+```
+
 ### Existing Project Skills
 ```bash
 /scan-codebase                             # Scan your tech stack
@@ -281,13 +321,34 @@ All agents include: structured handoff protocol with execution metrics, explicit
 /setup-smithery                           # Install community skills
 ```
 
-### Generated Skills (created by /generate-environment based on your stack)
+### Testing & Audit Skills
 ```bash
-/add-feature "password reset"     # Scaffold feature
+/e2e-browser                               # Run Playwright/Cypress E2E tests
+/e2e-mobile                                # Run Maestro/Detox/Appium tests
+/api-test                                  # Run API test suites (Newman, Hurl)
+/load-test                                 # Run k6/Artillery performance tests
+/visual-regression                         # Screenshot comparison tests
+/coverage-track                            # Parse coverage reports, track deltas
+/security-audit                            # OWASP Top 10, dependency vulns, secrets
+/accessibility-audit                       # WCAG 2.1 AA/AAA (axe-core, Pa11y)
+/performance-audit                         # Lighthouse, Core Web Vitals, bundle size
+/privacy-audit                             # GDPR/CCPA compliance, PII detection
+/infrastructure-audit                      # SOC 2, IaC scanning, container security
+/license-audit                             # SPDX validation, copyleft risk
+/cicd-audit                                # Pipeline security, deployment gates
+/docs-audit                                # API docs, README, ADR, changelog quality
+/incident-readiness                        # DR plans, runbooks, backup, RTO/RPO
+```
+
+### Dev & Quality Skills
+```bash
 /add-endpoint "POST /api/orders"  # Create API endpoint
 /add-component "UserAvatar"       # Create UI component
+/add-page "dashboard"             # Add page with route + layout
 /fix-bug "cart total wrong"       # Systematic debugging
+/hotfix "login crash"             # Emergency fast-track fix
 /migrate "add user roles"         # Database migration
+/refactor "extract auth service"  # Targeted refactoring
 /review-pr 123                    # Code review
 /qa-plan                          # Generate QA test plan
 /signoff qa TASK-001              # Request sign-off
@@ -314,23 +375,28 @@ Phase 13: Execution Report — success score, hallucination check, regression au
 
 Mandatory `/context-check` between every phase transition to enforce 60% context budget.
 
-## Hook Events (35 hooks implementing 10 events)
+## Hook Events (18 hooks across 10 events)
 
-| Event | Hook | Purpose |
-|-------|------|---------|
-| SessionStart | session-start.js | Re-inject active task context |
-| SessionStart | drift-detector.js | Detect environment drift on startup |
-| PreToolUse | protect-files.js, validate-bash.js | Block dangerous operations |
-| PostToolUse | post-edit-format.js, track-file-changes.js | Auto-format, log changes |
-| PostToolUse | gatekeeper-check.js | Auto-validate code changes for secrets, skipped tests, scope |
-| PostToolUseFailure | tool-failure-tracker.js | Track tool errors for debugging |
-| PreCompact | pre-compact-save.js | Save loop state before compaction |
-| PostCompact | post-compact-recovery.js | Restore workflow state after compaction |
-| Notification | notify-approval.js | OS notification on permission prompt |
-| SubagentStop | track-file-changes.js | Record subagent file changes |
-| SubagentStop | subagent-tracker.js | Track agent completion for execution metrics |
-| Stop | execution-report.js + prompt | Mandatory execution report |
-| StopFailure | stop-failure-handler.js | Preserve state on failures |
+| Event | Hook | Trigger | Purpose |
+|-------|------|---------|---------|
+| SessionStart | session-start.js | startup, resume, compact | Role check, context recovery, hook health |
+| SessionStart | drift-detector.js | startup | Detect environment drift |
+| PreToolUse | protect-files.js | Edit, Write | Block edits to .env, lock files, CI configs |
+| PreToolUse | gatekeeper-check.js | Edit, Write | Block secrets, skipped tests, scope violations |
+| PreToolUse | validate-bash.js | Bash | Block dangerous commands (rm -rf, fork bomb) |
+| PostToolUse | context-monitor.js | Read, Bash, Agent | Track context usage, warn at 45%/60%/75% |
+| PostToolUse | audit-logger.js | Edit, Write, Bash | Log all mutations to branch audit log |
+| PostToolUse | test-results-parser.js | Bash | Parse test output, detect regressions |
+| PostToolUse | post-edit-format.js | Edit, Write | Auto-format (Prettier, Black, gofmt) |
+| PostToolUse | track-file-changes.js | Edit, Write | Log file changes for task tracking |
+| PostToolUseFailure | tool-failure-tracker.js | any | Track tool errors for debugging |
+| PreCompact | pre-compact-save.js | any | Save loop state before compaction |
+| PostCompact | post-compact-recovery.js | any | Restore workflow state after compaction |
+| Notification | notify-approval.js | permission_prompt | OS notification when approval needed |
+| SubagentStop | subagent-tracker.js | any | Track agent completion for metrics |
+| Stop | execution-report.js | any | Generate execution metrics snapshot |
+| Stop | prompt-stats.js | any | Session stats — tools, tokens, hallucination risk |
+| StopFailure | stop-failure-handler.js | rate_limit, auth, billing | Preserve state on session failures |
 
 ## Execution Reports
 
@@ -351,7 +417,7 @@ Everything is designed to keep working context under 60%:
 | Agent descriptions | ~371 tokens | Always (metadata only) |
 | Skill descriptions | ~250 tokens | Always (metadata only) |
 | Agent full bodies | 0 on parent | Subagent context (isolated) |
-| Forked skills (87/87) | 0 on parent | Fork context (isolated) |
+| Forked skills (88/88) | 0 on parent | Fork context (isolated) |
 | Templates/profiles/docs | 0 | Never auto-loaded |
 | **Total startup** | **~1,500 tokens** | **~1.2% of 128K** |
 
@@ -370,16 +436,19 @@ The environment tracks its own state via `.claude/manifest.json`. When the codeb
 
 ```bash
 npx claude-code-scanner init       # Initialize in existing project
+npx claude-code-scanner setup      # Interactive setup wizard (7-step)
 npx claude-code-scanner new <name> # Create new project from scratch
 npx claude-code-scanner status     # Check setup status
 npx claude-code-scanner verify     # Run verification checks (170+ checks)
-npx claude-code-scanner update     # Update to latest version
+npx claude-code-scanner update     # Smart update — add new files, preserve customizations
 npx claude-code-scanner help       # Show help
 
 # Flags
 npx claude-code-scanner init --force         # Overwrite existing files
+npx claude-code-scanner init --interactive   # Same as 'setup' command
 npx claude-code-scanner init --no-smithery   # Skip Smithery instructions
 npx claude-code-scanner new my-app --here    # New project in current directory
+npx claude-code-scanner update --force       # Overwrite ALL template files
 ```
 
 ## How It Works

@@ -81,7 +81,9 @@ try {
       // Check for imports of non-existent local files
       const localImports = content.match(/from\s+['"]\.\/[^'"]+['"]/g) || [];
       for (const imp of localImports) {
-        const importPath = imp.match(/from\s+['"](\.\/[^'"]+)['"]/)[1];
+        const importMatch = imp.match(/from\s+['"](\.\/[^'"]+)['"]/);
+      if (!importMatch) continue;
+      const importPath = importMatch[1];
         const dir = path.dirname(filePath);
         const resolved = path.join(dir, importPath);
         const exists = fs.existsSync(resolved) ||

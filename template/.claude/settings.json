@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/session-start.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start.js"
           }
         ]
       },
@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/drift-detector.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/drift-detector.js",
             "statusMessage": "Checking for environment drift..."
           }
         ]
@@ -69,11 +69,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/protect-files.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.js"
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/gatekeeper-check.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/gatekeeper-check.js",
             "statusMessage": "Checking for secrets and regressions..."
           }
         ]
@@ -83,7 +83,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/validate-bash.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/validate-bash.js"
           }
         ]
       }
@@ -94,7 +94,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/context-monitor.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/context-monitor.js"
           }
         ]
       },
@@ -103,7 +103,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/audit-logger.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/audit-logger.js"
           }
         ]
       },
@@ -112,7 +112,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/test-results-parser.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/test-results-parser.js",
             "statusMessage": "Parsing test results..."
           }
         ]
@@ -122,11 +122,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/post-edit-format.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-edit-format.js"
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/track-file-changes.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/track-file-changes.js"
           }
         ]
       }
@@ -137,7 +137,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/tool-failure-tracker.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-failure-tracker.js",
             "statusMessage": "Logging tool failure..."
           }
         ]
@@ -149,7 +149,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/pre-compact-save.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact-save.js",
             "statusMessage": "Saving critical state before compaction..."
           }
         ]
@@ -161,7 +161,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/post-compact-recovery.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-compact-recovery.js",
             "statusMessage": "Recovering workflow state..."
           }
         ]
@@ -173,7 +173,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/notify-approval.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/notify-approval.js"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/subagent-tracker.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-tracker.js",
             "statusMessage": "Tracking agent completion..."
           }
         ]
@@ -196,12 +196,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/execution-report.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/execution-report.js",
             "statusMessage": "Collecting execution metrics..."
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/prompt-stats.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/prompt-stats.js",
             "statusMessage": "Generating session stats..."
           }
         ]
@@ -213,7 +213,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/stop-failure-handler.js",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-failure-handler.js",
             "statusMessage": "Preserving state after failure..."
           }
         ]

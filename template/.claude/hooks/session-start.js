@@ -28,6 +28,25 @@ function logHookFailure(hookName, error) {
   } catch (_) { /* last resort — can't even log */ }
 }
 
+// --- 0. Role Check — warn if /setup-workspace hasn't been run ---
+try {
+  const sessionEnvPath = path.join(_projectRoot, '.claude', 'session.env');
+  if (!fs.existsSync(sessionEnvPath)) {
+    console.log('SETUP REQUIRED: No .claude/session.env found. Run /setup-workspace to set your role.');
+    console.log('  Without a role, RBAC scope-guard and role-based features are disabled.');
+  } else {
+    const envContent = fs.readFileSync(sessionEnvPath, 'utf-8');
+    const roleMatch = envContent.match(/^CURRENT_ROLE=(.+)$/m);
+    if (roleMatch) {
+      process.stderr.write(`Role: ${roleMatch[1].trim()}\n`);
+    } else {
+      console.log('SETUP REQUIRED: .claude/session.env exists but CURRENT_ROLE is not set. Run /setup-workspace.');
+    }
+  }
+} catch (e) {
+  logHookFailure('session-start:role-check', e.message);
+}
+
 // --- 1. Hook Health Check ---
 try {
   const hooksDir = path.join(_projectRoot, '.claude', 'hooks');

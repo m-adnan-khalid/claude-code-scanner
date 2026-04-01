@@ -224,6 +224,19 @@ function init() {
   fs.mkdirSync(path.join(cwd, '.claude', 'templates'), { recursive: true });
   success('.claude/tasks/, .claude/reports/, .claude/profiles/, .claude/templates/');
 
+  // Create session.env template (each team member customizes via /setup-workspace)
+  const sessionEnvPath = path.join(cwd, '.claude', 'session.env');
+  if (!fs.existsSync(sessionEnvPath)) {
+    fs.writeFileSync(sessionEnvPath, [
+      '# Claude Code Session Environment',
+      '# Run /setup-workspace inside Claude to configure your role',
+      'CURRENT_ROLE=',
+      'WORKSPACE_INITIALIZED=false',
+      '',
+    ].join('\n'));
+    success('.claude/session.env (run /setup-workspace to set your role)');
+  }
+
   // Make hook scripts executable (handle both .js and legacy .sh)
   const hooksDir = path.join(cwd, '.claude', 'hooks');
   if (fs.existsSync(hooksDir)) {
@@ -317,11 +330,12 @@ RETRY_LOG.md
   log('Next steps:\n');
   log(`  ${BOLD}1.${RESET} cd ${cwd}`);
   log(`  ${BOLD}2.${RESET} claude`);
-  log(`  ${BOLD}3.${RESET} /scan-codebase          ${CYAN}# Scan your tech stack${RESET}`);
-  log(`  ${BOLD}4.${RESET} /generate-environment   ${CYAN}# Generate customized environment${RESET}`);
-  log(`  ${BOLD}5.${RESET} /validate-setup          ${CYAN}# Verify everything works${RESET}`);
+  log(`  ${BOLD}3.${RESET} /setup-workspace         ${CYAN}# Set your role (REQUIRED for each team member)${RESET}`);
+  log(`  ${BOLD}4.${RESET} /scan-codebase           ${CYAN}# Scan your tech stack${RESET}`);
+  log(`  ${BOLD}5.${RESET} /generate-environment    ${CYAN}# Generate customized environment${RESET}`);
+  log(`  ${BOLD}6.${RESET} /validate-setup          ${CYAN}# Verify everything works${RESET}`);
   if (!skipSmithery) {
-    log(`  ${BOLD}6.${RESET} /setup-smithery          ${CYAN}# Install community skills (optional)${RESET}`);
+    log(`  ${BOLD}7.${RESET} /setup-smithery          ${CYAN}# Install community skills (optional)${RESET}`);
   }
   log('');
   log(`Then start working:`);
@@ -482,6 +496,19 @@ function newProject() {
   fs.mkdirSync(path.join(targetDir, '.claude', 'reports', 'executions'), { recursive: true });
   success('.claude/tasks/, .claude/reports/');
 
+  // Create session.env template
+  const sessionEnvPath = path.join(targetDir, '.claude', 'session.env');
+  if (!fs.existsSync(sessionEnvPath)) {
+    fs.writeFileSync(sessionEnvPath, [
+      '# Claude Code Session Environment',
+      '# Run /setup-workspace inside Claude to configure your role',
+      'CURRENT_ROLE=',
+      'WORKSPACE_INITIALIZED=false',
+      '',
+    ].join('\n'));
+    success('.claude/session.env (template)');
+  }
+
   // Make hooks executable
   const hooksDir = path.join(targetDir, '.claude', 'hooks');
   if (fs.existsSync(hooksDir)) {
@@ -530,7 +557,8 @@ function newProject() {
     log(`  ${BOLD}1.${RESET} cd ${projectName}`);
   }
   log(`  ${BOLD}${here ? '1' : '2'}.${RESET} claude`);
-  log(`  ${BOLD}${here ? '2' : '3'}.${RESET} /new-project "describe your idea"  ${CYAN}# Full pre-dev pipeline${RESET}`);
+  log(`  ${BOLD}${here ? '2' : '3'}.${RESET} /setup-workspace                   ${CYAN}# Set your role (REQUIRED)${RESET}`);
+  log(`  ${BOLD}${here ? '3' : '4'}.${RESET} /new-project "describe your idea"  ${CYAN}# Full pre-dev pipeline${RESET}`);
   log('');
   log(`${CYAN}Or run individual phases:${RESET}`);
   log(`  /brainstorm "idea"        ${CYAN}# Brainstorm the idea${RESET}`);

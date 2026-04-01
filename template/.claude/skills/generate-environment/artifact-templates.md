@@ -148,6 +148,44 @@ paths: ["Dockerfile*", "docker-compose*", "terraform/**/*", ".github/workflows/*
 - Secrets: {management approach}
 ```
 
+### code-standards.md
+```yaml
+---
+paths: ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx", "**/*.py", "**/*.go", "**/*.java", "**/*.rb", "**/*.cs", "**/*.swift", "**/*.kt", "**/*.dart"]
+---
+# Code Standards — Auto-Enforced on Every Edit
+
+## Structural Limits
+- Max file length: {max_file_lines} lines (split into modules if exceeded)
+- Max function/method: {max_method_lines} lines (extract helpers if exceeded)
+- Max parameters: {max_params} (use an options/config object beyond limit)
+- Max nesting depth: {max_nesting} levels (extract early returns or helpers)
+
+## Naming Conventions
+- Functions/methods: {function_naming} (e.g., camelCase, snake_case)
+- Classes/types: {class_naming} (e.g., PascalCase)
+- Constants/enums: {constant_naming} (e.g., UPPER_SNAKE_CASE)
+- Files: {file_naming} (e.g., kebab-case, PascalCase for components)
+- Booleans: {boolean_prefix} (e.g., is, has, should, can)
+- Tests: {test_naming_pattern} (e.g., "should do X when Y")
+
+## SOLID & Architecture Patterns
+- SRP: One reason to change per class/module — split mixed responsibilities
+- OCP: Extend via {extension_pattern} (e.g., interfaces/strategy), not if/else chains
+- LSP: Subtypes must honor base contract — no NotImplementedError overrides
+- ISP: Small focused interfaces — split if implementors stub methods
+- DIP: Business logic depends on abstractions. Use {di_pattern} (e.g., constructor injection)
+- Pattern: {architecture_pattern} (e.g., interface → implementation, repository pattern)
+
+## No Magic Values
+- Define named constants or enums — no inline magic numbers/strings
+- Exception: 0, 1, -1, empty string, true/false, HTTP status codes in handlers
+
+## Imports
+- Order: {import_order} (e.g., stdlib → external → internal)
+- Remove unused imports before committing
+```
+
 ## Nested CLAUDE.md Template (per module)
 ```markdown
 # {Module Name}

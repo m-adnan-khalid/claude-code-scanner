@@ -11,7 +11,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const _projectRoot = process.cwd();
+// Resolve project root
+let _projectRoot = process.cwd();
+while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRoot !== path.dirname(_projectRoot)) {
+  _projectRoot = path.dirname(_projectRoot);
+}
 const REPORTS_DIR = path.join(_projectRoot, '.claude', 'reports', 'test-runs');
 const reportsDir = path.join(_projectRoot, '.claude', 'reports');
 

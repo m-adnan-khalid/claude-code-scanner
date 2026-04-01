@@ -59,11 +59,52 @@ function check(raw) {
       if (/@pytest\.mark\.skip|\.skip\(|xit\(|xdescribe\(|test\.skip|\.only\(/.test(newContent)) {
         blockers.push('Test skip/disable/only detected. This hides regressions. Remove or add justification.');
       }
+
+      // WARN: Long function in incoming content (>40 consecutive non-blank lines)
+      const incomingLines = newContent.split('\n');
+      if (incomingLines.length > 60) {
+        let consecNonBlank = 0;
+        for (const line of incomingLines) {
+          consecNonBlank = line.trim() ? consecNonBlank + 1 : 0;
+          if (consecNonBlank > 40) {
+            warnings.push('Code block exceeds 40 lines. Consider extracting into smaller functions.');
+            break;
+          }
+        }
+      }
+
+      // WARN: Magic numbers (not 0, 1, -1, common HTTP status codes)
+      const magicMatches = newContent.match(/(?<![.\w])(?:(?<!\d)[2-9]\d{2,}|[2-9]\d{3,})(?!\d)/g);
+      if (magicMatches && magicMatches.length > 2) {
+        const httpCodes = new Set(['200', '201', '204', '301', '302', '400', '401', '403', '404', '409', '422', '429', '500', '502', '503']);
+        const nonHttp = magicMatches.filter(m => !httpCodes.has(m));
+        if (nonHttp.length > 2) {
+          warnings.push(`${nonHttp.length} magic numbers detected. Use named constants or enums.`);
+        }
+      }
+
+      // WARN: DIP violation — direct instantiation of services in business logic
+      const newMatches = newContent.match(/new\s+\w+(Service|Repository|Client|Provider|Handler|Manager|Gateway)\s*\(/g);
+      if (newMatches && newMatches.length > 0 && !relative.includes('test') && !relative.includes('spec') && !relative.includes('factory') && !relative.includes('module') && !relative.includes('config') && !relative.includes('container')) {
+        warnings.push(`Direct "new ${newMatches[0].trim()}" in business logic. Use dependency injection (constructor parameter) instead.`);
+      }
+
+      // WARN: Large if/else chain that could be Strategy pattern
+      const ifElseChain = newContent.match(/else\s+if\s*\(/g);
+      if (ifElseChain && ifElseChain.length >= 4) {
+        warnings.push(`${ifElseChain.length + 1}-branch if/else chain detected. Consider Strategy or Map pattern for extensibility (OCP).`);
+      }
     }
 
     // Also check existing file for accumulated issues (warnings only)
     if (fs.existsSync(resolved) && codeExts.includes(ext)) {
       const existingContent = fs.readFileSync(resolved, 'utf-8');
+
+      // WARN: File exceeds 300 lines
+      const lineCount = existingContent.split('\n').length;
+      if (lineCount > 300) {
+        warnings.push(`File is ${lineCount} lines (limit: 300). Consider splitting into smaller modules.`);
+      }
 
       // WARN: Console.log in production code
       if (!relative.includes('test') && !relative.includes('spec')) {

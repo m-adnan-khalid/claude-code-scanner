@@ -93,6 +93,27 @@ Read 20+ files to establish patterns.
 - Git commit format (from last 20 commits), branch naming
 - Documentation: JSDoc/docstring coverage, README structure
 
+### Structural Metrics (feeds into code-standards rule)
+- Sample 20+ source files: count lines per file → compute median and P90
+- Sample 20+ functions/methods: count lines per function → compute median and P90
+- Typical parameter counts: note the max seen in well-structured functions
+- Nesting depth: spot-check 10 files for max indent levels
+- Import ordering: identify if stdlib-first, external-second, internal-third is followed
+- Magic values: note if codebase uses constants/enums vs inline string/number literals
+- Boolean naming: check if `is/has/should/can` prefixes are used consistently
+- Report these metrics in scan-results.md under `## Code Standards Metrics`
+
+### SOLID & Architecture Patterns (feeds into code-standards rule)
+- Interface/abstract usage: grep for `interface`, `abstract class`, `Protocol` (Python), `trait` (Rust/PHP)
+- Dependency injection: check if DI container exists (e.g., NestJS modules, Spring beans, Python inject)
+- Constructor injection vs service locator: which pattern does the codebase use?
+- Repository pattern: are DB queries behind interfaces or called directly in handlers?
+- Service layer: do handlers call services, or contain business logic directly?
+- Extension pattern: when new features are added, are new classes created (OCP) or existing ones modified?
+- God classes: flag any class with 10+ public methods or 500+ lines
+- if/else chains: flag any switch/if-else with 5+ branches that could be Strategy pattern
+- Report in scan-results.md under `## Architecture Patterns`
+
 ### Gotchas
 - ALL TODO/FIXME/HACK comments with context
 - Workarounds with explanatory comments

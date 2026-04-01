@@ -44,7 +44,13 @@
       "Bash(npm test:*)",
       "Bash(node --test tests/cli.test.js tests/copy.test.js)",
       "Bash(node -c template/.claude/hooks/drift-detector.js)",
-      "Bash(node -c bin/cli.js)"
+      "Bash(node -c bin/cli.js)",
+      "Bash(python3:*)",
+      "Bash(for f:*)",
+      "Bash(do if:*)",
+      "Bash(then echo:*)",
+      "Bash(chmod:*)",
+      "Bash(find /Users/muhammad.adnan/ai_projects/claude-code-scanner -name *spec* -o -name *schema* -o -name *format*)"
     ]
   },
   "hooks": {

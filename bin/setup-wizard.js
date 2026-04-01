@@ -645,7 +645,7 @@ function generateSettings(config) {
     if (!settings.hooks[hookDef.event]) settings.hooks[hookDef.event] = [];
     const entry = {
       type: 'command',
-      command: `node .claude/hooks/${hookDef.file}`,
+      command: `node "$CLAUDE_PROJECT_DIR"/.claude/hooks/${hookDef.file}`,
     };
     if (hookDef.matcher) entry.matcher = hookDef.matcher;
     settings.hooks[hookDef.event].push(entry);
@@ -656,7 +656,7 @@ function generateSettings(config) {
     if (!settings.hooks.PostCompact) settings.hooks.PostCompact = [];
     settings.hooks.PostCompact.push({
       type: 'command',
-      command: 'node .claude/hooks/post-compact-recovery.js',
+      command: 'node "$CLAUDE_PROJECT_DIR"/.claude/hooks/post-compact-recovery.js',
     });
   }
 

@@ -54,7 +54,7 @@ if (process.platform === 'darwin') {
 
 // Log permission request and outcome
 try {
-  const logDir = path.join('.claude', 'reports');
+  const logDir = path.join(_projectRoot, '.claude', 'reports');
   if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
   const logLine = `${new Date().toISOString()}|NOTIFICATION|${MSG}|sent\n`;
   fs.appendFileSync(path.join(logDir, 'approval-log.jsonl'), logLine);
