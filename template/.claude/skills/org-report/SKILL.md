@@ -6,6 +6,11 @@ roles: [CTO, TechLead, Architect]
 agents: [@cto, @team-lead, @gatekeeper]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Org Report
 
 Executive organization health dashboard. Restricted to CTO and Tech Lead roles.
@@ -73,4 +78,9 @@ Action Items:
 1. {highest priority action}
 2. {next priority}
 3. {next priority}
+```
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
 ```

@@ -12,6 +12,11 @@ roles: [BackendDev, FullStackDev, TechLead, Architect]
 agents: [@api-builder, @architect, @docs-writer]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /api-version $ARGUMENTS
 
 ## Commands
@@ -47,3 +52,8 @@ agents: [@api-builder, @architect, @docs-writer]
 - Deprecated endpoints marked with sunset date and migration path
 - No breaking changes without explicit documentation
 - Client migration guide generated
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

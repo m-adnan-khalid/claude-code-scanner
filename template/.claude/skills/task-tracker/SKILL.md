@@ -9,6 +9,11 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@team-lead, @process-coach]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Task Tracker: $ARGUMENTS
 
 ## Commands
@@ -56,3 +61,8 @@ All criteria must pass before this task is marked complete.
 - **Revert task status:** `/task-tracker update TASK-{id} --status {previous-status}`
 - **Undo phase change:** Edit `.claude/tasks/TASK-{id}.md` — restore previous phase in frontmatter
 - **View history:** `git log --oneline .claude/tasks/TASK-{id}.md` to find previous state
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

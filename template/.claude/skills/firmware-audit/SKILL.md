@@ -13,6 +13,23 @@ roles: [TechLead, Architect, CTO, DevOps]
 agents: [@security, @code-quality, @architect]
 ---
 
+**Lifecycle: T2 (audit/analysis) — See `_protocol.md`**
+
+**RULES:** Every output MUST end with `NEXT ACTION:`. Update MEMORY.md after completion.
+
+## Step 0 — Load Context
+
+1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
+2. **Memory:** Read `MEMORY.md` (if exists) → get last completed task, prior audit results
+3. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
+4. **Active work:** Read `TODO.md` (if exists) → get current work items
+
+Output:
+```
+CONTEXT: [CURRENT_ROLE] on [branch] | last: [last task] | git: [clean/dirty]
+```
+
+
 # /firmware-audit $ARGUMENTS
 
 ## Commands
@@ -69,3 +86,28 @@ agents: [@security, @code-quality, @architect]
 - No deadlock risks in RTOS task graph
 - Security audit passed for production deployment
 - Power budget documented and within battery life target
+
+## Post-Completion
+
+### Update Memory
+Update MEMORY.md (create if needed):
+- **Skill:** /[this skill name]
+- **Task:** audit completed
+- **When:** [timestamp]
+- **Result:** [PASS/FAIL/PARTIAL — N issues found]
+- **Output:** [report file path if any]
+- **Next Step:** [fix top priority issues / re-run after fixes / all clear]
+
+### Audit Log
+Append to `.claude/reports/audit/audit-{branch}.log`:
+```
+[timestamp] | [ROLE] | [branch] | [SKILL_NAME] | [summary] | [result]
+```
+
+### Final Output
+```
+NEXT ACTION: Audit complete. Here's what you can do:
+             - To fix issues, say "fix [issue]" or run /fix-bug
+             - To re-run this audit, run the same command again
+             - To run another audit, pick the relevant audit command
+```

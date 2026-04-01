@@ -10,6 +10,11 @@ roles: [CTO, TechLead, Architect, DevOps]
 agents: [@explorer, @architect, @team-lead]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Scan Codebase: $ARGUMENTS
 
 **Reference files in this skill directory:**
@@ -77,3 +82,8 @@ All criteria must pass before this phase is complete.
 ## Rollback
 - **Redo this phase:** Delete `.claude/scan-results.md` and re-run `/scan-codebase`
 - **Revert output:** Delete `.claude/scan-results.md`
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

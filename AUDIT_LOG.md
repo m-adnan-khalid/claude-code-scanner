@@ -17,3 +17,8 @@
 2026-03-29T10:17:00Z | Edit | EDIT_FILE | MEMORY.md — synced Next Step to TODO.md
 2026-03-29T10:17:30Z | Edit | EDIT_FILE | AUDIT_LOG.md — added current session entries
 2026-03-29T10:17:45Z | System | AUDIT_FIX_COMPLETE | All 4 warnings resolved
+| 2026-04-01T00:00:00Z | @installer | BUILD | Document Intelligence workspace | 48 artifacts created |
+| 2026-04-01T00:00:00Z | @installer | CREATE | @version-manager agent + 3 git gate hooks | Git governance added |
+| 2026-04-01T00:00:00Z | @installer | CREATE | /scan-and-build skill | Document installer skill added |
+| 2026-04-01T00:00:00Z | @installer | FIX | settings.json + settings.local.json | Hook schema corrected (19 issues) |
+| 2026-04-01T00:00:00Z | @installer | AUDIT | Full project audit | 67 gaps found, fixing all |

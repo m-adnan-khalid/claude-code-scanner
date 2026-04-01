@@ -42,7 +42,7 @@ Reports: `/progress-report dev|qa|business|management|executive`, `/metrics velo
 Sync: `/sync --check`, `/sync --fix`, `/sync --fix --component agents|skills|rules|hooks|claude-md`, `/sync --full-rescan`
 Deploy: `/signoff qa|business|tech`, `/deploy staging|production`, `/rollback deploy|code|phase [task-id]`
 Context: `/context-check`
-Prompt: `/prompt-intelligence "rough prompt"` — classify, score, improve, align, then execute with approval
+Prompt: `/prompt "rough prompt"` — classify, score, improve, align, then execute with approval
 Smithery: `/discover-skills`
 
 ## 4. Agent Team (@-mentions)

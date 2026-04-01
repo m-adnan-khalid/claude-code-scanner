@@ -12,7 +12,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `.claude/rules/` — path-specific rules (8 rules)
 - `.claude/agents/` — role-based agent team (25 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
-- `.claude/skills/` — workflow skills (86 skills including 6 real-environment testing, 8 audit/compliance, 2 observability, and 1 prompt intelligence skill)
+- `.claude/skills/` — workflow skills (86 skills including 6 real-environment testing, 8 audit/compliance, 2 observability, and 1 prompt skill)
 - `.claude/settings.json` — permissions, hooks
 - `.claude/hooks/` — automation scripts (9 root + 18 template = 27 hooks)
 - `.claude/templates/` — code scaffolding templates
@@ -177,11 +177,11 @@ Before creating any new file, function, class, or component:
 - Never skip QA gate before merge — all roles must pass quality checks
 - Always check GLOSSARY.md before naming entities — use exact canonical terms
 
-## PROMPT INTELLIGENCE
-All tool calls pass through the prompt intelligence pipeline (pre-tool-use hook + `/improve-prompt` skill):
+## PROMPT
+All tool calls pass through the prompt pipeline (pre-tool-use hook + `/prompt` skill):
 - **Automated (pre-tool-use hook):** 5-pass scoring on every mutating tool call — specificity, role alignment, domain/GLOSSARY, memory context, risk assessment. Strong prompts pass through. Weak prompts flagged with warnings. Destructive actions auto-flagged with checkpoint.
-- **Manual (`/improve-prompt` skill):** Full 5-pass improvement with GLOSSARY terms, STANDARDS rules, MEMORY context. Requires user approval (A/B/C/D) before execution. Cancelled prompts logged to audit.
-- **Gating:** Destructive actions auto-flagged; role violations detected; scope violations blocked; `/improve-prompt` for deep improvement
+- **Manual (`/prompt` skill):** Full 5-pass improvement with GLOSSARY terms, STANDARDS rules, MEMORY context. Requires user approval (A/B/C/D) before execution. Cancelled prompts logged to audit.
+- **Gating:** Destructive actions auto-flagged; role violations detected; scope violations blocked; `/prompt` for deep improvement
 
 ## Real Environment Testing
 `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`

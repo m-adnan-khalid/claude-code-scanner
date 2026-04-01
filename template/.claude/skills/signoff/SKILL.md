@@ -9,6 +9,11 @@ roles: [TechLead, QA, PM, CTO]
 agents: [@team-lead, @qa-lead, @product-owner, @gatekeeper]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Sign-off: $ARGUMENTS
 
 ## Process
@@ -41,3 +46,8 @@ Before marking the task as fully signed off:
 ## Rollback
 - **Undo changes:** Revoke approval by updating task file status back to pre-sign-off phase
 - **Revert to previous state:** `/task-tracker update TASK-{id} status=REVIEWING`
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

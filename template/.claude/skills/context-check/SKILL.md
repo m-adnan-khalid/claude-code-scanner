@@ -9,6 +9,11 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@team-lead]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Context Check: $ARGUMENTS
 
 ## Step 1: Measure Current Context
@@ -122,3 +127,8 @@ This skill should be called:
 
 ## Rollback
 - N/A (diagnostic only).
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

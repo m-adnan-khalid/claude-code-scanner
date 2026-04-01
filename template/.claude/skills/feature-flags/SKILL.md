@@ -12,6 +12,11 @@ roles: [BackendDev, FullStackDev, FrontendDev, TechLead, DevOps]
 agents: [@api-builder, @frontend, @infra, @tester]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /feature-flags $ARGUMENTS
 
 ## Commands
@@ -54,3 +59,8 @@ agents: [@api-builder, @frontend, @infra, @tester]
 - Flag added/removed with zero dead code left behind
 - All code paths tested (flag on AND flag off)
 - Stale flags identified and removal plan documented
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

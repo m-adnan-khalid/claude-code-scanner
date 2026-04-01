@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 23 role-based agents, 79 skills, 18 hooks, rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 27 role-based agents, 88 skills, 35 hooks, rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -127,7 +127,7 @@ your-project/
 │   ├── settings.json             <- Permissions + 10 hook events
 │   ├── settings.local.json       <- Your env vars (gitignored)
 │   ├── rules/                    <- Path-specific coding rules
-│   ├── agents/                   <- 23 role-based AI agents
+│   ├── agents/                   <- 27 role-based AI agents
 │   │   ├── team-lead.md          <- Orchestrator, assigns work, tech sign-off
 │   │   ├── architect.md          <- Architecture design & review
 │   │   ├── product-owner.md      <- Acceptance criteria, business sign-off
@@ -146,7 +146,7 @@ your-project/
 │   │   ├── ux-designer.md        <- User flows & wireframes
 │   │   ├── code-quality.md      <- Design patterns, SOLID, static analysis
 │   │   └── mobile.md            <- iOS, Android, React Native, Flutter, KMP
-│   ├── skills/                   <- 68 workflow skills
+│   ├── skills/                   <- 88 workflow skills
 │   │   ├── workflow/             <- /workflow — Full 13-phase SDLC
 │   │   ├── scan-codebase/        <- /scan-codebase
 │   │   ├── generate-environment/ <- /generate-environment
@@ -179,11 +179,11 @@ your-project/
 │   │   ├── release-notes/        <- /release-notes — Release documentation
 │   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
 │   │   └── ...                   <- + more utility skills
-│   ├── hooks/                    <- 18 automation scripts (10 events)
+│   ├── hooks/                    <- 35 automation scripts (10 events)
 │   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
-│   ├── docs/                     <- 11 reference documents
+│   ├── docs/                     <- 14 reference documents
 │   ├── scripts/                  <- Verification scripts
 │   ├── tasks/                    <- Task tracking (gitignored)
 │   └── reports/                  <- Progress & execution reports (gitignored)
@@ -314,7 +314,7 @@ Phase 13: Execution Report — success score, hallucination check, regression au
 
 Mandatory `/context-check` between every phase transition to enforce 60% context budget.
 
-## Hook Events (18 hooks implementing 10 events)
+## Hook Events (35 hooks implementing 10 events)
 
 | Event | Hook | Purpose |
 |-------|------|---------|
@@ -351,7 +351,7 @@ Everything is designed to keep working context under 60%:
 | Agent descriptions | ~371 tokens | Always (metadata only) |
 | Skill descriptions | ~250 tokens | Always (metadata only) |
 | Agent full bodies | 0 on parent | Subagent context (isolated) |
-| Forked skills (68/68) | 0 on parent | Fork context (isolated) |
+| Forked skills (87/87) | 0 on parent | Fork context (isolated) |
 | Templates/profiles/docs | 0 | Never auto-loaded |
 | **Total startup** | **~1,500 tokens** | **~1.2% of 128K** |
 
@@ -395,7 +395,7 @@ npx claude-code-scanner new my-app --here    # New project in current directory
 2. **`/generate-environment`** uses scan results to create project-specific:
    - CLAUDE.md with your exact commands, paths, and conventions
    - Rules that enforce YOUR codebase patterns
-   - 23 agents configured for YOUR tech stack
+   - 27 agents configured for YOUR tech stack
    - Skills with YOUR project's commands and file paths
    - Templates extracted from YOUR existing code
    - Profiles for backend, frontend, and devops roles

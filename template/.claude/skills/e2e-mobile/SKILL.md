@@ -9,6 +9,23 @@ roles: [QA, TechLead, FullStackDev]
 agents: [@qa-automation, @mobile, @tester, @qa-lead]
 ---
 
+**Lifecycle: T4 (testing) — See `_protocol.md`**
+
+**RULES:** Every output MUST end with `NEXT ACTION:`. Update MEMORY.md after completion.
+
+## Step 0 — Load Context
+
+1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
+2. **Memory:** Read `MEMORY.md` (if exists) → get last test results, prior runs
+3. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
+4. **Active work:** Read `TODO.md` (if exists) → get current work items
+
+Output:
+```
+CONTEXT: [CURRENT_ROLE] on [branch] | last: [last task] | git: [clean/dirty]
+```
+
+
 # Mobile E2E Testing: $ARGUMENTS
 
 ## Auto-Detection
@@ -259,3 +276,28 @@ kill $APPIUM_PID 2>/dev/null
 - Video recorded for failures (if --record)
 - Structured report saved to `.claude/reports/mobile/`
 - Emulators/devices cleaned up
+
+## Post-Completion
+
+### Update Memory
+Update MEMORY.md (create if needed):
+- **Skill:** /[this skill name]
+- **Task:** tests executed
+- **When:** [timestamp]
+- **Result:** [PASS/FAIL — N passed, N failed]
+- **Output:** [test report path if any]
+- **Next Step:** [fix failures / all passing / increase coverage]
+
+### Audit Log
+Append to `.claude/reports/audit/audit-{branch}.log`:
+```
+[timestamp] | [ROLE] | [branch] | [SKILL_NAME] | [summary] | [result]
+```
+
+### Final Output
+```
+NEXT ACTION: Tests complete. Here's what you can do:
+             - To fix failures, say "fix [test name]"
+             - To re-run, use the same test command
+             - To check coverage, say "/coverage-track"
+```

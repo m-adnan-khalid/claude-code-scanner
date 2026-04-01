@@ -19,6 +19,11 @@ roles: [TechLead, PM, DevOps, CTO]
 agents: [@docs-writer, @product-owner, @team-lead]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /release-notes — Changelog & Release Notes Generator
 
 ## Usage
@@ -121,3 +126,8 @@ Update: CHANGELOG.md in project root (append)
 ## Rollback
 - **Regenerate notes:** `/release-notes --force` with different parameters
 - **Revert file changes:** `git checkout -- RELEASE_NOTES.md` to undo edits
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

@@ -13,6 +13,11 @@ roles: [BackendDev, FullStackDev, TechLead, Architect]
 agents: [@api-builder, @architect, @tester]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /service-contract $ARGUMENTS
 
 ## Commands
@@ -70,3 +75,8 @@ When `/workflow new` affects multiple services:
 - Contract tests pass for all consumer-provider pairs
 - No breaking changes deployed without consumer migration
 - Service dependency map current and no circular dependencies
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

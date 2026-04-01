@@ -17,6 +17,11 @@ roles: [CTO, TechLead, PM, QA]
 agents: [@team-lead, @product-owner, @qa-lead]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /mvp-status — MVP Progress Dashboard
 
 ## Overview
@@ -194,3 +199,8 @@ All criteria must pass before this task is marked complete.
 
 ## Rollback
 - No rollback needed — this is a read-only dashboard skill with no side effects
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

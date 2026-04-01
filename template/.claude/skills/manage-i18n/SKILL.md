@@ -13,6 +13,11 @@ roles: [FrontendDev, FullStackDev, TechLead]
 agents: [@frontend, @code-quality]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /manage-i18n $ARGUMENTS
 
 ## Commands
@@ -48,3 +53,8 @@ agents: [@frontend, @code-quality]
 - All locales have 100% key coverage (even if values are English defaults)
 - No placeholder mismatches across locales
 - RTL support validated (if applicable)
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

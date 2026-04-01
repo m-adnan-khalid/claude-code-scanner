@@ -21,10 +21,10 @@ Root owns the pipeline; template owns the product.
 4. **Smithery** — Installs matching MCP servers
 
 ### Runtime Layer
-- **25 Agents** — Role-based subagents with tool restrictions
-- **85 Skills** — Workflow automations (slash commands)
+- **27 Agents** — Role-based subagents with tool restrictions
+- **88 Skills** — Workflow automations (slash commands)
 - **8 Rules** — Path-scoped coding constraints
-- **27 Hooks** — Pre/Post tool-use automation (9 root + 18 template)
+- **35 Hooks** — Pre/Post tool-use automation (17 root + 18 template)
 
 ### Enterprise Governance
 - **RBAC** — 10 roles with path-scoped permissions

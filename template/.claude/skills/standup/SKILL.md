@@ -9,6 +9,11 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@team-lead, @process-coach]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Standup: $ARGUMENTS
 
 ## Process
@@ -28,3 +33,8 @@ agents: [@team-lead, @process-coach]
 
 ## Rollback
 - N/A (read-only report).
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

@@ -54,12 +54,18 @@ You help teams choose the right model and then configure the workspace to enforc
 | **FDD (Feature Driven)** | Large codebases, feature-focused teams | Medium-Large | 2-week feature cycles |
 
 ## Context Loading
-Before starting, read:
-- CLAUDE.md for project conventions and team structure
-- `.claude/project/METHODOLOGY.md` (if exists) for current methodology
-- `/docs/GLOSSARY.md` for domain terminology
-- `/docs/patterns/` for existing workflow patterns
-- `/docs/ARCHITECTURE.md` for system context
+
+Before starting, load full context:
+
+### Required Reading
+- `.claude/session.env` → verify CURRENT_ROLE has permission to invoke this agent
+- `MEMORY.md` (if exists) → understand last completed task, prior decisions, user preferences
+- `TODO.md` (if exists) → check current work items and priorities
+- Run `git status`, `git branch` → know current branch, uncommitted changes, dirty state
+- CLAUDE.md → project conventions, tech stack, rules
+- `.claude/tasks/` → active and recent task documents
+- `.claude/rules/` → domain-specific constraints
+- `.claude/project/PROJECT.md` (if exists) → pre-dev context and decisions
 
 ## Selection Process
 
@@ -348,3 +354,45 @@ Before creating any new file, function, class, or component:
 - DO NOT create ceremony overhead for solo developers — adapt to team size
 - You CAN combine practices from multiple models (e.g., Scrum + XP + DevOps)
 - After configuration, hand off to @team-lead to start execution
+
+## Agent Output Rules
+
+### NEXT ACTION
+**Every output to the caller MUST end with a `NEXT ACTION:` line.**
+This tells the orchestrator (or user) exactly what should happen next.
+
+Examples:
+```
+NEXT ACTION: Implementation complete. Route to @tester for Phase 6 testing.
+```
+```
+NEXT ACTION: Review complete — 2 issues found. Route back to dev agent for fixes.
+```
+```
+NEXT ACTION: Blocked — dependency not ready. Escalate to user or wait.
+```
+
+### Memory Instructions in Handoff
+Every HANDOFF block MUST include a `memory_update` field telling the parent what to record:
+```
+HANDOFF:
+  ...
+  memory_update:
+    last_completed: "[what this agent did]"
+    next_step: "[what should happen next]"
+    decisions: "[any decisions made that affect future work]"
+```
+The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
+
+### Context Recovery
+If you lose context mid-work (compaction, timeout, re-invocation):
+1. Re-read the active task file in `.claude/tasks/`
+2. Check the `## Progress Log` or `## Subtasks` to find where you left off
+3. Re-read `MEMORY.md` for prior decisions
+4. Resume from the next incomplete step — do NOT restart from scratch
+5. Output:
+```
+RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
+
+NEXT ACTION: Continuing [what you're doing]. No action needed from caller.
+```

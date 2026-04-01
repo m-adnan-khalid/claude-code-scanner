@@ -9,6 +9,11 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@docs-writer, @team-lead]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Changelog: $ARGUMENTS
 
 ## Process
@@ -27,3 +32,8 @@ agents: [@docs-writer, @team-lead]
 ## Rollback
 - **Undo changelog update:** `git checkout -- CHANGELOG.md` to revert changes
 - **Regenerate:** `/changelog --force` to rebuild from git history
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

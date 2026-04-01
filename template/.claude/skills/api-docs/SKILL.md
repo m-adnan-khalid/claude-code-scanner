@@ -9,6 +9,11 @@ roles: [BackendDev, FullStackDev, TechLead, Architect]
 agents: [@docs-writer, @api-builder]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # API Docs: $ARGUMENTS
 
 ## Process
@@ -27,3 +32,8 @@ agents: [@docs-writer, @api-builder]
 
 ## Rollback
 - Regenerate from code with `/api-docs --force`.
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

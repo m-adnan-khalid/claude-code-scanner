@@ -6,6 +6,11 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@team-lead, @process-coach]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Daily Sync
 
 Start-of-day sync for all team members.
@@ -53,4 +58,9 @@ Open PRs in your scope: {count}
 {list of PRs if any}
 
 Ready to work. Run /feature-start or /workflow new to begin.
+```
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
 ```

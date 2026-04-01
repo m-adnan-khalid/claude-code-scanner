@@ -6,7 +6,7 @@
 
 ## 1. WHAT THIS FRAMEWORK IS
 
-A production-ready system that scans codebases (or starts from scratch) and generates complete Claude Code environments. It automates setup for **25 agents, 85 skills, 8 rules, 27 hooks**, and enterprise **RBAC across 10 roles**.
+A production-ready system that scans codebases (or starts from scratch) and generates complete Claude Code environments. It automates setup for **27 agents, 88 skills, 8 rules, 35 hooks**, and enterprise **RBAC across 10 roles**.
 
 ### Core Pipeline (4 Phases)
 
@@ -27,7 +27,7 @@ Phase 1: SCAN ──> Phase 2: GENERATE ──> Phase 3: VALIDATE ──> Phase 
 
 ---
 
-## 2. AGENT SYSTEM (25 Agents)
+## 2. AGENT SYSTEM (26 Agents)
 
 ### Agent Architecture
 
@@ -112,7 +112,7 @@ Every agent has these enforced sections:
 
 ---
 
-## 4. HOOK SYSTEM (27 Hooks)
+## 4. HOOK SYSTEM (35 Hooks)
 
 ### Root Hooks (9) — `.claude/hooks/`
 
@@ -353,11 +353,11 @@ End:      stop.js updates MEMORY.md automatically
 - [ ] `/feature-done` runs doc sync check, QA gate, lint, tests
 - [ ] `/org-report` rejects non-CTO/TechLead/Architect roles
 - [ ] `/audit-system` runs 7-phase validation
-- [ ] All 85 skill directories have SKILL.md with valid frontmatter
+- [ ] All 87 skill directories have SKILL.md with valid frontmatter
 
 ### F. Doc Consistency Tests
-- [ ] CLAUDE.md says "25 agents" (matches actual count)
-- [ ] CLAUDE.md says "85 skills" (matches actual count)
+- [ ] CLAUDE.md says "27 agents" (matches actual count)
+- [ ] CLAUDE.md says "88 skills" (matches actual count)
 - [ ] ARCHITECTURE.md counts match CLAUDE.md
 - [ ] ONBOARDING.md has all 10 role tracks
 - [ ] GLOSSARY.md terms are referenced by all agents
@@ -416,7 +416,7 @@ claude-code-scanner/
 ├── template/                          # Generated environment template
 │   ├── CLAUDE.md                      # Lightweight scaffold (42 lines)
 │   └── .claude/
-│       ├── settings.json              # Full settings (223 lines, 18 hooks)
+│       ├── settings.json              # Full settings (223 lines, 35 hooks)
 │       ├── agents/ (25 files)         # Role-based subagents
 │       ├── skills/ (85 directories)   # Workflow automations
 │       ├── rules/ (8 files)           # Path-scoped constraints
@@ -434,4 +434,4 @@ claude-code-scanner/
 - **Root** (`.claude/`, `docs/`, `CLAUDE.md`) — THIS project's own config for developing the scanner
 - **Template** (`template/.claude/`, `template/CLAUDE.md`) — what gets GENERATED for other projects
 
-They are intentionally different. Root has 9 hooks for development governance. Template has 18 hooks for production environments.
+They are intentionally different. Root has 17 hooks for development governance. Template has 18 hooks for production environments.

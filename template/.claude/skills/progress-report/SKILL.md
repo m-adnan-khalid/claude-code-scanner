@@ -9,6 +9,11 @@ roles: [CTO, TechLead, PM, QA, Architect, BackendDev, FrontendDev, FullStackDev,
 agents: [@team-lead, @product-owner, @qa-lead]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Progress Report: $ARGUMENTS
 
 Read task files from `.claude/tasks/` and generate audience-appropriate report.
@@ -36,3 +41,8 @@ Status light (green/yellow/red), key metrics table with trends (tasks completed,
 
 ## Rollback
 - N/A (read-only report).
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

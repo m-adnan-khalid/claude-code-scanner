@@ -20,8 +20,8 @@
       "Bash(node \"C:/adnan/cluade projects/claude-code-scanner/bin/cli.js\" new final-test)",
       "Bash(grep -r \"MISSING\\\\|TODO\\\\|FIXME\\\\|HACK\" 'C:/adnan/cluade projects/claude-code-scanner/template/.claude/skills/' --include=*.md)",
       "Bash(ls:*)",
-      "Bash(wc -l /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/skills/*/SKILL.md)",
-      "Bash(ROOT=\"/Users/muhammad.adnan/ai_projects/claude-code-scanner/template\")",
+      "Bash(wc -l C:/adnan/cluade projects/claude-code-scanner/template/.claude/skills/*/SKILL.md)",
+      "Bash(ROOT=\"C:/adnan/cluade projects/claude-code-scanner/template\")",
       "Bash(PASS=0)",
       "Bash(FAIL=0)",
       "Bash(TOTAL=0)",
@@ -31,37 +31,63 @@
       "Bash(git push:*)",
       "Bash(wc:*)",
       "Bash(node -c template/.claude/hooks/execution-report.js)",
-      "Bash(node -c /Users/muhammad.adnan/ai_projects/claude-code-scanner/bin/cli.js)",
-      "Bash(node -c /Users/muhammad.adnan/ai_projects/claude-code-scanner/scripts/verify-setup.js)",
+      "Bash(node -c C:/adnan/cluade projects/claude-code-scanner/bin/cli.js)",
+      "Bash(node -c C:/adnan/cluade projects/claude-code-scanner/scripts/verify-setup.js)",
       "Bash(node -c template/.claude/hooks/track-file-changes.js)",
-      "Bash(head -15 /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/agents/*.md)",
+      "Bash(head -15 C:/adnan/cluade projects/claude-code-scanner/template/.claude/agents/*.md)",
       "Bash(/tmp/gap_analysis.txt:*)",
       "Read(//tmp/**)",
       "Bash(grep:*)",
-      "Bash(find /Users/muhammad.adnan/ai_projects/claude-code-scanner -name *.md -o -name *.json)"
+      "Bash(find C:/adnan/cluade projects/claude-code-scanner -name *.md -o -name *.json)",
+      "Bash(mkdir -p .claude/rules)",
+      "Bash(cp template/.claude/rules/__TRACKED_VAR__.md .claude/rules/__TRACKED_VAR__.md)",
+      "Bash(npm test:*)",
+      "Bash(node --test tests/cli.test.js tests/copy.test.js)",
+      "Bash(node -c template/.claude/hooks/drift-detector.js)",
+      "Bash(node -c bin/cli.js)"
     ]
   },
   "hooks": {
     "PreToolUse": [
       {
         "matcher": ".*",
-        "command": "node .claude/hooks/pre-tool-use.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-use.js"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": ".*",
-        "command": "node .claude/hooks/post-tool-use.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-use.js"
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "command": "node .claude/hooks/stop.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop.js"
+          }
+        ]
       }
     ],
     "PreCompact": [
       {
-        "command": "node .claude/hooks/pre-compact.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact.js"
+          }
+        ]
       }
     ]
   }

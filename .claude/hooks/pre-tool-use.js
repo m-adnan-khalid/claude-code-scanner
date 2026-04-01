@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * pre-tool-use.js — PreToolUse hook + Prompt Intelligence Pipeline
+ * pre-tool-use.js — PreToolUse hook + Prompt Pipeline
  *
- * Automated layer of the prompt intelligence system.
+ * Automated layer of the prompt system.
  * Runs 5 checks on every mutating tool call:
  *   1. Quality scoring (specificity, completeness)
  *   2. Role alignment (scope check for Bash path refs)
@@ -56,7 +56,7 @@ process.stdin.on('end', () => {
       process.exit(0);
     }
 
-    // ── PROMPT INTELLIGENCE PIPELINE (mutating tools: Bash, Edit, Write) ──
+    // ── PROMPT PIPELINE (mutating tools: Bash, Edit, Write) ──
 
     let score = 10;          // Start perfect, deduct for issues
     const flags = [];        // Collect all flags
@@ -234,12 +234,12 @@ process.stdin.on('end', () => {
 
     // Weak prompt — log flags and warnings
     if (flags.length > 0) {
-      process.stderr.write(`\n📋 PROMPT INTELLIGENCE [score: ${clampedScore}/10]\n`);
+      process.stderr.write(`\n📋 PROMPT [score: ${clampedScore}/10]\n`);
       for (const f of flags) {
         process.stderr.write(`   ⚠ ${f}\n`);
       }
       if (clampedScore <= 4) {
-        process.stderr.write(`   💡 Run /improve-prompt for full 5-pass improvement pipeline\n`);
+        process.stderr.write(`   💡 Run /prompt for full 5-pass improvement pipeline\n`);
       }
       process.stderr.write(`\n`);
     }

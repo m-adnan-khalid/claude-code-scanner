@@ -246,14 +246,37 @@ try {
   // Non-fatal — skip inventory validation
 }
 
-// --- Output warnings ---
+// --- 8. Scanner version check (post-update detection) ---
+try {
+  if (manifest && manifest.scanner_version) {
+    const pkgPath = path.join(_projectRoot, 'node_modules', 'claude-code-scanner', 'package.json');
+    if (fs.existsSync(pkgPath)) {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+      if (pkg.version !== manifest.scanner_version) {
+        warnings.push(`UPDATE: Scanner updated (${manifest.scanner_version} → ${pkg.version}). Run /sync --check to pick up new agents/skills`);
+      }
+    }
+  }
+} catch (e) {
+  // Non-fatal
+}
+
+// --- Output warnings with actionable guidance ---
 if (warnings.length > 0) {
   console.log('');
   for (const w of warnings) {
     console.log(w);
   }
+  console.log('');
   if (warnings.length >= 3) {
-    console.log(`\n${warnings.length} drift issues detected. Run: /sync --check (for report) or /sync --fix (to auto-repair)`);
+    console.log(`${warnings.length} drift issues detected.`);
+    console.log('');
+    console.log('Quick fix:    /sync --fix           (auto-repair common drift)');
+    console.log('Full report:  /sync --check         (see details before fixing)');
+    console.log('Major change: /scan-codebase        (full rescan of tech stack)');
+    console.log('Nuclear:      /sync --full-rescan   (regenerate everything)');
+  } else {
+    console.log('Run /sync --check to see details, or /sync --fix to auto-repair.');
   }
 }
 

@@ -3,48 +3,148 @@
     "PreToolUse": [
       {
         "matcher": ".*",
-        "command": "node .claude/hooks/pre-tool-use.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-use.js"
+          }
+        ]
       },
       {
         "matcher": "Edit|Write",
-        "command": "node .claude/hooks/scope-guard.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/scope-guard.js"
+          }
+        ]
       },
       {
         "matcher": ".*",
-        "command": "node .claude/hooks/version-check.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/version-check.js"
+          }
+        ]
       },
       {
         "matcher": "Edit|Write",
-        "command": "node .claude/hooks/branch-conflict-check.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/branch-conflict-check.js"
+          }
+        ]
       },
       {
         "matcher": ".*",
-        "command": "node .claude/hooks/branch-naming-check.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/branch-naming-check.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-commit-gate.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-push-gate.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git merge*)",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-merge-gate.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push*--force*)",
+            "command": "echo '❌ Force push blocked. Use --force-with-lease.' >&2; exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git reset --hard*)",
+            "command": "echo '❌ Hard reset blocked. Use git stash first.' >&2; exit 2"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": ".*",
-        "command": "node .claude/hooks/post-tool-use.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-use.js"
+          }
+        ]
       },
       {
         "matcher": "Edit|Write",
-        "command": "node .claude/hooks/doc-drift-check.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/doc-drift-check.js"
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "command": "node .claude/hooks/stop.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop.js"
+          }
+        ]
       }
     ],
     "PreCompact": [
       {
-        "command": "node .claude/hooks/pre-compact.js"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact.js"
+          }
+        ]
       }
     ],
     "PostCompact": [
       {
-        "command": "echo 'Post-compact: context restored'"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Post-compact: context restored'"
+          }
+        ]
       }
     ]
   }

@@ -9,6 +9,11 @@ roles: [CTO, TechLead, DevOps]
 agents: [@team-lead, @gatekeeper, @output-validator]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Validate Setup
 
 ## Checks
@@ -48,3 +53,8 @@ All criteria must pass before this phase is complete.
 ## Rollback
 - **Redo this phase:** `/validate-setup --fix` to auto-repair, then re-validate
 - **Revert output:** Fix issues manually based on FAIL/WARN report
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

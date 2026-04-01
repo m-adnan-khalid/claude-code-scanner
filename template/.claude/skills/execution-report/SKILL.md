@@ -9,6 +9,11 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@team-lead, @output-validator]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Execution Report: $ARGUMENTS
 
 Generate a comprehensive post-execution analytics report. This runs automatically after every phase completion and on session Stop, or manually via `/execution-report`.
@@ -238,3 +243,8 @@ Includes:
 
 ## Rollback
 - N/A (read-only report).
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

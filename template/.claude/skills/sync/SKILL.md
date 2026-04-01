@@ -10,6 +10,11 @@ roles: [CTO, TechLead, Architect, DevOps]
 agents: [@team-lead, @explorer, @gatekeeper]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Sync: $ARGUMENTS
 
 Detect and resolve drift between the Claude Code environment (`.claude/`) and the actual project codebase.
@@ -21,11 +26,37 @@ Detect and resolve drift between the Claude Code environment (`.claude/`) and th
 - `/sync --fix --component claude-md` — Fix only CLAUDE.md
 - `/sync --full-rescan` — Complete re-scan + regenerate everything (like fresh install)
 
+## Decision Tree: Which Command Do I Need?
+
+```
+Changed package.json / added dependency?
+  └─ /sync --check → /sync --fix
+
+Added new source directory?
+  └─ /sync --fix --component rules (creates rules for new dirs)
+
+Added/removed an agent or skill manually?
+  └─ /sync --fix --component agents (or skills)
+
+Major tech stack change (new framework/language)?
+  └─ /scan-codebase → /generate-environment → /validate-setup
+
+Updated scanner version (npx claude-code-scanner update)?
+  └─ /sync --check → /sync --fix (picks up new template files)
+
+Everything feels stale / too many drift items?
+  └─ /sync --full-rescan (nuclear option — equivalent to fresh install)
+
+Weekly maintenance?
+  └─ /sync --check (just look, no changes)
+```
+
 ## When to Run
 - After adding/removing dependencies (`npm install`, `pip install`, etc.)
 - After adding/removing agents, skills, hooks, or rules manually
 - After major refactors that change file structure
 - After team role changes (new agent types needed, roles removed)
+- After running `npx claude-code-scanner update` (picks up new files)
 - Periodically (weekly recommended) to catch gradual drift
 - At workflow Phase 1 (Task Intake) — automatic drift check before starting work
 
@@ -262,3 +293,8 @@ Next: {recommendation}
 
 ## Rollback
 - Revert changed files via git, re-run `/sync --check` to confirm.
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

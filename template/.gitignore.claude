@@ -1,0 +1,16 @@
+# ─── Claude Code: Session-specific (per developer, never commit) ───
+.claude/session.env
+.claude/settings.local.json
+.claude/agent-memory-local/
+
+# ─── Claude Code: Generated operational state (rebuild with /sync --fix) ───
+.claude/reports/
+.claude/project/tasks/
+.claude/project/stories/
+logs/
+
+# ─── Claude Code: Runtime state (rebuild anytime) ───
+MEMORY.md
+AUDIT_LOG.md
+RETRY_LOG.md
+TODO.md

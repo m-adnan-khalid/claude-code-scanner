@@ -9,6 +9,11 @@ roles: [TechLead, Architect, BackendDev, FrontendDev, FullStackDev]
 agents: [@reviewer, @security, @code-quality]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Review PR: $ARGUMENTS
 
 ## Process
@@ -35,3 +40,8 @@ All criteria must pass before this task is marked complete.
 - **Re-request review:** `/review-pr {PR-number}` to review again after changes
 - **Dismiss review:** Use `gh pr review --dismiss` to clear stale reviews
 - **Return to dev:** `/workflow dev TASK-{id}` to make additional changes
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

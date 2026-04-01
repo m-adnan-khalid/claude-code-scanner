@@ -9,6 +9,11 @@ roles: [CTO, TechLead, PM, QA]
 agents: [@team-lead, @qa-lead, @process-coach]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Metrics: $ARGUMENTS
 
 Read all `.claude/tasks/*.md` and `.claude/project/PROJECT.md` to calculate:
@@ -41,3 +46,8 @@ Read all `.claude/tasks/*.md` and `.claude/project/PROJECT.md` to calculate:
 
 ## Rollback
 - N/A (read-only analysis).
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

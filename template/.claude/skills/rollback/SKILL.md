@@ -10,6 +10,11 @@ roles: [DevOps, TechLead, CTO]
 agents: [@infra, @team-lead, @debugger]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # Rollback: $ARGUMENTS
 
 ## Commands
@@ -90,3 +95,8 @@ All criteria must pass before this task is marked complete.
 
 ## Rollback
 - Rolling back a rollback is not supported — fix forward instead with `/fix-bug` or `/hotfix`
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```

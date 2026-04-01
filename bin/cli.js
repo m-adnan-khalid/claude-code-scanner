@@ -50,7 +50,7 @@ const COMMANDS = {
   new: 'Create a new project from idea to launch',
   status: 'Check if Claude Code environment is set up',
   verify: 'Run verification checks on existing setup',
-  update: 'Update scanner skills/agents to latest version',
+  update: 'Smart update — add new files, preserve customizations (use --force to overwrite all)',
   help: 'Show this help message',
 };
 
@@ -236,29 +236,80 @@ function init() {
     success('Hook scripts ready');
   }
 
-  // Update .gitignore
+  // Update .gitignore with Claude Code entries
   const gitignorePath = path.join(cwd, '.gitignore');
-  const gitignoreEntries = [
-    '.claude/settings.local.json',
-    '.claude/agent-memory-local/',
-    '.claude/tasks/',
-    '.claude/reports/',
-  ];
+  const gitignoreBlock = `
+# ─── Claude Code: Session-specific (per developer) ───
+.claude/session.env
+.claude/settings.local.json
+.claude/agent-memory-local/
+
+# ─── Claude Code: Generated state (rebuild with /sync --fix) ───
+.claude/reports/
+.claude/project/tasks/
+.claude/project/stories/
+.claude/tasks/
+logs/
+
+# ─── Claude Code: Runtime state ───
+MEMORY.md
+AUDIT_LOG.md
+RETRY_LOG.md
+`;
 
   try {
     let gitignoreContent = fs.existsSync(gitignorePath)
       ? fs.readFileSync(gitignorePath, 'utf-8')
       : '';
 
-    const existingLines = new Set(gitignoreContent.split('\n').map(l => l.trim()));
-    const newEntries = gitignoreEntries.filter(e => !existingLines.has(e));
-    if (newEntries.length > 0) {
-      gitignoreContent += '\n# Claude Code local files\n' + newEntries.join('\n') + '\n';
+    // Check if Claude Code block already exists
+    if (!gitignoreContent.includes('Claude Code:')) {
+      gitignoreContent += gitignoreBlock;
       fs.writeFileSync(gitignorePath, gitignoreContent);
-      success(`.gitignore updated (${newEntries.length} entries)`);
+      success('.gitignore updated (Claude Code entries added)');
     }
   } catch (err) {
     warn(`Could not update .gitignore: ${err.message}`);
+  }
+
+  // Copy VS Code settings for file hiding (if .vscode/ doesn't have custom settings)
+  const vscodeSrc = path.join(templateDir, '.vscode', 'settings.json');
+  const vscodeDir = path.join(cwd, '.vscode');
+  const vscodeDest = path.join(vscodeDir, 'settings.json');
+  if (fs.existsSync(vscodeSrc)) {
+    if (!fs.existsSync(vscodeDest)) {
+      // No existing VS Code settings — copy ours
+      fs.mkdirSync(vscodeDir, { recursive: true });
+      fs.copyFileSync(vscodeSrc, vscodeDest);
+      success('.vscode/settings.json (hides Claude operational files from explorer)');
+    } else {
+      // Existing VS Code settings — try to merge files.exclude
+      try {
+        const existing = JSON.parse(fs.readFileSync(vscodeDest, 'utf-8'));
+        const template = JSON.parse(fs.readFileSync(vscodeSrc, 'utf-8'));
+        let merged = false;
+        if (!existing['files.exclude']) existing['files.exclude'] = {};
+        for (const [pattern, value] of Object.entries(template['files.exclude'] || {})) {
+          if (!(pattern in existing['files.exclude'])) {
+            existing['files.exclude'][pattern] = value;
+            merged = true;
+          }
+        }
+        if (!existing['search.exclude']) existing['search.exclude'] = {};
+        for (const [pattern, value] of Object.entries(template['search.exclude'] || {})) {
+          if (!(pattern in existing['search.exclude'])) {
+            existing['search.exclude'][pattern] = value;
+            merged = true;
+          }
+        }
+        if (merged) {
+          fs.writeFileSync(vscodeDest, JSON.stringify(existing, null, 2) + '\n');
+          success('.vscode/settings.json merged (Claude file exclusions added)');
+        }
+      } catch (e) {
+        // Can't merge — skip silently
+      }
+    }
   }
 
   // Summary
@@ -553,17 +604,188 @@ function verify() {
 
 function update() {
   const cwd = process.cwd();
-  warn('UPDATE will overwrite template files (agents, skills, hooks, rules, scripts).');
-  warn('Custom modifications to these files will be lost.');
-  log('  Your task files (.claude/tasks/) and project files (.claude/project/) are preserved.');
-  log('  Your settings.local.json is preserved.');
-  log('');
-  log('  To proceed, re-run with: npx claude-code-scanner update --force');
-  if (!flags.includes('--force') && !flags.includes('-f')) {
-    process.exit(0);
+  const templateDir = path.join(__dirname, '..', 'template');
+  const force = flags.includes('--force') || flags.includes('-f');
+
+  // Check if workspace exists
+  if (!fs.existsSync(path.join(cwd, '.claude'))) {
+    error('No .claude/ directory found. Run init first: npx claude-code-scanner init');
+    process.exit(1);
   }
-  flags.push('--force');
-  init();
+
+  if (force) {
+    // Force mode = destructive overwrite (old behavior)
+    warn('FORCE UPDATE — overwriting ALL template files.');
+    warn('Custom modifications to agents/skills/hooks/rules will be lost.');
+    log('  Preserved: .claude/tasks/, .claude/project/, settings.local.json');
+    log('');
+    init();
+    return;
+  }
+
+  // Smart update mode — add new files, skip existing (preserve customizations)
+  header('Claude Code Scanner — Smart Update');
+  log(`Target: ${cwd}\n`);
+
+  const dirs = ['rules', 'agents', 'skills', 'hooks', 'scripts', 'docs', 'templates', 'profiles'];
+  let totalAdded = 0;
+  let totalSkipped = 0;
+  let totalUpdated = 0;
+  const report = { added: [], skipped: [], updated: [] };
+
+  for (const dir of dirs) {
+    const src = path.join(templateDir, '.claude', dir);
+    const dest = path.join(cwd, '.claude', dir);
+    if (!fs.existsSync(src)) continue;
+
+    if (!fs.existsSync(dest)) {
+      // New directory — copy entirely
+      const result = copyDir(src, dest, false);
+      totalAdded += result.copied;
+      report.added.push(`.claude/${dir}/ (${result.copied} new files)`);
+      success(`.claude/${dir}/ — ${result.copied} new files added`);
+    } else {
+      // Existing directory — smart merge
+      const result = smartMergeDir(src, dest);
+      totalAdded += result.added;
+      totalSkipped += result.skipped;
+      totalUpdated += result.updated;
+      if (result.added > 0 || result.updated > 0) {
+        success(`.claude/${dir}/ — ${result.added} added, ${result.updated} updated, ${result.skipped} preserved`);
+        if (result.added > 0) report.added.push(`.claude/${dir}/ (${result.added} new)`);
+      } else {
+        log(`  .claude/${dir}/ — up to date (${result.skipped} files preserved)`);
+      }
+    }
+  }
+
+  // Update CLAUDE.md only if user hasn't modified it (compare first line for version)
+  const claudeMdSrc = path.join(templateDir, 'CLAUDE.md');
+  const claudeMdDest = path.join(cwd, 'CLAUDE.md');
+  if (fs.existsSync(claudeMdDest)) {
+    const srcContent = fs.readFileSync(claudeMdSrc, 'utf-8');
+    const destContent = fs.readFileSync(claudeMdDest, 'utf-8');
+    const srcVersion = srcContent.match(/FRAMEWORK VERSION:\s*([\d.]+)/);
+    const destVersion = destContent.match(/FRAMEWORK VERSION:\s*([\d.]+)/);
+    if (srcVersion && destVersion && srcVersion[1] !== destVersion[1]) {
+      warn(`CLAUDE.md: template version ${srcVersion[1]} differs from installed ${destVersion[1]}`);
+      warn('  Review manually or use --force to overwrite.');
+      report.skipped.push('CLAUDE.md (version mismatch — manual review needed)');
+    } else {
+      log('  CLAUDE.md — up to date');
+    }
+  }
+
+  // Update settings.json — merge new hooks, preserve existing
+  const settingsSrc = path.join(templateDir, '.claude', 'settings.json');
+  const settingsDest = path.join(cwd, '.claude', 'settings.json');
+  if (fs.existsSync(settingsSrc) && fs.existsSync(settingsDest)) {
+    try {
+      const srcSettings = JSON.parse(fs.readFileSync(settingsSrc, 'utf-8'));
+      const destSettings = JSON.parse(fs.readFileSync(settingsDest, 'utf-8'));
+      let merged = false;
+
+      // Add new hook events that don't exist in destination
+      if (srcSettings.hooks && destSettings.hooks) {
+        for (const [event, hooks] of Object.entries(srcSettings.hooks)) {
+          if (!destSettings.hooks[event]) {
+            destSettings.hooks[event] = hooks;
+            merged = true;
+            report.added.push(`settings.json: new hook event "${event}"`);
+          }
+        }
+        if (merged) {
+          fs.writeFileSync(settingsDest, JSON.stringify(destSettings, null, 2) + '\n');
+          success('settings.json — merged new hook events');
+        } else {
+          log('  settings.json — up to date');
+        }
+      }
+    } catch (e) {
+      warn(`settings.json merge failed: ${e.message}`);
+    }
+  }
+
+  // Update manifest.json
+  const manifestSrc = path.join(templateDir, '.claude', 'manifest.json');
+  const manifestDest = path.join(cwd, '.claude', 'manifest.json');
+  if (fs.existsSync(manifestSrc)) {
+    try {
+      const manifest = JSON.parse(fs.readFileSync(
+        fs.existsSync(manifestDest) ? manifestDest : manifestSrc, 'utf-8'
+      ));
+      manifest.last_sync = new Date().toISOString();
+      manifest.scanner_version = require(path.join(__dirname, '..', 'package.json')).version;
+      fs.writeFileSync(manifestDest, JSON.stringify(manifest, null, 2) + '\n');
+    } catch (e) { /* ok */ }
+  }
+
+  // Print report
+  log('');
+  header('Update Summary');
+  log(`  Added:     ${totalAdded} new files`);
+  log(`  Preserved: ${totalSkipped} existing files (your customizations are safe)`);
+  if (totalUpdated > 0) log(`  Updated:   ${totalUpdated} files (empty → populated)`);
+  log('');
+
+  if (report.added.length > 0) {
+    log(`${GREEN}New files:${RESET}`);
+    for (const item of report.added) log(`  + ${item}`);
+    log('');
+  }
+
+  if (totalAdded === 0 && totalUpdated === 0) {
+    success('Workspace is already up to date!');
+  } else {
+    success(`Smart update complete. ${totalAdded} files added, ${totalSkipped} preserved.`);
+  }
+
+  log('');
+  log('  Next steps:');
+  log('  1. Run /sync --check inside Claude Code to verify');
+  log('  2. Use --force to overwrite ALL files if needed');
+  log('');
+}
+
+function smartMergeDir(src, dest, _depth = 0) {
+  if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  let added = 0;
+  let skipped = 0;
+  let updated = 0;
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      const result = smartMergeDir(srcPath, destPath, _depth + 1);
+      added += result.added;
+      skipped += result.skipped;
+      updated += result.updated;
+    } else {
+      if (!fs.existsSync(destPath)) {
+        // New file — add it
+        fs.copyFileSync(srcPath, destPath);
+        added++;
+      } else {
+        // Existing file — preserve user's version
+        const destContent = fs.readFileSync(destPath, 'utf-8');
+        const destSize = destContent.trim().length;
+
+        if (destSize === 0) {
+          // Empty file — populate from template
+          fs.copyFileSync(srcPath, destPath);
+          updated++;
+        } else {
+          // Non-empty — preserve
+          skipped++;
+        }
+      }
+    }
+  }
+  return { added, skipped, updated };
 }
 
 async function setup() {

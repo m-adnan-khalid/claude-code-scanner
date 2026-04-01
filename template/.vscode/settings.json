@@ -1,0 +1,21 @@
+{
+  "files.exclude": {
+    "**/.claude/project/tasks": true,
+    "**/.claude/project/stories": true,
+    "**/.claude/reports": true,
+    "**/.claude/session.env": true,
+    "**/.claude/session.env.template": true,
+    "**/.claude/settings.local.json": true,
+    "**/MEMORY.md": true,
+    "**/AUDIT_LOG.md": true,
+    "**/RETRY_LOG.md": true,
+    "**/logs": true
+  },
+  "search.exclude": {
+    "**/.claude/hooks": true,
+    "**/.claude/project/tasks": true,
+    "**/.claude/project/stories": true,
+    "**/.claude/reports": true,
+    "**/logs": true
+  }
+}

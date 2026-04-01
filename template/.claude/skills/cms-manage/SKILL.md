@@ -13,6 +13,11 @@ roles: [FullStackDev, BackendDev, FrontendDev, TechLead]
 agents: [@api-builder, @frontend, @database, @scaffolder]
 ---
 
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
+
+
 # /cms-manage $ARGUMENTS
 
 ## Commands
@@ -82,3 +87,8 @@ agents: [@api-builder, @frontend, @database, @scaffolder]
 - Plugin/extension follows platform conventions and passes lint
 - Migration verified: all content transferred, relationships intact
 - Audit findings addressed (critical fixed, medium documented)
+
+### Final Output
+```
+NEXT ACTION: Done. Review the output above and decide your next step.
+```
