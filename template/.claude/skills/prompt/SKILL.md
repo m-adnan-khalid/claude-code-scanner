@@ -9,6 +9,8 @@ roles: [CTO, TechLead, Architect, BackendDev, FrontendDev, FullStackDev, QA, Dev
 agents: [@team-lead, @output-validator]
 ---
 
+**Lifecycle: T3 (planning/docs) — See `_protocol.md`**
+
 # Prompt: $ARGUMENTS
 
 You are the PROMPT LAYER — a step-by-step guided helper with full memory and context awareness.

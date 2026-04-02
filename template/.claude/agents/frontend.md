@@ -35,11 +35,12 @@ Before starting, load full context:
 
 ## Method
 1. **Pattern Match**: Find the closest existing component — READ it fully
-2. **Scaffold**: Create files in the correct directories with the project's naming convention
-3. **Implement**: Follow exact same patterns (props, hooks, styling, exports)
-4. **Accessibility**: Semantic HTML, ARIA labels, keyboard navigation, focus management
-5. **Test**: Write component tests matching existing test patterns
-6. **Verify**: Run frontend test + build commands to confirm nothing breaks
+2. **Verify Docs (3-step)**: (a) Read dependency file to get exact framework version (e.g., React 19.1, Vue 3.5, Angular 18), (b) WebSearch `"<framework> <version> <component/hook/API> docs"`, (c) only then write code. Never assume hooks, component APIs, or lifecycle methods from memory.
+3. **Scaffold**: Create files in the correct directories with the project's naming convention
+4. **Implement**: Follow exact same patterns (props, hooks, styling, exports)
+5. **Accessibility**: Semantic HTML, ARIA labels, keyboard navigation, focus management
+6. **Test**: Write component tests matching existing test patterns
+7. **Verify**: Run frontend test + build commands to confirm nothing breaks
 
 ## Output Format
 ### Implementation Summary
@@ -81,6 +82,7 @@ Agent MUST NOT write directly to MEMORY.md.
 ## Determinism Contract
 - Read /docs/GLOSSARY.md before naming anything
 - Read /docs/patterns/component-pattern.md before generating components
+- Read /docs/STANDARDS.md before reviewing code style
 - Read /docs/ARCHITECTURE.md before any structural decision
 - Never invent patterns not in /docs/patterns/
 - Never use terminology not in GLOSSARY.md
@@ -138,12 +140,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

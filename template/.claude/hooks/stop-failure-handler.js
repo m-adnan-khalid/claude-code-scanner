@@ -50,13 +50,14 @@ function processInput(raw) {
   try {
     const data = JSON.parse(raw);
     const errorType = data.stop_failure_error_type || data.error_type || 'unknown';
+    const sessionId = data.session_id || 'unknown';
     const timestamp = new Date().toISOString();
 
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
     // Log the failure
     const logPath = path.join(reportsDir, 'session-failures.log');
-    fs.appendFileSync(logPath, `| ${timestamp} | ${errorType} | ${JSON.stringify(data).substring(0, 500)} |\n`);
+    fs.appendFileSync(logPath, `| ${timestamp} | ${sessionId} | ${errorType} | ${JSON.stringify(data).substring(0, 500)} |\n`);
 
     // Find and update active task
     const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
@@ -80,7 +81,10 @@ function processInput(raw) {
           content = content.replace(/(## Timeline\n[\s\S]*?)(\n## |\n$|$)/, (m, before, after) => {
             return before + '\n' + timelineEntry + after;
           });
-          fs.writeFileSync(taskPath, content);
+          // Atomic write: write to temp, then rename
+          const tmpPath = taskPath + '.tmp';
+          fs.writeFileSync(tmpPath, content);
+          fs.renameSync(tmpPath, taskPath);
         }
 
         // Update the changes log
@@ -94,6 +98,7 @@ function processInput(raw) {
         const manifest = {
           event: 'session_failure',
           timestamp,
+          session_id: sessionId,
           task_id: id.trim(),
           status_at_failure: status.trim(),
           error_type: errorType,
@@ -101,6 +106,18 @@ function processInput(raw) {
           preserved: {
             loop_state: loopState,
             last_handoff: lastHandoff,
+            full_handoff_block: (() => {
+              const blocks = content.match(/```[\s\S]*?HANDOFF:[\s\S]*?```/g);
+              return blocks ? blocks[blocks.length - 1].replace(/```/g, '').trim() : null;
+            })(),
+            next_agent_needs: (() => {
+              const m = content.match(/next_agent_needs:\s*([\s\S]*?)(?=\n\s{2,}\w+:|\n```|$)/);
+              return m ? m[1].trim() : null;
+            })(),
+            decisions_made: (() => {
+              const m = content.match(/## (?:Key )?Decisions\n([\s\S]*?)(?=\n##|$)/);
+              return m ? m[1].trim().split('\n').filter(l => l.trim().startsWith('-')).map(l => l.trim()).join('; ') : null;
+            })(),
             open_bugs: (content.match(/BUG-\S+\s*\(P[0-4]\)/g) || []).join(', ') || null,
             blocked: /blocked:\s*Y/i.test(content)
           },
@@ -109,7 +126,9 @@ function processInput(raw) {
         };
 
         const manifestPath = path.join(snapshotDir, `${id.trim()}_interrupted_${Date.now()}.json`);
-        fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+        const tmpManifest = manifestPath + '.tmp';
+        fs.writeFileSync(tmpManifest, JSON.stringify(manifest, null, 2));
+        fs.renameSync(tmpManifest, manifestPath);
 
         console.log(`\nSESSION FAILURE: ${errorType}`);
         console.log(`TASK ${id.trim()} state preserved at ${status.trim()}`);

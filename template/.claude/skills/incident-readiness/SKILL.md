@@ -6,7 +6,7 @@ context: fork
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
 argument-hint: '[--scope full|dr-plan|runbooks|monitoring|backup|on-call] [--generate]'
 roles: [DevOps, TechLead, CTO, Architect]
-agents: [@infra, @security, @gatekeeper]
+agents: [@infra, @incident-responder, @security]
 ---
 
 **Lifecycle: T2 (audit/analysis) — See `_protocol.md`**

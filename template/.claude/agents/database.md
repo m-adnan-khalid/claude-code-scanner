@@ -35,8 +35,9 @@ Before starting, load full context:
 
 ## Method
 1. **Understand**: Read current schema, models, and existing migrations
-2. **Design**: Schema changes with backward compatibility in mind
-3. **Migrate**: Create migration file following project conventions
+2. **Verify Docs (3-step)**: (a) Read dependency file to get exact ORM/DB version (e.g., Prisma 6.1, SQLAlchemy 2.0, TypeORM 0.3), (b) WebSearch `"<ORM/DB> <version> <migration/query/type> docs"`, (c) only then write schema/queries. Never assume migration syntax or query builder API from memory.
+3. **Design**: Schema changes with backward compatibility in mind
+4. **Migrate**: Create migration file following project conventions
 4. **Validate**: Verify migration is safe (reversible, no data loss, zero-downtime DDL)
 5. **Optimize**: Check query performance, suggest indexes if needed
 6. **Test**: Run migration in test environment, verify data integrity
@@ -109,6 +110,7 @@ Agent MUST NOT write directly to MEMORY.md.
 ## Determinism Contract
 - Read /docs/GLOSSARY.md before naming anything
 - Read /docs/patterns/data-model-pattern.md before schema design
+- Read /docs/STANDARDS.md before reviewing code style
 - Read /docs/ARCHITECTURE.md before any structural decision
 - Never invent patterns not in /docs/patterns/
 - Never use terminology not in GLOSSARY.md
@@ -160,12 +162,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

@@ -572,9 +572,20 @@ Sequential gates:
 | @team-lead (perf/tests) | PRESERVED | PRESERVED | Phase 5 -> 6 -> 7 -> 8 -> 9 -> 10 |
 
 **On re-entry:** ALL inner loop counters reset to 0. Signoff-rejection-cycle increments.
-**Cycle 2 -> CIRCUIT BREAKER:** escalate to user (continue, re-scope, split, cancel)
+**Cycle 2 -> CIRCUIT BREAKER:** set `circuit-breaker: true` in Loop State, escalate to user (continue, re-scope, split, cancel).
 
-Track: `signoff-rejection-cycle: N/2`, per-gate status
+### Loop Counter Reset Implementation
+When routing back from Phase 10 rejection, the orchestrator MUST update the task file's `## Loop State`:
+- **Route to Phase 3 or 4:** Reset ALL counters (dev-test-loop, review-loop, ci-fix-loop, qa-bug-loop) to `iteration 0/N`
+- **Route to Phase 5/5c/5d:** Reset dev-test-loop, review-loop, ci-fix-loop to `iteration 0/N` (preserve qa-bug-loop)
+- **ON_HOLD:** Preserve ALL counters (no reset)
+- **Deploy fail → Phase 5:** Reset dev-test-loop, review-loop, ci-fix-loop to `iteration 0/N`
+- **Agent timeout in loop:** Increment counter +1 (handled by subagent-tracker hook)
+- Update `sub-phase-active:` field when routing to 5c or 5d
+- Update `last-rejection-route:` field with the target phase
+- Update `approvals-invalidated:` per the preservation table above
+
+Track: `signoff-rejection-cycle: N/2`, per-gate status, `last-rejection-route`, `sub-phase-active`, `approvals-invalidated`
 
 **States: QA_SIGNOFF -> BIZ_SIGNOFF -> TECH_SIGNOFF**
 
@@ -607,12 +618,21 @@ Track: `deploy-loop: N/2`, `merge-sha`, `last-deploy-failure`, `rollback-execute
 **State: DEPLOYING**
 
 ## Phase 12: Post-Deploy
-Monitor 30min (hotfix: 15min). Run smoke tests against production:
+Monitor 30min (hotfix: 15min). Run smoke tests and validate observability:
 1. @infra runs health check endpoints
 2. @tester runs smoke test suite (subset of E2E tests targeting critical paths)
 3. If smoke tests fail → immediate `/rollback deploy TASK-{id}` → new hotfix
-4. Close issues. Notify stakeholders.
+4. @observability-engineer validates post-deploy observability:
+   - Logs flowing to aggregator (no silent failures)
+   - Metrics being scraped (request rate, error rate, latency p50/p95/p99)
+   - Tracing spans complete for critical paths
+   - Alerting rules active and tested
+5. @performance-engineer validates performance budgets (if Phase 5 included perf changes):
+   - Compare against pre-deploy baseline
+   - If regression > threshold → escalate to @team-lead
+6. Close issues. Notify stakeholders.
 Production bugs: P0/P1 -> new hotfix workflow, P2/P3 -> new task.
+Observability gaps: route to @observability-engineer for immediate fix before CLOSED.
 
 **State: MONITORING -> CLOSED**
 

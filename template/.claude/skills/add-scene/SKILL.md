@@ -18,8 +18,9 @@ agents: [@scaffolder, @tester, @architect]
 **CRITICAL RULES:**
 1. Every output to the user MUST end with a `NEXT ACTION:` line.
 2. Any file created MUST contain a `## Session Context` section.
-3. Re-read task/output files before each step — never rely on in-memory state alone.
-4. Update MEMORY.md after completion.
+3. **Verify Docs (3-step)**: Read dependency files for exact versions → WebSearch `"<framework> <version> <API> docs"` → only then write code (per accuracy.md 3-step rule)
+16. Re-read task/output files before each step — never rely on in-memory state alone.
+16. Update MEMORY.md after completion.
 
 ## Step 0 — Load Context
 
@@ -27,9 +28,9 @@ Before starting, load full context:
 
 1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
 2. **Memory:** Read `MEMORY.md` (if exists) → get last completed task, user preferences
-3. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
-4. **Active work:** Read `TODO.md` (if exists) → get current work items
-5. **History:** List `.claude/tasks/` → check for related or duplicate work
+16. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
+16. **Active work:** Read `TODO.md` (if exists) → get current work items
+16. **History:** List `.claude/tasks/` → check for related or duplicate work
 
 Output:
 ```
@@ -53,10 +54,10 @@ NEXT ACTION: Context loaded. Starting skill...
 ### Detect Game Engine
 1. Unity: `.csproj`, `Assets/`, `ProjectSettings/`, MonoBehaviour patterns
 2. Unreal: `.uproject`, `Source/`, UObject/AActor patterns
-3. Godot: `project.godot`, `.tscn`, `.gd` files
-4. Bevy: `bevy` in Cargo.toml dependencies
-5. Phaser: `phaser` in package.json, Scene class patterns
-6. Custom ECS: entity-component patterns in source
+16. Godot: `project.godot`, `.tscn`, `.gd` files
+16. Bevy: `bevy` in Cargo.toml dependencies
+16. Phaser: `phaser` in package.json, Scene class patterns
+16. Custom ECS: entity-component patterns in source
 
 ### Scaffold Scene
 **Unity:**
@@ -86,14 +87,14 @@ NEXT ACTION: Context loaded. Starting skill...
 ### Add Entity (ECS Pattern)
 1. Define component structs/classes (Transform, Sprite, Physics, Health, Input)
 2. Create entity factory/prefab with default component values
-3. Add spawn function to scene setup
-4. If physics: set up collision layers and masks
+16. Add spawn function to scene setup
+16. If physics: set up collision layers and masks
 
 ### Add System
 1. Create system function/class with query for relevant components
 2. Define execution order (before/after other systems)
-3. Register in scene or global system scheduler
-4. Add unit test for system logic
+16. Register in scene or global system scheduler
+16. Add unit test for system logic
 
 ## Game-Specific Quality Checks
 - Frame rate: no system should block main thread >16ms (60fps target)
@@ -131,8 +132,8 @@ Append to `.claude/reports/audit/audit-{branch}.log`:
 If context is lost (compaction, pause, resume):
 1. Find most recent `.claude/tasks/` file with `Phase: IN_PROGRESS`
 2. Read `## Session Context` → restore state
-3. Read `## Progress Log` → find last completed step
-4. Resume from next pending step
+16. Read `## Progress Log` → find last completed step
+16. Resume from next pending step
 
 ### Final Output
 ```

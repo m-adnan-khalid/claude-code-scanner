@@ -1,7 +1,7 @@
 ---
 paths: ["**/*.ts", "**/*.js", "**/*.py", "**/*.go", "**/*.java", "**/*.rb", "**/*.cs"]
 ---
-# Logging Standards
+# Logging Standards (detailed reference — summary in code-standards.md)
 
 ## Format
 - Use **structured JSON logging** in production (machine-parseable)

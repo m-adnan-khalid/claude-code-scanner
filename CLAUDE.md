@@ -9,12 +9,12 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 
 ## What You Generate
 - `CLAUDE.md` (root + nested per module)
-- `.claude/rules/` — path-specific rules (9 rules)
-- `.claude/agents/` — role-based agent team (27 agents)
+- `.claude/rules/` — path-specific rules (11 rules: code-standards, code-safety, code-platform + 8 workflow/domain rules)
+- `.claude/agents/` — role-based agent team (30 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
 - `.claude/skills/` — workflow skills (88 skills including 6 real-environment testing, 8 audit/compliance, 2 observability, and 1 prompt skill)
 - `.claude/settings.json` — permissions, hooks
-- `.claude/hooks/` — automation scripts (9 root + 18 template = 27 hooks)
+- `.claude/hooks/` — automation scripts (25 root + 19 template = 44 hooks)
 - `.claude/templates/` — code scaffolding templates
 - `.claude/profiles/` — developer role profiles
 - `.claude/scripts/` — setup + verification scripts
@@ -41,7 +41,7 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 - MCP servers: max 5, scoped to agents via `mcpServers:` field
 - Startup context: under 20%
 - Working context: under 60%
-- Run `/context` to verify
+- Run `/context-check` to verify
 
 ## Agent Team (Role-Based)
 | Role | Agent | Access |
@@ -71,10 +71,15 @@ Use `/setup-smithery` skill — installs matching Smithery skills and MCP server
 | Docs Writer | `@docs-writer` | Read/Write docs — READMEs, API docs, ADRs, changelogs |
 | CTO | `@cto` | Read-only — executive oversight, org health |
 | Output Validator | `@output-validator` | Read-only — validates agent output quality |
+| Analyst | `@analyst` | Read/Write docs — requirements analysis, BRD, domain modeling |
+| Version Manager | `@version-manager` | Read/Write — git governance, branch naming, commit gates, PR validation |
+| Observability Engineer | `@observability-engineer` | Read/Write — logging, tracing, metrics, alerting, health checks |
+| Incident Responder | `@incident-responder` | Read/Write — production incidents, post-mortems, runbooks, SLA tracking |
+| Performance Engineer | `@performance-engineer` | Read/Write — profiling, benchmarking, optimization, performance budgets |
 
 ## Hook Registration
-- Root hooks (9): pre-tool-use, scope-guard, version-check, branch-conflict-check, branch-naming-check, post-tool-use, doc-drift-check, stop, pre-compact
-- Template hooks (18): session-start, drift-detector, protect-files, gatekeeper-check, validate-bash, context-monitor, audit-logger, test-results-parser, post-edit-format, track-file-changes, tool-failure-tracker, pre-compact-save, post-compact-recovery, notify-approval, subagent-tracker, execution-report, prompt-stats, stop-failure-handler
+- Root hooks (25): pre-tool-use, scope-guard, version-check, branch-conflict-check, branch-naming-check, git-commit-gate, git-push-gate, git-merge-gate, git-checkout-warn, post-tool-use, doc-drift-check, post-write-audit, post-edit-format, context-monitor, audit-logger, stop, stop-registry-snapshot, pre-compact, pre-compact-archive, session-start, drift-detector, post-compact-recovery, stop-failure-handler, subagent-tracker, handoff-validator
+- Template hooks (19): session-start, drift-detector, protect-files, gatekeeper-check, validate-bash, context-monitor, audit-logger, test-results-parser, post-edit-format, track-file-changes, tool-failure-tracker, pre-compact-save, post-compact-recovery, notify-approval, subagent-tracker, execution-report, prompt-stats, stop-failure-handler, stop-persist-state
 
 ## Enterprise Role Registry (RBAC)
 
@@ -187,8 +192,28 @@ All tool calls pass through the prompt pipeline (pre-tool-use hook + `/prompt` s
 `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
 
 ## Audit & Compliance
-`/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`
+`/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`, `/security-audit`, `/mobile-audit`, `/seo-audit`, `/firmware-audit`, `/logging-audit`
+
+## Observability & Monitoring
+`/setup-observability`, `/logging-audit`, `/metrics`, `/execution-report`
+
+## Development Utilities
+`/add-endpoint`, `/add-component`, `/add-page`, `/add-command`, `/add-scene`, `/add-template`, `/fix-bug`, `/hotfix`, `/refactor`, `/migrate`, `/parallel-dev`
+
+## Versioning & Feature Management
+`/api-version`, `/api-docs`, `/feature-flags`, `/service-contract`, `/cms-manage`, `/manage-i18n`
+
+## Deployment & Operations
+`/deploy`, `/rollback`, `/release-notes`, `/changelog`, `/cost-estimate`, `/deploy-strategy`
+
+## Planning & Strategy
+`/brainstorm`, `/product-spec`, `/feature-map`, `/domain-model`, `/tech-stack`, `/architecture`, `/scaffold`, `/methodology`, `/pi-planning`, `/create-story`, `/clarify`, `/cost-estimate`
 
 ## Team Workflow
-`/setup-workspace`, `/daily-sync`, `/feature-start`, `/workflow new "task"`, `/feature-done`, `/task-tracker status`, `/org-report` — See `.claude/docs/commands-template.md` for full reference
+`/setup-workspace`, `/daily-sync`, `/feature-start`, `/workflow new "task"`, `/feature-done`, `/task-tracker status`, `/org-report`, `/standup`, `/onboard`, `/progress-report`, `/signoff`
+
+## Maintenance & Context
+`/sync --check`, `/sync --fix`, `/context-check`, `/compact`, `/dependency-check`, `/scan-and-build`, `/audit-system`, `/review-pr`, `/design-review`, `/impact-analysis`
+
+See `.claude/docs/commands-template.md` for full 88-skill reference with syntax and flags.
 

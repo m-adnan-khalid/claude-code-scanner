@@ -3,7 +3,7 @@
 /**
  * audit-logger.js — PostToolUse hook
  * Auto-logs every tool call to the active Task Brief's Audit Log section.
- * Format: ISO-timestamp|ROLE|branch|ACTION|DETAIL|STATUS|duration_ms
+ * Format: ISO-timestamp|session_id|ROLE|branch|ACTION|DETAIL|STATUS|duration_ms
  *
  * Logs are branch-scoped: .claude/reports/audit/audit-{branch}.log
  */
@@ -32,6 +32,9 @@ process.stdin.on('end', () => {
     const now = new Date();
     const timestamp = now.toISOString();
 
+    // Extract session_id from hook input
+    const sessionId = data.session_id || 'unknown';
+
     // Read CURRENT_ROLE from session.env
     let role = 'UNKNOWN';
     try {
@@ -55,7 +58,7 @@ process.stdin.on('end', () => {
     const detail = getDetail(tool_name, tool_input);
     const status = getStatus(tool_name, tool_output);
     const durationMs = Date.now() - startMs;
-    const logLine = `${timestamp}|${role}|${branch}|${action}|${detail}|${status}|${durationMs}ms`;
+    const logLine = `${timestamp}|${sessionId}|${role}|${branch}|${action}|${detail}|${status}|${durationMs}ms`;
 
     // 1. Append to branch-scoped audit log
     const auditDir = path.join(root, '.claude', 'reports', 'audit');

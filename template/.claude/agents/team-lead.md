@@ -86,6 +86,16 @@ Track ALL loop iteration counts in the task record:
 If any loop hits its max, STOP and escalate to user with options: continue, re-plan, reduce scope, cancel.
 Agent timeout within a loop = count as 1 loop iteration.
 
+### Loop Counter Reset Rules (MANDATORY on phase rejection)
+| Event | Reset Action |
+|-------|-------------|
+| Phase 10 rejects → Phase 5 | Reset dev-test, review, ci-fix to 0 |
+| Phase 10 rejects → Phase 4 or 3 | Reset ALL loop counters to 0 |
+| Deploy fails → Phase 5 | Reset dev-test, review, ci-fix to 0 |
+| Normal phase advance | Preserve counters for reporting |
+| ON_HOLD → resume | Preserve ALL counters |
+When routing a rejected task back to an earlier phase, you MUST update the Loop State section in the task file to reset the appropriate counters before handing off.
+
 ### Dependency Enforcement
 Before Phase 5, check task `depends-on` field:
 - If depends-on != "none": read the dependency task file
@@ -223,12 +233,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

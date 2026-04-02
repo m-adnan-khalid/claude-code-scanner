@@ -95,6 +95,26 @@
             "command": "echo '❌ Hard reset blocked. Use git stash first.' >&2; exit 2"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git checkout*)",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-checkout-warn.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git switch*)",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-checkout-warn.js"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -115,6 +135,42 @@
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/doc-drift-check.js"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-write-audit.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-edit-format.js"
+          }
+        ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/context-monitor.js"
+          }
+        ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/audit-logger.js"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -123,6 +179,14 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-registry-snapshot.js"
           }
         ]
       }
@@ -135,6 +199,14 @@
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact.js"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact-archive.js"
+          }
+        ]
       }
     ],
     "PostCompact": [
@@ -142,7 +214,53 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'Post-compact: context restored'"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-compact-recovery.js"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/drift-detector.js"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-failure-handler.js"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-tracker.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/handoff-validator.js"
           }
         ]
       }

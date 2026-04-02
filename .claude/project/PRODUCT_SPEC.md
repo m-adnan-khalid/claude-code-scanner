@@ -35,8 +35,8 @@ Claude Code Scanner is an open-source CLI tool (Node.js >= 18, zero external dep
 |----|---------|-----------|----------|--------|
 | FEAT-001 | 4-Phase Pipeline | As a developer, I want to scan my codebase and get a complete Claude Code environment so that I don't spend days configuring it manually | Must Have | Done |
 | FEAT-002 | New Project Mode | As a PM/CTO, I want to go from an idea to a scaffolded project with full Claude Code setup so that I can start development immediately | Must Have | Done |
-| FEAT-003 | 25 Role-Based Agents | As a tech lead, I want pre-configured agents for every team role so that each role has AI assistance tailored to their work | Must Have | Done |
-| FEAT-004 | 85+ Workflow Skills | As a developer, I want skill commands for common tasks (add-endpoint, fix-bug, deploy, etc.) so that I follow consistent patterns | Must Have | Done |
+| FEAT-003 | 30 Role-Based Agents | As a tech lead, I want pre-configured agents for every team role so that each role has AI assistance tailored to their work | Must Have | Done |
+| FEAT-004 | 88 Workflow Skills | As a developer, I want skill commands for common tasks (add-endpoint, fix-bug, deploy, etc.) so that I follow consistent patterns | Must Have | Done |
 | FEAT-005 | 27 Automation Hooks | As a tech lead, I want hooks that enforce standards, guard scope, and log actions so that quality is maintained automatically | Must Have | Done |
 | FEAT-006 | 8 Path-Scoped Rules | As an architect, I want rules that constrain behavior by file path so that agents work within their boundaries | Must Have | Done |
 | FEAT-007 | 10-Role RBAC | As a CTO, I want role-based access control so that team members only access files and commands appropriate to their role | Must Have | Done |
@@ -60,7 +60,7 @@ Claude Code Scanner is an open-source CLI tool (Node.js >= 18, zero external dep
 ### In Scope (MVP — v2.2.0, DONE)
 All features FEAT-001 through FEAT-013 are complete and verified:
 - Complete 4-phase pipeline (scan → generate → validate → smithery)
-- Full agent team (25 agents), skill library (85+), hook system (27 hooks)
+- Full agent team (30 agents), skill library (88), hook system (23 root + 18 template hooks)
 - Enterprise RBAC (10 roles) with PreToolUse enforcement
 - 13-phase workflow with QA gates
 - Execution reports, context budget, drift detection
@@ -110,9 +110,9 @@ All features FEAT-001 through FEAT-013 are complete and verified:
 |---|--------|--------|---------|--------|
 | KPI-001 | Framework verification score | 100% | 100% (69/69) | CERT-20260329-FINAL |
 | KPI-002 | Integration test pass rate | 100% | 100% (18/18) | TODO.md |
-| KPI-003 | Agent coverage (roles) | 10/10 | 10/10 (25 agents) | CLAUDE.md |
-| KPI-004 | Skill coverage (workflow phases) | 13/13 | 13/13 (85+ skills) | README.md |
-| KPI-005 | Hook coverage (events) | 10/10 | 10/10 (27 hooks) | docs/ARCHITECTURE.md |
+| KPI-003 | Agent coverage (roles) | 10/10 | 10/10 (30 agents) | CLAUDE.md |
+| KPI-004 | Skill coverage (workflow phases) | 13/13 | 13/13 (88 skills) | README.md |
+| KPI-005 | Hook coverage (events) | 10/10 | 10/10 (25 root + 19 template hooks) | settings.json |
 | KPI-006 | npm weekly downloads | 100+ | [?] Not published yet | TODO.md |
 | KPI-007 | Setup time (existing project) | < 5 min | [?] Not benchmarked | [INFERRED] |
 | KPI-008 | GitHub stars | 50+ | [?] Not tracked | [INFERRED] |
@@ -140,7 +140,7 @@ All features FEAT-001 through FEAT-013 are complete and verified:
 | OQ-002 | What features should interactive CLI mode include? | Scopes FEAT-015 | @strategist | OPEN |
 | OQ-003 | What plugin API surface should be exposed? | Scopes FEAT-016 | @architect | OPEN |
 | OQ-004 | Are there competing tools to benchmark against? | Competitive positioning | @strategist | OPEN — see STORY-009 |
-| OQ-005 | Skill count discrepancy: README says 79, CLAUDE.md says 86 | Documentation accuracy | @docs-writer | OPEN |
+| OQ-005 | Skill count discrepancy: README says 79, CLAUDE.md says 86 | Documentation accuracy | @docs-writer | RESOLVED — Verified: 88 skills in template, all docs updated 2026-04-02 |
 
 ---
 

@@ -25,14 +25,21 @@ function fail(gate, msg) {
   process.exit(2);
 }
 
-// Read stdin
+// Read stdin (4-layer approach for cross-platform)
 let input = '';
-try { input = fs.readFileSync('/dev/stdin', 'utf-8'); } catch (e) { /* ok */ }
+try { input = fs.readFileSync('/dev/stdin', 'utf-8'); } catch (e) {
+  try { input = fs.readFileSync(0, 'utf-8'); } catch (e2) { /* no stdin */ }
+}
 
 const cmd = (() => {
   try { return JSON.parse(input).tool_input?.command || ''; }
   catch { return ''; }
 })();
+
+// Only run if this is actually a git merge command
+if (!cmd || !cmd.match(/git\s+merge/)) {
+  process.exit(0);
+}
 
 // ── GATE 9: DESTRUCTIVE COMMAND BLOCK ──
 if (/merge.*main|merge.*master/.test(cmd)) {
@@ -58,6 +65,41 @@ if (storyId && fs.existsSync(registryPath)) {
   const storyLine = registry.split('\n').find(l => l.includes(storyId));
   if (storyLine && !storyLine.includes('DONE') && !storyLine.includes('IN_REVIEW') && !storyLine.includes('MERGED')) {
     fail(2, `${storyId} is not DONE/IN_REVIEW.\n    Complete all tasks before merging.`);
+  }
+}
+
+// ── GATE 10: PHASE 10 SIGN-OFF CHECK ──
+if (storyId) {
+  const tasksDir = path.join(ROOT, '.claude', 'tasks');
+  if (fs.existsSync(tasksDir)) {
+    try {
+      const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
+      for (const tf of taskFiles) {
+        const content = fs.readFileSync(path.join(tasksDir, tf), 'utf8');
+        if (content.includes(storyId) || tf.toUpperCase().includes(storyId)) {
+          // Check sign-off statuses
+          const techSignoff = content.match(/tech_signoff:\s*(\S+)/i);
+          const qaSignoff = content.match(/qa_signoff:\s*(\S+)/i);
+          const bizSignoff = content.match(/business_signoff:\s*(\S+)/i);
+
+          const missing = [];
+          if (!techSignoff || techSignoff[1] !== 'APPROVED') missing.push('tech');
+          if (!qaSignoff || qaSignoff[1] !== 'APPROVED') missing.push('QA');
+          // Business sign-off optional for hotfix/refactor
+          if (bizSignoff && bizSignoff[1] === 'REJECTED') missing.push('business (REJECTED)');
+          else if (!bizSignoff && !content.includes('type: hotfix') && !content.includes('type: refactor')) {
+            missing.push('business');
+          }
+
+          if (missing.length > 0) {
+            process.stderr.write(`⚠️  GATE 10 WARNING: Missing sign-offs for ${storyId}: ${missing.join(', ')}\n`);
+            process.stderr.write(`    Run: /signoff ${missing[0]} ${storyId}\n`);
+            // Advisory warning, not blocking — @team-lead orchestrator enforces the hard gate
+          }
+          break;
+        }
+      }
+    } catch (e) { /* best effort */ }
   }
 }
 

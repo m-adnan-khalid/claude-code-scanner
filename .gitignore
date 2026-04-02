@@ -13,7 +13,11 @@ Thumbs.db
 .claude/reports/
 .claude/project/tasks/
 .claude/project/stories/
+.claude/tasks/
 logs/
+
+# ─── Template runtime state (should not be in git) ───
+template/.claude/reports/context-state.json
 
 # ─── Claude Code: Runtime state files ───
 MEMORY.md

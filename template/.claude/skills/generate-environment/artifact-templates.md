@@ -148,42 +148,105 @@ paths: ["Dockerfile*", "docker-compose*", "terraform/**/*", ".github/workflows/*
 - Secrets: {management approach}
 ```
 
-### code-standards.md
+### code-standards.md (structure, naming, SOLID — max 50 lines)
 ```yaml
 ---
-paths: ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx", "**/*.py", "**/*.go", "**/*.java", "**/*.rb", "**/*.cs", "**/*.swift", "**/*.kt", "**/*.dart"]
+paths: ["{source_file_globs}"]
 ---
-# Code Standards — Auto-Enforced on Every Edit
+# Code Standards — Structure, Naming, SOLID
 
 ## Structural Limits
-- Max file length: {max_file_lines} lines (split into modules if exceeded)
-- Max function/method: {max_method_lines} lines (extract helpers if exceeded)
-- Max parameters: {max_params} (use an options/config object beyond limit)
-- Max nesting depth: {max_nesting} levels (extract early returns or helpers)
+- Max file length: {max_file_lines} lines | Max function: {max_method_lines} lines
+- Max parameters: {max_params} | Max nesting: {max_nesting} levels
+- Max cyclomatic complexity: 10 per function
 
 ## Naming Conventions
-- Functions/methods: {function_naming} (e.g., camelCase, snake_case)
-- Classes/types: {class_naming} (e.g., PascalCase)
-- Constants/enums: {constant_naming} (e.g., UPPER_SNAKE_CASE)
-- Files: {file_naming} (e.g., kebab-case, PascalCase for components)
-- Booleans: {boolean_prefix} (e.g., is, has, should, can)
-- Tests: {test_naming_pattern} (e.g., "should do X when Y")
+- Functions: {function_naming} | Classes: {class_naming} | Constants: {constant_naming}
+- Files: {file_naming} | Booleans: {boolean_prefix} (is, has, should, can)
+- Events: past tense ({event_naming}) | Tests: {test_naming_pattern}
+- No single-letter variables except i, j, k in loops and e for error/event
 
-## SOLID & Architecture Patterns
+## SOLID & Architecture
 - SRP: One reason to change per class/module — split mixed responsibilities
-- OCP: Extend via {extension_pattern} (e.g., interfaces/strategy), not if/else chains
-- LSP: Subtypes must honor base contract — no NotImplementedError overrides
-- ISP: Small focused interfaces — split if implementors stub methods
-- DIP: Business logic depends on abstractions. Use {di_pattern} (e.g., constructor injection)
-- Pattern: {architecture_pattern} (e.g., interface → implementation, repository pattern)
+- OCP: Extend via {extension_pattern}, not if/else chains
+- LSP: Subtypes honor base contract | ISP: Small focused interfaces
+- DIP: Business logic depends on abstractions. Use {di_pattern}
 
 ## No Magic Values
-- Define named constants or enums — no inline magic numbers/strings
-- Exception: 0, 1, -1, empty string, true/false, HTTP status codes in handlers
+- Named constants or enums only — no inline magic numbers/strings
+- Exception: 0, 1, -1, empty string, true/false, HTTP status codes
+
+## Constants Location
+- Constants in dedicated files (`constants.{ext}`, `enums/`, `config/`) — never in business logic
+- Group by domain: `auth.constants.{ext}`, `payment.constants.{ext}`
 
 ## Imports
-- Order: {import_order} (e.g., stdlib → external → internal)
-- Remove unused imports before committing
+- Order: {import_order} (stdlib → external → internal)
+- Remove unused imports | No circular dependencies
+```
+
+### code-safety.md (type safety, errors, testability, concurrency — max 50 lines)
+```yaml
+---
+paths: ["{source_file_globs}"]
+---
+# Code Safety — Type Safety, Error Handling, Testability, Concurrency
+
+## Type Safety
+- No `any`/`object`/`dynamic` — use specific types or generics
+- No unsafe casts unless in thin adapter with comment
+- Nullable types explicitly handled | Discriminated unions over loose strings
+
+## Error Handling
+- Domain-specific error types — never generic Error/Exception
+- Catch specific types — no bare catch/except | Include message + code + cause
+- Network/IO MUST have timeouts | Retry only idempotent ops
+- Translate infra errors to domain errors at boundary | Never swallow errors
+
+## Testability
+- All deps injectable — no new ConcreteService() in business logic
+- No static business methods | No direct env/time/filesystem access — inject
+- No hardcoded URLs/endpoints — inject via config
+
+## Concurrency & Async
+- All async awaited or fire-and-forget with error handler
+- No nested callbacks >1 level | Shared state must use synchronization
+- Immutable data preferred for concurrent access
+
+## Memory & Resources
+- Subscriptions/listeners disposed on cleanup
+- Resources closed in finally/defer/using/with
+- String concat in loops: use builder | Caches must have TTL
+```
+
+### code-platform.md (database, API, i18n, platform — max 50 lines)
+```yaml
+---
+paths: ["{source_file_globs}"]
+---
+# Code Platform — Database, API, i18n, Platform-Specific
+
+## Database & Persistence
+- All queries parameterized — zero string interpolation
+- Batch ops for bulk insert/update | Transaction scope minimal
+- Migrations backwards-compatible or rollback plan | Indexes on queried fields
+
+## API Design
+- HTTP methods semantically correct (GET/POST/PUT/PATCH/DELETE)
+- All lists paginated | Status codes accurate (201, 404, 409)
+- Input validated at boundary | Response envelope consistent
+
+## Internationalization (i18n)
+- No hardcoded user-facing strings — use i18n keys
+- Locale-aware formatters for dates/numbers/currency
+- Timestamps stored as UTC — local only for display
+- Parameterized templates for sentences — no concatenation
+
+## Platform-Specific (applied by scan results)
+- Web: semantic HTML, ARIA, keyboard nav, error boundaries, lazy loading
+- Mobile: lifecycle mgmt, permissions, background limits, battery efficiency
+- Desktop: UI on main thread, heavy work offloaded, window state
+- Embedded: bounded allocs, deterministic timing, HAL, minimal ISRs
 ```
 
 ## Nested CLAUDE.md Template (per module)

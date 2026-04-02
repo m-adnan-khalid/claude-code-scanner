@@ -130,12 +130,19 @@ process.stdin.on('end', () => {
     const glossaryTerms = loadGlossaryTerms(root);
     if (glossaryTerms.length > 0) {
       const textToCheck = getTextForDomainCheck(tool_name, tool_input);
+      const textLower = textToCheck.toLowerCase();
       for (const term of glossaryTerms) {
-        // Check for common informal variants of glossary terms
-        if (term.informal && textToCheck.toLowerCase().includes(term.informal)) {
-          flags.push(`DOMAIN_FIX: "${term.informal}" → use "${term.canonical}" (GLOSSARY)`);
-          score -= 1;
-          isStrong = false;
+        // Check all informal variants (now an array from GLOSSARY + domain-terms.md)
+        if (term.informal && term.informal.length > 0) {
+          for (const variant of term.informal) {
+            // Word-boundary check to avoid false positives (e.g., "guard" in "safeguard")
+            const wordPattern = new RegExp(`\\b${variant.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            if (wordPattern.test(textLower)) {
+              flags.push(`DOMAIN_FIX: "${variant}" → use "${term.canonical}" (GLOSSARY/domain-terms)`);
+              score -= 1;
+              isStrong = false;
+            }
+          }
         }
       }
     }
@@ -304,24 +311,47 @@ function logToAudit(root, line) {
 }
 
 function loadGlossaryTerms(root) {
+  const terms = [];
   try {
+    // 1. Parse GLOSSARY.md table for canonical terms + informal variants
     const glossaryPath = path.join(root, 'docs', 'GLOSSARY.md');
-    if (!fs.existsSync(glossaryPath)) return [];
-    const content = fs.readFileSync(glossaryPath, 'utf8');
-    const terms = [];
-    // Parse table rows for canonical terms
-    const rows = content.split('\n').filter(l => l.startsWith('|') && !l.includes('---'));
-    for (const row of rows) {
-      const cols = row.split('|').map(c => c.trim()).filter(Boolean);
-      if (cols.length >= 2 && cols[0] !== 'Term') {
-        terms.push({
-          canonical: cols[0],
-          informal: cols[0].toLowerCase() === 'adr' ? 'architecture decision' : null
-        });
+    if (fs.existsSync(glossaryPath)) {
+      const content = fs.readFileSync(glossaryPath, 'utf8');
+      const rows = content.split('\n').filter(l => l.startsWith('|') && !l.includes('---'));
+      for (const row of rows) {
+        const cols = row.split('|').map(c => c.trim()).filter(Boolean);
+        if (cols.length >= 2 && cols[0] !== 'Term') {
+          const entry = { canonical: cols[0], informal: [] };
+          // Check for "Informal Variants" column (col 3+ if exists)
+          if (cols.length >= 4 && cols[3] && cols[3] !== '—' && cols[3] !== '-') {
+            entry.informal = cols[3].split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+          }
+          terms.push(entry);
+        }
       }
     }
-    return terms;
-  } catch (_) { return []; }
+
+    // 2. Parse domain-terms.md anti-patterns: 'Using "job" instead of "Task"'
+    const dtPath = path.join(root, '.claude', 'rules', 'domain-terms.md');
+    if (fs.existsSync(dtPath)) {
+      const dtContent = fs.readFileSync(dtPath, 'utf8');
+      const antiPatterns = dtContent.match(/Using "([^"]+)" instead of "([^"]+)"/g) || [];
+      for (const ap of antiPatterns) {
+        const m = ap.match(/Using "([^"]+)" instead of "([^"]+)"/);
+        if (m) {
+          const informal = m[1].toLowerCase();
+          const canonical = m[2];
+          const existing = terms.find(t => t.canonical.toLowerCase() === canonical.toLowerCase());
+          if (existing) {
+            if (!existing.informal.includes(informal)) existing.informal.push(informal);
+          } else {
+            terms.push({ canonical, informal: [informal] });
+          }
+        }
+      }
+    }
+  } catch (_) { /* best effort */ }
+  return terms;
 }
 
 function loadMemoryContext(root) {

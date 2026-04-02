@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Resolve project root (walk up to find .claude/hooks/)
 let _projectRoot = process.cwd();
@@ -53,10 +54,22 @@ for (const file of files) {
       }
     }
 
+    // Extract session_id from pre-compact snapshot if available
+    let prevSessionId = 'unknown';
+    const execDir2 = path.join('.claude', 'reports', 'executions');
+    const fullExecDir = path.join(_projectRoot, execDir2);
+    if (fs.existsSync(fullExecDir)) {
+      const snaps = fs.readdirSync(fullExecDir).filter(f => f.startsWith(id) && f.includes('_precompact_')).sort().reverse();
+      if (snaps.length > 0) {
+        try { prevSessionId = JSON.parse(fs.readFileSync(path.join(fullExecDir, snaps[0]), 'utf-8')).session_id || 'unknown'; } catch (_) {}
+      }
+    }
+
     console.log('');
     console.log('=== CONTEXT RECOVERY (post-compaction) ===');
     console.log(`ACTIVE TASK: ${id} — ${title.trim()}`);
     console.log(`STATUS: ${status.trim()} | PHASE: ${phase.trim()} | ASSIGNED: ${assignedTo.trim()}`);
+    console.log(`PREVIOUS SESSION: ${prevSessionId}`);
 
     // Extract and re-inject loop state (prefer snapshot, fall back to task file)
     const loopSection = content.match(/## Loop State\n([\s\S]*?)(?=\n##|\n$|$)/);
@@ -69,21 +82,41 @@ for (const file of files) {
       }
     }
 
-    // Extract last handoff with next_agent_needs
-    const handoffLines = content.match(/\| \d{4}-\d{2}-\d{2}T.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|/g);
-    if (handoffLines && handoffLines.length > 0) {
-      const lastHandoff = handoffLines[handoffLines.length - 1];
+    // Extract full HANDOFF block (not just table line)
+    const handoffBlocks = content.match(/```[\s\S]*?HANDOFF:[\s\S]*?```/g);
+    if (handoffBlocks && handoffBlocks.length > 0) {
+      const lastBlock = handoffBlocks[handoffBlocks.length - 1].replace(/```/g, '').trim();
       console.log('');
-      console.log(`LAST HANDOFF: ${lastHandoff.trim()}`);
+      console.log('LAST HANDOFF BLOCK:');
+      for (const line of lastBlock.split('\n').slice(0, 15)) {
+        console.log(`  ${line}`);
+      }
+    } else {
+      // Fallback to table line extraction
+      const handoffLines = content.match(/\| \d{4}-\d{2}-\d{2}T.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|/g);
+      if (handoffLines && handoffLines.length > 0) {
+        console.log('');
+        console.log(`LAST HANDOFF: ${handoffLines[handoffLines.length - 1].trim()}`);
+      }
     }
 
     // Extract the last HANDOFF block's next_agent_needs
-    const needsMatch = content.match(/next_agent_needs:\s*\|?\n([\s\S]*?)(?=\n\s*iteration:|HANDOFF:|$)/);
+    const needsMatch = content.match(/next_agent_needs:\s*([\s\S]*?)(?=\n\s{2,}\w+:|\n```|$)/);
     if (needsMatch) {
       console.log('');
       console.log('NEXT ACTION NEEDED:');
       console.log(`  ${needsMatch[1].trim().split('\n').map(l => l.trim()).join('\n  ')}`);
     }
+
+    // Check and report uncommitted changes
+    try {
+      const diff = execSync('git diff --stat', { cwd: _projectRoot, encoding: 'utf8', timeout: 3000 }).trim();
+      if (diff) {
+        console.log('');
+        console.log('WARNING: UNCOMMITTED CHANGES DETECTED:');
+        console.log(`  ${diff.split('\n').slice(0, 5).join('\n  ')}`);
+      }
+    } catch (_) { /* git not available */ }
 
     // Extract blockers
     if (/blocked:\s*Y/i.test(content)) {

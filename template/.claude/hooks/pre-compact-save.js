@@ -12,10 +12,13 @@ while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRo
   _projectRoot = path.dirname(_projectRoot);
 }
 
-// Drain stdin so hook never hangs if data is piped
-process.stdin.resume();
-process.stdin.on('data', () => {});
+// Parse stdin for session_id
+let _stdinBuf = '';
+let _sessionId = 'unknown';
+process.stdin.setEncoding('utf-8');
+process.stdin.on('data', chunk => { _stdinBuf += chunk; });
 process.stdin.on('error', () => {});
+process.stdin.on('end', () => { try { _sessionId = JSON.parse(_stdinBuf).session_id || 'unknown'; } catch (_) {} });
 setTimeout(() => process.exit(0), 5000).unref();
 
 const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
@@ -53,9 +56,13 @@ for (const file of files) {
       fs.mkdirSync(snapshotDir, { recursive: true });
     }
 
+    // Extract full HANDOFF block (not just regex table line)
+    const fullHandoff = extractFullHandoff(content);
+
     const snapshot = {
       event: 'pre-compaction',
       timestamp: new Date().toISOString(),
+      session_id: _sessionId,
       task_id: id.trim(),
       title: title.trim(),
       status: status.trim(),
@@ -65,13 +72,28 @@ for (const file of files) {
       preserved: {
         loop_state: extractSection(content, 'Loop State'),
         last_handoff: extractLastHandoff(content),
+        full_handoff_block: fullHandoff,
+        next_agent_needs: extractNextAgentNeeds(content),
+        memory_update: extractMemoryUpdate(content),
         open_bugs: extractBugs(content),
-        blocked: /blocked:\s*Y/i.test(content)
+        blocked: /blocked:\s*Y/i.test(content),
+        decisions_made: extractSection(content, 'Decisions') || extractSection(content, 'Key Decisions')
       }
     };
 
+    // Auto-persist memory_update to MEMORY.md before compaction
+    if (snapshot.preserved.memory_update) {
+      try {
+        const memPath = path.join(_projectRoot, 'MEMORY.md');
+        const memEntry = `\n## ${snapshot.task_id} — ${new Date().toISOString().split('T')[0]} (session: ${_sessionId})\n${snapshot.preserved.memory_update}\n`;
+        fs.appendFileSync(memPath, memEntry);
+      } catch (_) { /* best-effort */ }
+    }
+
     const snapshotPath = path.join(snapshotDir, `${id.trim()}_precompact_${Date.now()}.json`);
-    fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
+    const tmpSnapshot = snapshotPath + '.tmp';
+    fs.writeFileSync(tmpSnapshot, JSON.stringify(snapshot, null, 2));
+    fs.renameSync(tmpSnapshot, snapshotPath);
 
     // Output critical context for the compaction to preserve
     console.log('');
@@ -117,6 +139,24 @@ function extractLastHandoff(content) {
 function extractBugs(content) {
   const bugs = content.match(/BUG-\S+\s*\(P[0-4]\)/g);
   return bugs ? bugs.join(', ') : null;
+}
+
+function extractFullHandoff(content) {
+  // Extract the last complete HANDOFF: block (between ``` markers)
+  const blocks = content.match(/```[\s\S]*?HANDOFF:[\s\S]*?```/g);
+  if (!blocks) return null;
+  return blocks[blocks.length - 1].replace(/```/g, '').trim();
+}
+
+function extractNextAgentNeeds(content) {
+  const match = content.match(/next_agent_needs:\s*(.*?)(?:\n\s{2,}\S|\n\s*\w+:|\n```|$)/s);
+  return match ? match[1].trim() : null;
+}
+
+function extractMemoryUpdate(content) {
+  const match = content.match(/memory_update:\s*\n([\s\S]*?)(?=\n\s{2}\w+:|\n```|$)/);
+  if (!match) return null;
+  return match[1].split('\n').map(l => l.trim()).filter(l => l).join('\n');
 }
 
 process.exit(0);

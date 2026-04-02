@@ -4,11 +4,15 @@ description: >
   Context compaction skill. Archives current context state to MEMORY.md and
   logs, then triggers context compaction with a focused summary for the
   current task. Use when context budget exceeds 60% working limit.
-invocation: user
-context: main
+user-invocable: true
+context: fork
 effort: low
-lifecycle: T5
+agents: []
 ---
+
+**Lifecycle: T5 (utility) — See `_protocol.md`**
+
+**RULE:** Every output MUST end with `NEXT ACTION:`.
 
 # /compact [focus]
 

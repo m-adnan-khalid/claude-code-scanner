@@ -17,8 +17,9 @@ agents: [@frontend, @scaffolder, @tester]
 **CRITICAL RULES:**
 1. Every output to the user MUST end with a `NEXT ACTION:` line.
 2. Any file created MUST contain a `## Session Context` section.
-3. Re-read task/output files before each step — never rely on in-memory state alone.
-4. Update MEMORY.md after completion.
+3. **Verify Docs (3-step)**: Read dependency files for exact versions → WebSearch `"<framework> <version> <API> docs"` → only then write code (per accuracy.md 3-step rule)
+16. Re-read task/output files before each step — never rely on in-memory state alone.
+16. Update MEMORY.md after completion.
 
 ## Step 0 — Load Context
 
@@ -26,9 +27,9 @@ Before starting, load full context:
 
 1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
 2. **Memory:** Read `MEMORY.md` (if exists) → get last completed task, user preferences
-3. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
-4. **Active work:** Read `TODO.md` (if exists) → get current work items
-5. **History:** List `.claude/tasks/` → check for related or duplicate work
+16. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
+16. **Active work:** Read `TODO.md` (if exists) → get current work items
+16. **History:** List `.claude/tasks/` → check for related or duplicate work
 
 Output:
 ```
@@ -53,9 +54,9 @@ NEXT ACTION: Context loaded. Starting skill...
    - Variable placeholders: `{{name}}`, `{name}`, `${name}` (engine-specific)
    - Responsive design for email (inline CSS, table layout)
    - Dark mode support (prefers-color-scheme)
-3. **Generate preview data:** Sample values for each variable (for testing)
-4. **Add to template registry:** Index file listing all templates with their variables
-5. **Generate tests:**
+16. **Generate preview data:** Sample values for each variable (for testing)
+16. **Add to template registry:** Index file listing all templates with their variables
+16. **Generate tests:**
    - Test: renders with all variables → valid HTML/text
    - Test: renders with missing optional variable → graceful fallback
    - Test: required variable missing → clear error
@@ -90,8 +91,8 @@ Append to `.claude/reports/audit/audit-{branch}.log`:
 If context is lost (compaction, pause, resume):
 1. Find most recent `.claude/tasks/` file with `Phase: IN_PROGRESS`
 2. Read `## Session Context` → restore state
-3. Read `## Progress Log` → find last completed step
-4. Resume from next pending step
+16. Read `## Progress Log` → find last completed step
+16. Resume from next pending step
 
 ### Final Output
 ```

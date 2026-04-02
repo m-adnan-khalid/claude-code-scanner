@@ -94,6 +94,50 @@ function check(raw) {
       if (ifElseChain && ifElseChain.length >= 4) {
         warnings.push(`${ifElseChain.length + 1}-branch if/else chain detected. Consider Strategy or Map pattern for extensibility (OCP).`);
       }
+
+      // WARN: any/dynamic type usage (type safety — code-safety.md)
+      if (['.ts', '.tsx'].includes(ext)) {
+        const anyMatches = newContent.match(/:\s*any\b|<any>|as\s+any\b/g);
+        if (anyMatches && anyMatches.length > 0) {
+          warnings.push(`${anyMatches.length} "any" type(s) detected. Use specific types or generics (see code-safety.md Type Safety).`);
+        }
+      }
+
+      // WARN: Bare catch-all (error handling — code-safety.md)
+      if (/catch\s*\(\s*\)\s*\{[\s]*\}|catch\s*\{[\s]*\}|except\s*:\s*$/m.test(newContent)) {
+        blockers.push('Empty catch block detected. Never swallow errors — log or propagate (see code-safety.md Error Handling).');
+      }
+
+      // WARN: Hardcoded user-facing strings (i18n — code-platform.md)
+      // Only flag if project uses i18n (checked by presence of common i18n imports)
+      if (/(?:i18n|intl|t\(|useTranslation|formatMessage|gettext|__)/.test(newContent)) {
+        const hardcodedStrings = newContent.match(/(?:label|title|message|placeholder|text)\s*[:=]\s*['"][A-Z][a-z]/g);
+        if (hardcodedStrings && hardcodedStrings.length > 2) {
+          warnings.push(`${hardcodedStrings.length} potentially hardcoded user-facing strings. Use i18n keys (see code-platform.md i18n).`);
+        }
+      }
+
+      // WARN: Missing timeout on fetch/axios/http calls (code-safety.md)
+      if (/(?:fetch|axios|http\.get|http\.post|request)\s*\(/.test(newContent) && !/timeout/i.test(newContent)) {
+        warnings.push('Network call without timeout configuration. Add timeout to prevent infinite waits (see code-safety.md Error Handling).');
+      }
+
+      // WARN: Unsubscribed event listeners (code-safety.md Resources)
+      if (/addEventListener\s*\(/.test(newContent) && !/removeEventListener/.test(newContent)) {
+        warnings.push('addEventListener without matching removeEventListener. Dispose on cleanup (see code-safety.md Resources).');
+      }
+
+      // WARN: Nesting depth > 3 levels (code-standards.md)
+      let maxNest = 0;
+      for (const line of incomingLines || newContent.split('\n')) {
+        if (!line.trim()) continue;
+        const indent = (line.match(/^(\s*)/)[1] || '').length;
+        const level = Math.floor(indent / 2);
+        if (level > maxNest) maxNest = level;
+      }
+      if (maxNest > 6) {
+        warnings.push(`Nesting depth ~${Math.floor(maxNest / 2)} levels detected (limit: 3). Extract early returns or helper functions (see code-standards.md).`);
+      }
     }
 
     // Also check existing file for accumulated issues (warnings only)

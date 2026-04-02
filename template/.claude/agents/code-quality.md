@@ -154,11 +154,35 @@ For EACH of the 15 principles, check every modified/new file:
 - Divergent change (one class modified for unrelated reasons)
 - Dead code (unreachable, unused exports, commented-out blocks)
 - Magic numbers / hardcoded strings
+- Constants defined inside business logic / service classes (must be in dedicated constants/enums files)
 - Inappropriate intimacy (classes that know too much about each other)
 - Refused bequest (subclass ignoring inherited behavior)
 - Speculative generality (YAGNI violation — unused abstractions)
+- `any`/`dynamic`/`object` types used instead of specific types
+- Generic Error/Exception thrown instead of domain-specific error types
+- Bare catch-all blocks (empty catch, except Exception, catch {})
+- Hardcoded URLs, endpoints, or environment values in business logic
+- `new ConcreteService()` inside business logic (breaks DIP and testability)
+- Static methods/singletons used for business logic (untestable)
+- Direct time/clock access (Date.now(), System.currentTimeMillis()) instead of injected provider
+- Fire-and-forget async without error handling
+- Unsubscribed listeners, undisposed subscriptions (memory leaks)
+- String concatenation in loops (use builder/buffer)
+- Unbounded cache without TTL or invalidation
+- Hardcoded user-facing strings instead of i18n resource keys
+- Network/IO calls without timeout configuration
+- Single-query loops instead of batch operations (DB N+1 variant)
+- Circular imports/dependencies between modules
+- Deprecated/removed framework APIs used (check against installed version)
+- Framework patterns that don't match installed version (e.g., old React class components in React 18+ project)
 
-### 7. Scalability Review
+### 7. External API Accuracy
+- Flag any framework/library API usage that looks suspicious or outdated
+- Check if imported modules/functions actually exist in the installed version
+- Verify pattern usage matches the framework's current recommended approach
+- Flag code that uses patterns from a different major version of the framework
+
+### 8. Scalability Review
 - N+1 query patterns
 - Unbounded collections (missing pagination/limits)
 - Missing caching opportunities
@@ -362,12 +386,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

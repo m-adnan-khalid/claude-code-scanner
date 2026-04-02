@@ -55,6 +55,14 @@ Before starting, load full context:
 6. **Missing tests**: new functionality with zero test coverage
 7. **Breaking change**: modifies public API contract without migration/versioning
 8. **Dependency risk**: adds large/unmaintained dependency without justification
+9. **Type safety violation**: `any`/`dynamic`/`object` types, unsafe casts, unhandled nullables
+10. **Constants in business logic**: constants/enums defined inside service/logic classes instead of dedicated files
+11. **Testability violation**: `new ConcreteService()` in business logic, static business methods, direct env/time/filesystem access
+12. **Error handling violation**: bare catch-all, swallowed errors, generic exceptions, missing timeouts on IO
+13. **Resource leak**: unsubscribed listeners, unclosed streams/connections, unbounded caches
+14. **i18n violation**: hardcoded user-facing strings in source code
+15. **Async violation**: fire-and-forget promises/goroutines without error handling
+16. **Logging violation**: unstructured logs, PII in logs, wrong log levels, missing correlation ID
 
 ### ESCALATE TO HUMAN — can't decide autonomously:
 1. Business logic ambiguity (correct behavior is unclear)
@@ -261,12 +269,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

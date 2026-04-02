@@ -5,11 +5,13 @@ description: >
   classifies every file, extracts project intelligence, creates full task registry
   with agile stories, then builds a complete workspace with project documents,
   requirements, process flows, design briefs, agents, skills, hooks, and state files.
-invocation: user
+user-invocable: true
 context: fork
 effort: high
-lifecycle: T1
+agents: ["@team-lead", "@explorer"]
 ---
+
+**Lifecycle: T1 (multi-step) — See `_protocol.md`**
 
 # /scan-and-build [folder_path]
 

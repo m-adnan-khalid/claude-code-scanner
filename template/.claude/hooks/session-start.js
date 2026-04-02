@@ -10,10 +10,27 @@ while (!fs.existsSync(path.join(_projectRoot, '.claude', 'hooks')) && _projectRo
   _projectRoot = path.dirname(_projectRoot);
 }
 
-// Drain stdin so hook never hangs if data is piped
-process.stdin.resume();
-process.stdin.on('data', () => {});
+// Parse stdin for session_id, then proceed
+let _stdinData = '';
+let _sessionId = 'unknown';
+process.stdin.setEncoding('utf-8');
+process.stdin.on('data', chunk => { _stdinData += chunk; });
 process.stdin.on('error', () => {});
+process.stdin.on('end', () => {
+  try {
+    const parsed = JSON.parse(_stdinData);
+    _sessionId = parsed.session_id || 'unknown';
+  } catch (_) {}
+});
+// Fallback timeout — proceed even if stdin doesn't close
+setTimeout(() => {
+  try {
+    if (_stdinData && _sessionId === 'unknown') {
+      const parsed = JSON.parse(_stdinData);
+      _sessionId = parsed.session_id || 'unknown';
+    }
+  } catch (_) {}
+}, 500);
 setTimeout(() => process.exit(0), 5000).unref();
 
 const reportsDir = path.join(_projectRoot, '.claude', 'reports');
@@ -28,7 +45,33 @@ function logHookFailure(hookName, error) {
   } catch (_) { /* last resort — can't even log */ }
 }
 
-// --- 0. Role Check — warn if /setup-workspace hasn't been run ---
+// --- 0a. Session ID tracking — log and persist for cross-session continuity ---
+setTimeout(() => {
+  try {
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    const sessionLogPath = path.join(reportsDir, 'sessions.log');
+    const ts = new Date().toISOString();
+    const branch = (() => { try { return require('child_process').execSync('git branch --show-current', { cwd: _projectRoot, encoding: 'utf8', timeout: 2000 }).trim(); } catch (_) { return 'unknown'; } })();
+    const entry = `| ${ts} | ${_sessionId} | ${branch} | start |\n`;
+    fs.appendFileSync(sessionLogPath, entry);
+
+    // Write current session ID to session.env for other hooks to read
+    const sessionEnvPath = path.join(_projectRoot, '.claude', 'session.env');
+    if (fs.existsSync(sessionEnvPath)) {
+      let envContent = fs.readFileSync(sessionEnvPath, 'utf-8');
+      if (envContent.includes('SESSION_ID=')) {
+        envContent = envContent.replace(/^SESSION_ID=.*$/m, `SESSION_ID=${_sessionId}`);
+      } else {
+        envContent += `\nSESSION_ID=${_sessionId}\n`;
+      }
+      fs.writeFileSync(sessionEnvPath, envContent);
+    }
+
+    console.log(`SESSION: ${_sessionId} | Branch: ${branch}`);
+  } catch (_) {}
+}, 600); // Wait for stdin parse to complete
+
+// --- 0b. Role Check — warn if /setup-workspace hasn't been run ---
 try {
   const sessionEnvPath = path.join(_projectRoot, '.claude', 'session.env');
   if (!fs.existsSync(sessionEnvPath)) {
@@ -84,13 +127,29 @@ try {
   logHookFailure('session-start:health-check', e.message);
 }
 
-// --- 1b. Read MEMORY.md and TODO.md for context injection ---
+// --- 1b. Read MEMORY.md (with rotation if too large) and TODO.md ---
 try {
   const memoryPath = path.join(_projectRoot, 'MEMORY.md');
   if (fs.existsSync(memoryPath)) {
-    const memory = fs.readFileSync(memoryPath, 'utf8').trim();
+    let memory = fs.readFileSync(memoryPath, 'utf8').trim();
+
+    // MEMORY.md rotation: if >100 lines, archive old entries and keep recent 60
+    const memLines = memory.split('\n');
+    if (memLines.length > 100) {
+      const archivePath = path.join(_projectRoot, '.claude', 'reports', 'memory-archive.md');
+      const archiveHeader = `\n\n---\nArchived ${new Date().toISOString().split('T')[0]}\n---\n`;
+      const oldEntries = memLines.slice(0, memLines.length - 60).join('\n');
+      const recentEntries = memLines.slice(memLines.length - 60).join('\n');
+      try {
+        fs.appendFileSync(archivePath, archiveHeader + oldEntries + '\n');
+        fs.writeFileSync(memoryPath, recentEntries + '\n');
+        memory = recentEntries;
+        console.log(`MEMORY: Rotated — archived ${memLines.length - 60} old lines to .claude/reports/memory-archive.md`);
+      } catch (_) { /* best-effort rotation */ }
+    }
+
     if (memory) {
-      process.stderr.write(`\n📋 MEMORY.md:\n${memory.slice(0, 500)}\n`);
+      process.stderr.write(`\nMEMORY.md:\n${memory.slice(0, 500)}\n`);
     }
   }
 
@@ -98,9 +157,23 @@ try {
   if (fs.existsSync(todoPath)) {
     const todo = fs.readFileSync(todoPath, 'utf8').trim();
     if (todo) {
-      process.stderr.write(`\n📝 TODO.md:\n${todo.slice(0, 500)}\n`);
+      process.stderr.write(`\nTODO.md:\n${todo.slice(0, 500)}\n`);
     }
   }
+
+  // Re-inject recent audit log entries (last 10 decisions) for context continuity
+  try {
+    const { execSync } = require('child_process');
+    const branch = execSync('git branch --show-current', { cwd: _projectRoot, encoding: 'utf8', timeout: 2000 }).trim();
+    const auditPath = path.join(reportsDir, 'audit', `audit-${branch}.log`);
+    if (fs.existsSync(auditPath)) {
+      const auditContent = fs.readFileSync(auditPath, 'utf-8').trim();
+      const recentLines = auditContent.split('\n').slice(-10).join('\n');
+      if (recentLines) {
+        console.log(`\nRECENT AUDIT (last 10 actions on ${branch}):\n${recentLines}`);
+      }
+    }
+  } catch (_) { /* no audit log or git not available */ }
 } catch (e) {
   logHookFailure('session-start:context-inject', e.message);
 }
@@ -156,10 +229,69 @@ try {
     const id = idMatch ? idMatch[1].trim() : file;
     const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
 
-    // Active task — check for crash/stale state
+    // Active task — auto-inject full resume context
     if (/DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING|QA_SIGNOFF|BIZ_SIGNOFF|TECH_SIGNOFF|DEPLOYING|MONITORING/.test(status)) {
       if (!activeFound) {
-        console.log(`ACTIVE TASK: ${id} — ${title} | STATUS: ${status}`);
+        // Extract phase and assigned agent
+        const phaseMatch = content.match(/^phase:\s*(.+)$/m);
+        const assignedMatch = content.match(/^assigned-to:\s*(.+)$/m);
+        const phase = phaseMatch ? phaseMatch[1].trim() : 'unknown';
+        const assignedTo = assignedMatch ? assignedMatch[1].trim() : 'unknown';
+
+        console.log(`\nACTIVE TASK: ${id} — ${title}`);
+        console.log(`STATUS: ${status} | PHASE: ${phase} | AGENT: ${assignedTo}`);
+        console.log(`TASK FILE: .claude/tasks/${file}`);
+
+        // Auto-inject loop state for immediate context
+        const loopSection = content.match(/## Loop State\n([\s\S]*?)(?=\n##|\n$|$)/);
+        if (loopSection) {
+          const loops = loopSection[1].trim().split('\n').filter(l => l.trim().startsWith('-'));
+          if (loops.length > 0) {
+            console.log(`\nLOOP STATE:`);
+            for (const l of loops) console.log(`  ${l.trim()}`);
+          }
+        }
+
+        // Auto-inject last HANDOFF block with next_agent_needs
+        const handoffBlocks = content.match(/```[\s\S]*?HANDOFF:[\s\S]*?```/g);
+        if (handoffBlocks) {
+          const lastBlock = handoffBlocks[handoffBlocks.length - 1].replace(/```/g, '').trim();
+          const needsMatch = lastBlock.match(/next_agent_needs:\s*([\s\S]*?)(?=\n\s{2}\w+:|\n```|$)/);
+          if (needsMatch) {
+            console.log(`\nNEXT AGENT NEEDS: ${needsMatch[1].trim()}`);
+          }
+          const contextMatch = lastBlock.match(/context:\s*(.*)/);
+          if (contextMatch) {
+            console.log(`LAST CONTEXT: ${contextMatch[1].trim()}`);
+          }
+        }
+
+        // Auto-inject subtask progress
+        const subtasksDone = (content.match(/\|\s*DONE\s*\|/g) || []).length;
+        const subtasksTotal = (content.match(/\|\s*(?:TODO|IN_PROGRESS|DONE|BLOCKED)\s*\|/g) || []).length;
+        if (subtasksTotal > 0) {
+          console.log(`\nSUBTASKS: ${subtasksDone}/${subtasksTotal} complete`);
+        }
+
+        // Auto-inject recovery snapshot if exists
+        const execDir = path.join(reportsDir, 'executions');
+        if (fs.existsSync(execDir)) {
+          const snapshots = fs.readdirSync(execDir)
+            .filter(f => f.startsWith(id) && (f.includes('_interrupted_') || f.includes('_precompact_')))
+            .sort().reverse();
+          if (snapshots.length > 0) {
+            try {
+              const snap = JSON.parse(fs.readFileSync(path.join(execDir, snapshots[0]), 'utf-8'));
+              if (snap.preserved) {
+                if (snap.preserved.decisions_made) console.log(`\nDECISIONS: ${snap.preserved.decisions_made}`);
+                if (snap.preserved.open_bugs) console.log(`OPEN BUGS: ${snap.preserved.open_bugs}`);
+              }
+            } catch (_) { /* snapshot parse failed */ }
+          }
+        }
+
+        console.log(`\nRESUME: Read .claude/tasks/${file} then continue Phase ${phase} with ${assignedTo}`);
+        console.log(`Or run: /workflow resume ${id}\n`);
 
         // Crash detection: check last activity age
         const updatedMatch = content.match(/^updated:\s*(.+)$/m);
@@ -175,7 +307,7 @@ try {
 
         if (lastActivity) {
           const hoursStale = (Date.now() - lastActivity.getTime()) / (1000 * 60 * 60);
-          if (hoursStale > 6) {
+          if (hoursStale > 1) {
             console.log(`CRASH DETECTED: ${id} has been ${status} for ${Math.round(hoursStale)}h with no activity.`);
             console.log('  This may indicate a session crash. Options:');
             console.log(`  1. Resume: /workflow resume ${id}`);
@@ -271,6 +403,50 @@ try {
   }
 } catch (e) {
   logHookFailure('session-start:task-scan', e.message);
+}
+
+// --- 5. Orphaned worktree detection ---
+try {
+  const { execSync } = require('child_process');
+  const worktrees = execSync('git worktree list', { cwd: _projectRoot, encoding: 'utf8', timeout: 3000 }).trim();
+  const wtLines = worktrees.split('\n').filter(l => l.trim());
+  if (wtLines.length > 1) {
+    console.log(`\nWORKTREES: ${wtLines.length - 1} active worktree(s) detected:`);
+    for (const wt of wtLines.slice(1)) {
+      console.log(`  ${wt.trim()}`);
+    }
+    console.log('  Clean up orphaned worktrees: git worktree remove <path>');
+  }
+} catch (_) { /* git worktree not available */ }
+
+// --- 6. Uncommitted changes warning ---
+try {
+  const { execSync } = require('child_process');
+  const diff = execSync('git diff --stat', { cwd: _projectRoot, encoding: 'utf8', timeout: 3000 }).trim();
+  if (diff) {
+    const fileCount = diff.split('\n').length - 1;
+    console.log(`\nUNCOMMITTED: ${fileCount} file(s) with uncommitted changes. Consider committing.`);
+  }
+} catch (_) { /* git not available */ }
+
+// --- 7. Task file format validation ---
+try {
+  const tasksDir2 = path.join(_projectRoot, '.claude', 'tasks');
+  if (fs.existsSync(tasksDir2)) {
+    const taskFiles = fs.readdirSync(tasksDir2).filter(f => f.endsWith('.md'));
+    for (const tf of taskFiles) {
+      const content = fs.readFileSync(path.join(tasksDir2, tf), 'utf-8');
+      const hasId = /^id:\s*.+$/m.test(content);
+      const hasStatus = /^status:\s*.+$/m.test(content);
+      const hasTitle = /^title:\s*.+$/m.test(content);
+      if (!hasId || !hasStatus || !hasTitle) {
+        const missing = [!hasId && 'id', !hasStatus && 'status', !hasTitle && 'title'].filter(Boolean).join(', ');
+        console.log(`TASK WARNING: ${tf} is missing required fields: ${missing}. May be corrupted.`);
+      }
+    }
+  }
+} catch (e) {
+  logHookFailure('session-start:task-validation', e.message);
 }
 
 process.exit(0);

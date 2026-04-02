@@ -36,13 +36,23 @@ Before starting, load full context:
 
 ## Review Checklist
 - [ ] Naming follows project conventions (check CLAUDE.md)
-- [ ] Error handling is complete — no swallowed errors, no generic catches
+- [ ] Error handling is complete — no swallowed errors, no generic catches, domain-specific exceptions used
 - [ ] Tests cover the right scenarios — happy path, error cases, edge cases
 - [ ] No debug code, console.logs, hardcoded values, or secrets
 - [ ] Performance — no N+1 queries, unnecessary re-renders, missing indexes, unbounded loops
 - [ ] Separation of concerns — business logic not in controllers/components
 - [ ] Backward compatibility — no breaking changes without migration
 - [ ] Documentation updated if public API changed
+- [ ] Type safety — no `any`/`dynamic`, nullable types handled explicitly
+- [ ] Constants in dedicated files — not defined inside business logic/service classes
+- [ ] Dependencies injectable — no `new ConcreteService()` in business logic, no static business methods
+- [ ] Async/concurrency — all promises awaited, no fire-and-forget without error handler
+- [ ] Resources cleaned up — subscriptions disposed, connections closed, listeners removed
+- [ ] Timeouts set on all network/IO calls
+- [ ] i18n — no hardcoded user-facing strings (use resource keys)
+- [ ] Logging — structured, correct levels, no PII, correlation ID present
+- [ ] API endpoints — correct HTTP methods, pagination on lists, input validated at boundary
+- [ ] Database — parameterized queries, batch ops for bulk, minimal transaction scope
 
 ## Output Format
 ### Review Summary
@@ -142,12 +152,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

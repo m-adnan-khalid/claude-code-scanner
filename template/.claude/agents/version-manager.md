@@ -6,7 +6,7 @@ description: >
   and manages PR creation. MUST run before any git push, PR, or merge operation.
   Triggers on: push, commit, PR, merge, branch, git, deploy, release, version,
   ship, tag, publish.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Write, Bash, Grep, Glob
 disallowedTools: NotebookEdit
 maxTurns: 15
@@ -81,6 +81,15 @@ Generated automatically from story file:
 }
 ```
 
+## Determinism Contract
+- Read /docs/GLOSSARY.md before naming anything
+- Read /docs/patterns/ before reviewing patterns
+- Read /docs/STANDARDS.md before reviewing standards
+- Read /docs/ARCHITECTURE.md before any structural decision
+- Never invent patterns not in /docs/patterns/
+- Never use terminology not in GLOSSARY.md
+- Output format: { result, files_changed: [], decisions_made: [], errors: [] }
+
 ## LIMITATIONS
 - DO NOT write feature code or documents
 - DO NOT skip any gate — NO EXCEPTIONS
@@ -92,6 +101,15 @@ Generated automatically from story file:
 - Callable by: ALL roles (every role needs git governance)
 - Auto-invoked by: PreToolUse hooks on git commands
 
+### Context Recovery
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files)
+3. Check the `## Subtasks` table to find where you left off — resume from next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+
 ### HANDOFF
 ```
 HANDOFF:
@@ -101,5 +119,19 @@ HANDOFF:
   artifacts:
     - logs/git-clearance.log
     - AUDIT_LOG.md entry
+  execution_metrics:
+    turns_used: N
+    files_read: N
+    files_modified: 0
+    files_created: 0
+    tests_run: 0
+    coverage_delta: "N/A"
+    hallucination_flags: [list or "CLEAN"]
+    regression_flags: "CLEAN"
+    confidence: HIGH/MEDIUM/LOW
+  memory_update:
+    last_completed: "[what this agent did]"
+    next_step: "[what should happen next]"
+    decisions: "[any decisions made that affect future work]"
   status: complete | blocked
 ```

@@ -26,8 +26,9 @@ agents: [@scaffolder, @architect, @team-lead]
 **CRITICAL RULES:**
 1. Every output to the user MUST end with a `NEXT ACTION:` line.
 2. Any file created MUST contain a `## Session Context` section.
-3. Re-read task/output files before each step — never rely on in-memory state alone.
-4. Update MEMORY.md after completion.
+3. **Verify Docs (3-step)**: Read dependency files for exact versions → WebSearch `"<framework> <version> <API> docs"` → only then write code (per accuracy.md 3-step rule)
+16. Re-read task/output files before each step — never rely on in-memory state alone.
+16. Update MEMORY.md after completion.
 
 ## Step 0 — Load Context
 
@@ -35,9 +36,9 @@ Before starting, load full context:
 
 1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
 2. **Memory:** Read `MEMORY.md` (if exists) → get last completed task, user preferences
-3. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
-4. **Active work:** Read `TODO.md` (if exists) → get current work items
-5. **History:** List `.claude/tasks/` → check for related or duplicate work
+16. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
+16. **Active work:** Read `TODO.md` (if exists) → get current work items
+16. **History:** List `.claude/tasks/` → check for related or duplicate work
 
 Output:
 ```
@@ -109,7 +110,7 @@ Generate the project:
    - Create empty directories that the generator didn't create
    - Add .gitkeep files to empty directories
 
-3. CREATE CONFIGURATION FILES
+16. CREATE CONFIGURATION FILES
    - .gitignore (comprehensive for the tech stack)
    - .editorconfig
    - Linter config (ESLint / Pylint / etc.)
@@ -118,22 +119,22 @@ Generate the project:
    - Test config (Jest / Vitest / Pytest / etc.)
    - .env.example with placeholder values (NEVER real secrets)
 
-4. CREATE INFRASTRUCTURE FILES (if applicable)
+16. CREATE INFRASTRUCTURE FILES (if applicable)
    - Dockerfile (multi-stage build, production-ready)
    - docker-compose.yml (app + database + any services)
    - .github/workflows/ci.yml (lint, test, build pipeline)
 
-5. CREATE STUB FILES
+16. CREATE STUB FILES
    - API route stubs (correct paths from ARCHITECTURE.md, empty handlers)
    - Model/entity stubs (fields from data model, no business logic)
    - Test stubs (one example test per test directory)
    - README.md with project info from PRODUCT_SPEC.md
 
-6. INSTALL DEPENDENCIES
+16. INSTALL DEPENDENCIES
    - Run package manager install
    - Verify no vulnerabilities (npm audit / pip-audit / etc.)
 
-7. VERIFY
+16. VERIFY
    - Type check passes (if applicable)
    - Lint passes
    - Build succeeds
@@ -220,8 +221,8 @@ Append to `.claude/reports/audit/audit-{branch}.log`:
 If context is lost (compaction, pause, resume):
 1. Find most recent `.claude/tasks/` file with `Phase: IN_PROGRESS`
 2. Read `## Session Context` → restore state
-3. Read `## Progress Log` → find last completed step
-4. Resume from next pending step
+16. Read `## Progress Log` → find last completed step
+16. Resume from next pending step
 
 ### Final Output
 ```

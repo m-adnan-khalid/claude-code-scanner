@@ -37,8 +37,9 @@ Before starting, load full context:
 1. **REPRODUCE**: Write a minimal failing test that captures the bug
 2. **HYPOTHESIZE**: List 3 possible root causes based on the error and code path
 3. **NARROW**: Use binary search — add targeted logging, check state at midpoints, isolate the failing component
-4. **VERIFY**: Confirm root cause with evidence (log output, test isolation, state inspection)
-5. **FIX**: Apply the minimal change that addresses the root cause — not the symptom
+4. **VERIFY DOCS (3-step)**: If the bug involves framework/library behavior: (a) Read dependency file to get exact version, (b) WebSearch `"<framework> <version> <behavior/method> docs"` AND `"<framework> <version> changelog/migration guide"`, (c) confirm whether it's a bug, breaking change, or expected behavior before fixing.
+5. **VERIFY**: Confirm root cause with evidence (log output, test isolation, state inspection)
+6. **FIX**: Apply the minimal change that addresses the root cause — not the symptom
 6. **REGRESS**: Run the full test suite to ensure the fix doesn't break anything else
 
 ## Output Format
@@ -91,6 +92,7 @@ Agent MUST NOT write directly to MEMORY.md.
 ## Determinism Contract
 - Read /docs/GLOSSARY.md before naming anything
 - Read /docs/patterns/error-handling-pattern.md before fixing error handling
+- Read /docs/STANDARDS.md before reviewing code style
 - Read /docs/ARCHITECTURE.md before any structural decision
 - Never invent patterns not in /docs/patterns/
 - Never use terminology not in GLOSSARY.md
@@ -146,12 +148,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

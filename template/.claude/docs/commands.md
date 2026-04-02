@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 79 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 88 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 
@@ -14,7 +14,7 @@
 | **I want to build one feature** | `/workflow new "feature description"` | 13-phase SDLC with requirements → dev → test → review → deploy |
 | **I have a production bug** | `/hotfix "critical issue"` | Fast-track: fix → test → deploy in minutes, skip design/business phases |
 | **I have a small bug** | `/fix-bug "description"` | 5-step: reproduce → diagnose → fix → test → review (< 50 lines, < 3 files) |
-| **I'm joining this project** | `/onboard` | Generates guide: architecture, conventions, setup, active work, how to contribute |
+| **I'm joining this project** | `/setup-workspace` → `/onboard` | Sets your role, then generates guide: architecture, conventions, setup, active work |
 | **I came back after a break** | Just start a session | Session-start hook shows active tasks, progress, what to resume |
 | **I want full automation** | `/idea-to-launch "idea"` | Idea → pre-dev → build all features → deploy → monitor |
 | **Something looks stale** | `/sync --check` | Detects drift between environment and codebase, auto-fixes with `--fix` |
@@ -31,13 +31,19 @@ WITH DOCS:    /import-docs "path/" → /new-project --resume (skips covered phas
 
 EXISTING:     /scan-codebase → /generate-environment → /validate-setup → /setup-smithery
 
-DEVELOPMENT:  /mvp-kickoff next → /workflow new "feature" (14 phases: Phase 0-13) → /mvp-kickoff next (repeat)
+DEVELOPMENT:  /mvp-kickoff next → /workflow new "feature" (Phase 0-13) → /mvp-kickoff next (repeat)
 
 LAUNCH:       /mvp-status --launch-ready → /launch-mvp --check → /launch-mvp
 
 MAINTENANCE:  /sync --check → /sync --fix → /context-check → /dependency-check
 
-JOINING:      /onboard → /standup → /workflow status
+JOINING:      /setup-workspace → /daily-sync → /onboard → /standup → /workflow status
+
+FEATURES:     /feature-start → (develop) → /feature-done → PR → merge
+
+TEAM:         /setup-workspace → /daily-sync → /org-report → /audit-system
+
+PROMPT:       /prompt "rough idea" → improve → answer questions → execute with tracking
 ```
 
 ---
@@ -97,6 +103,15 @@ Run these to set up Claude Code on an existing codebase.
 | 2 | `/generate-environment` | Generate all Claude Code files from scan results | agents, skills, rules, hooks, settings | `/validate-setup` |
 | 3 | `/validate-setup` | Verify environment (12 automated checks) | Validation report | `/setup-smithery` |
 | 4 | `/setup-smithery` | Install matching MCP servers | MCP configuration | `/methodology` |
+| 5 | `/scan-and-build "path/"` | Scan documents folder, classify files, extract intelligence, build full workspace | Project docs, task registry, stories, agents, skills, hooks | `/validate-setup` |
+
+### Flags & Variants
+| Command | Flag | Effect |
+|---------|------|--------|
+| `/generate-environment` | `--force` | Overwrite all template files (destructive reset) |
+| `/generate-environment` | `--preserve-custom` | Protect user-modified files during regeneration |
+| `/validate-setup` | `--fix` | Auto-repair detected issues |
+| `/validate-setup` | `--verbose` | Show detailed check output |
 
 ---
 
@@ -260,7 +275,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 13. Scaffolding Utilities
+## 13. Scaffolding & Templates
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -270,7 +285,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 12. Real-Environment Testing
+## 14. Real-Environment Testing
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -283,7 +298,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 13. Audit & Compliance
+## 15. Audit & Compliance
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -295,10 +310,11 @@ Run these to set up Claude Code on an existing codebase.
 | `/docs-audit` | README quality, API docs completeness, ADR validation, changelog | @docs-writer |
 | `/cicd-audit` | Pipeline secrets, deployment gates, supply chain security | @infra |
 | `/incident-readiness` | DR plans, runbooks, backup/restore, monitoring, on-call | @infra |
+| `/audit-system` | Full 7-phase system audit: file structure, hook health, agent/skill inventory, RBAC, drift, context budget | @cto + @team-lead + @gatekeeper |
 
 ---
 
-## 14. Observability
+## 16. Observability
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -307,7 +323,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 15. Story Management
+## 17. Story Management
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -315,7 +331,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 16. Microservices
+## 18. Microservices
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -327,7 +343,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 17. Game Development
+## 19. Game Development
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -337,7 +353,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 18. Embedded/IoT & CMS
+## 20. Embedded/IoT & CMS
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -350,7 +366,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 19. Enterprise Scale
+## 21. Enterprise Scale
 
 | Command | Purpose | Agent |
 |---------|---------|-------|
@@ -362,7 +378,7 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 20. Maintenance & Context
+## 22. Maintenance & Context
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
@@ -374,7 +390,39 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 21. Git Workflow (Built Into `/workflow`)
+## 23. Team Workspace & Daily Operations
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/setup-workspace` | Initialize workspace for a team role — sets CURRENT_ROLE in session.env, verifies CLAUDE.md version, runs setup checks | @team-lead + @process-coach |
+| `/daily-sync` | Start-of-day sync — git pull, CLAUDE.md version check, recent team activity, your next step, PRs in your scope | @team-lead + @process-coach |
+| `/feature-start` | Start a new feature — creates role-prefixed branch, task file, scope assignment, enforces branch naming | @team-lead + @process-coach |
+| `/feature-done` | Complete a feature — doc sync check, lint, tests, QA gate, prepare for PR submission | @team-lead + @qa-lead + @gatekeeper + @reviewer |
+| `/org-report` | Executive org health report — branch activity, blocked items, doc drift, subagent violations, framework version compliance (CTO/TechLead/Architect only) | @cto + @team-lead + @gatekeeper |
+
+---
+
+## 24. Prompt Intelligence
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/prompt "your rough prompt"` | Guided prompt improvement — classify, score (clarity/scope/alignment/context/safety), 5-pass improvement, write to file, collect answers, create task doc, execute with live tracking | @team-lead + @output-validator |
+
+### `/prompt` Workflow
+| Stage | What Happens |
+|-------|-------------|
+| Stage 0 | Load memory, session, git state, check for resumable work |
+| Stage 1 | Classify prompt (vague/misaligned/weak/risky/strong), score on 5 dimensions |
+| Stage 2 | 5-pass improvement (role alignment, domain alignment, context injection, CLAUDE.md rules, structure) |
+| Stage 3 | Write improved prompt to `.claude/prompts/prompt-{timestamp}.md`, ask for answers if needed |
+| Stage 4 | User confirms — verify answers, create task document |
+| Stage 5 | Create `.claude/tasks/task-{timestamp}.md` with subtask breakdown |
+| Stage 6 | Execute subtasks with live progress tracking, pause/resume/retry support |
+| Stage 7 | Mark complete, update MEMORY.md, audit log |
+
+---
+
+## 25. Git Workflow (Built Into `/workflow`)
 
 ```
 Phase 1:  git checkout -b feature/TASK-{id}/{slug}     ← Branch from main/dev
@@ -390,7 +438,7 @@ Phase 11: @infra deploys                                 ← Production deployme
 
 ---
 
-## 22. Agent Team (23 Agents)
+## 26. Agent Team (30 Agents)
 
 | Agent | Role | Access | Use For |
 |-------|------|--------|---------|
@@ -417,3 +465,10 @@ Phase 11: @infra deploys                                 ← Production deployme
 | `@gatekeeper` | Change Gate | Read-only | Auto-validate changes, regression detection |
 | `@process-coach` | Process Coach | Read/Write docs | SDLC methodology configuration |
 | `@docs-writer` | Documentation | Read/Write docs | READMEs, API docs, ADRs, changelogs |
+| `@cto` | Executive | Read-only | Executive oversight, org health, framework audits |
+| `@output-validator` | Validator | Read-only | Agent output quality validation |
+| `@analyst` | Requirements | Read/Write docs | Requirements analysis, BRD, domain modeling |
+| `@version-manager` | Git Governance | Read/Write | Branch naming, commit gates, PR validation |
+| `@observability-engineer` | Observability | Read/Write | Logging, tracing, metrics, alerting, health checks |
+| `@incident-responder` | Incidents | Read/Write | Production incidents, post-mortems, runbooks, SLA |
+| `@performance-engineer` | Performance | Read/Write | Profiling, benchmarking, optimization, budgets |

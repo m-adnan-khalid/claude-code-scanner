@@ -9,6 +9,23 @@ Read actual source files, not just configs.
 - Framework patterns: middleware chain, DI, router structure, error handlers
 - Custom abstractions on top of framework
 
+### Version Manifest (MANDATORY OUTPUT)
+After scanning, produce `TECH_MANIFEST.json` in `.claude/project/` with ALL detected versions:
+```json
+{
+  "language": {"name": "{lang}", "version": "{ver}", "source": "{config file}"},
+  "framework": {"name": "{fw}", "version": "{ver}", "source": "{config file}"},
+  "dependencies": [
+    {"name": "{pkg}", "version": "{ver}", "type": "runtime|dev|peer"}
+  ],
+  "platform": {"type": "web|mobile|desktop|embedded", "targets": ["{target versions}"]},
+  "test_framework": {"name": "{fw}", "version": "{ver}"},
+  "orm_database": {"orm": "{name}", "orm_version": "{ver}", "db": "{name}", "db_version": "{ver}"},
+  "build_tools": [{"name": "{tool}", "version": "{ver}"}]
+}
+```
+This manifest is used by ALL agents for the 3-step doc verification (accuracy.md). Agents read this file INSTEAD of re-parsing dependency files each time.
+
 ### API Layer
 - READ every route file — list all endpoints (method + path)
 - Request validation: Zod, Joi, Pydantic, class-validator
@@ -102,6 +119,71 @@ Read 20+ files to establish patterns.
 - Magic values: note if codebase uses constants/enums vs inline string/number literals
 - Boolean naming: check if `is/has/should/can` prefixes are used consistently
 - Report these metrics in scan-results.md under `## Code Standards Metrics`
+
+### Type Safety Scan
+- Check if strict mode enabled: `strict: true` (TS), `from __future__ import annotations` (Python), `#nullable enable` (C#), etc.
+- Grep for `any`, `: object`, `dynamic`, `Object` in typed codebases — count occurrences
+- Check for unsafe casts: `as Type` (TS), `(Type)` (Java/C#), `as!` (Swift), `!!` (Kotlin)
+- Check for unhandled nullables: optional chaining vs null checks vs ignoring
+- Report in scan-results.md under `## Type Safety Metrics`
+
+### Error Handling Scan
+- Grep for custom error/exception classes — list them, check hierarchy
+- Grep for bare catch blocks: `catch {}`, `catch (e) {}`, `except:`, `except Exception`
+- Grep for generic throws: `throw new Error(`, `raise Exception(`
+- Check if network/IO calls have timeouts configured
+- Check for swallowed errors: catch blocks with no logging or re-throw
+- Report in scan-results.md under `## Error Handling Patterns`
+
+### Constants & Config Scan
+- Check if constants are in dedicated files or inline in business logic
+- Grep for hardcoded URLs, IPs, ports, endpoints in source files
+- Check for hardcoded user-facing strings vs i18n resource usage
+- Check environment variable access: direct `process.env`/`os.environ` vs config injection
+- Report in scan-results.md under `## Constants & Config Patterns`
+
+### Testability Scan
+- Check for `new ConcreteService()` inside business logic (non-injectable deps)
+- Check for static methods used for business logic
+- Check for direct time/clock access: `Date.now()`, `System.currentTimeMillis()`, `time.time()`
+- Check for direct filesystem access in business logic classes
+- Report in scan-results.md under `## Testability Patterns`
+
+### Concurrency & Async Scan
+- Grep for unhandled promises: `.then(` without `.catch(`, missing `await`
+- Check for fire-and-forget patterns: goroutines without error channels, threads without join
+- Check for shared mutable state: global variables modified by multiple functions
+- Check for callback nesting depth (callback hell)
+- Report in scan-results.md under `## Concurrency Patterns`
+
+### Resource Management Scan
+- Check for event listener registration without matching removal
+- Check subscription patterns (RxJS, EventEmitter, signals) — are they disposed?
+- Check for string concatenation in loops vs builder/buffer usage
+- Check cache implementations for TTL or invalidation
+- Report in scan-results.md under `## Resource Management Patterns`
+
+### Database Scan
+- Check for raw SQL strings with interpolation vs parameterized queries
+- Check for single-query loops (N+1 pattern)
+- Check transaction usage and scope
+- Check migration files for rollback support
+- Check for missing indexes on commonly queried fields
+- Report in scan-results.md under `## Database Patterns`
+
+### Logging Scan
+- Check log format: structured (JSON/key=value) vs free-text
+- Check log levels used: are ERROR/WARN/INFO/DEBUG used correctly?
+- Grep for PII in log statements (email, password, token, ssn, phone)
+- Check for correlation/request ID in log entries
+- Report in scan-results.md under `## Logging Patterns`
+
+### Platform-Specific Scan
+- **Web:** Check for semantic HTML, ARIA usage, error boundaries, lazy loading, bundle analysis
+- **Mobile:** Check lifecycle methods, permission handling, background task patterns, deep linking
+- **Desktop:** Check main thread usage, worker threads, window state management
+- **Embedded:** Check memory allocation patterns, interrupt handlers, HAL usage
+- Report in scan-results.md under `## Platform Patterns`
 
 ### SOLID & Architecture Patterns (feeds into code-standards rule)
 - Interface/abstract usage: grep for `interface`, `abstract class`, `Protocol` (Python), `trait` (Rust/PHP)

@@ -85,6 +85,34 @@ try {
     }
   }
 
+  // Capture active loop state to MEMORY.md (preserves counters across sessions)
+  const tasksDir = path.join(root, '.claude', 'tasks');
+  if (fs.existsSync(tasksDir)) {
+    try {
+      const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));
+      for (const tf of taskFiles) {
+        const taskContent = fs.readFileSync(path.join(tasksDir, tf), 'utf8');
+        if (/DEVELOPING|DEV_TESTING|REVIEWING|CI_PENDING|QA_TESTING/.test(taskContent)) {
+          const loopMatch = taskContent.match(/## Loop State\n([\s\S]*?)(?=\n## |\n$|$)/);
+          if (loopMatch) {
+            const loopLines = loopMatch[1].trim().split('\n').filter(l => l.trim().startsWith('-'));
+            if (loopLines.length > 0) {
+              // Add loop state to MEMORY.md
+              const loopSummary = `## Active Loop State\n${loopLines.join('\n')}\n`;
+              if (memContent.includes('## Active Loop State')) {
+                memContent = memContent.replace(/## Active Loop State\n(?:- [^\n]*\n)*/, loopSummary);
+              } else {
+                memContent += '\n' + loopSummary;
+              }
+              fs.writeFileSync(memPath, memContent);
+            }
+          }
+          break;
+        }
+      }
+    } catch (e) { /* best effort */ }
+  }
+
   // Log to branch-scoped audit log
   const role = getRole(root);
   const branch = getBranch(root);

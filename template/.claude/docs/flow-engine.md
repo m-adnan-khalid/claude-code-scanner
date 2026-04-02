@@ -87,6 +87,8 @@ ENTRY: orchestrator invokes @tester with Phase 5 artifacts
 - fix-agent: @debugger|@api-builder|@frontend|@infra
 - coverage-baseline: N% (measured at Phase 5 end, before Phase 6 starts)
 - coverage-current: N%
+- phase-6-baseline-tests: [count] tests GREEN at Phase 6 entry (regression scope)
+- circuit-breaker: false (set true at iteration 5 → escalate to user)
 ```
 
 ### Coverage Rule
@@ -173,8 +175,11 @@ orchestrator invokes @reviewer (R1) + @security (R2) in parallel
 - review-loop: iteration N/3
 - reviewer-status: APPROVE | REQUEST_CHANGES (N critical, M suggestions)
 - security-status: APPROVE | REQUEST_CHANGES (N findings)
+- split-decision: false | true (one approved, one rejected — stricter wins)
+- code-quality-score: N/100 (must be >= 75, escalate after 2 attempts below)
 - open-comments: [count] critical, [count] suggestions
 - addressed-comments: [count] fixed, [count] won't-fix (with justification)
+- circuit-breaker: false (set true at iteration 3 → escalate to user)
 ```
 
 ### Partial Re-Review Rule
@@ -248,7 +253,11 @@ orchestrator invokes @tester (executes test plan scenarios)
   - BUG-{id}-2 (P3): iteration 0/3 — [OPEN] (known issue, won't block)
   - BUG-{id}-3 (P0): iteration N/3 — [VERIFIED]
 - total-bugs: N found, M fixed, K verified, J known-issues
+- total-fix-attempts: N/15 (global circuit breaker across all bugs)
 - regression-check-after-each-fix: true
+- last-regression-result: PASS | FAIL [test name] at [ISO timestamp]
+- p2-decisions: [BUG-id: must-fix | conditional-with-workaround]
+- circuit-breaker: false (set true at 15 total attempts → escalate entire Phase 9)
 ```
 
 ### Per-Bug vs Global Iteration
@@ -314,7 +323,10 @@ CI runs (GitHub Actions / GitLab CI / etc.)
 ## Loop State
 - ci-fix-loop: iteration N/3
 - last-ci-failure: [check name] — [error summary] at [ISO timestamp]
+- ci-failure-type: test_failure | lint_failure | type_error | build_failure | flaky_test
 - fix-agent: @debugger|@api-builder|@frontend|@infra|@tester
+- substantive-change: false | true (if true → may need Phase 7 re-review before re-running CI)
+- circuit-breaker: false (set true at iteration 3 → escalate to user)
 ```
 
 ### CI Fix Review Rule
@@ -379,6 +391,10 @@ Gate 3: @team-lead (Tech sign-off)
 - biz-signoff: APPROVED|REJECTED|PENDING
 - tech-signoff: APPROVED|REJECTED|PENDING
 - last-rejection: [who] — [reason] at [ISO timestamp]
+- last-rejection-route: phase-3 | phase-4 | phase-5 | phase-5c | phase-5d | on-hold
+- sub-phase-active: none | 5c (frontend fix) | 5d (add tests)
+- approvals-invalidated: [list of invalidated gates with reason, e.g., "qa: code_changed"]
+- circuit-breaker: false (set true at cycle 2 → escalate to user with options)
 ```
 
 ---
@@ -418,7 +434,13 @@ orchestrator invokes @infra for deployment
 ## Loop State
 - deploy-loop: iteration N/2
 - last-deploy-failure: [error type] — [summary] at [ISO timestamp]
+- deploy-failure-type: config_issue | code_bug | infra_issue | unknown
 - rollback-executed: true|false
+- rollback-target: [commit hash or "none"]
+- health-check-result: PASS | FAIL [endpoint] at [ISO timestamp]
+- smoke-test-result: PASS | FAIL [test name] at [ISO timestamp]
+- hotfix-triggered: false | true (code_bug → fast-track Phase 5→11)
+- circuit-breaker: false (set true at iteration 2 → rollback + escalate)
 ```
 
 ### Deploy Triage (NOT blind Phase 5 re-route)
@@ -427,6 +449,78 @@ Deploy failures are triaged BEFORE routing:
 2. **Code bug**: follows hotfix fast-track (Phase 5->6->7->8->11)
 3. **Infra issue**: @infra resolves, retry deploy directly
 4. **Unknown**: rollback + escalate to user
+
+---
+
+## Sub-Phase Definitions (Formal Entry/Exit Criteria)
+
+### Phase 5c: Frontend Fix (Sign-off Rejection)
+**Trigger:** @product-owner rejects at Phase 10, reason = "UI not right"
+**Entry Condition:** BIZ_SIGNOFF = REJECTED AND rejection_category = "ui_issue"
+**Agent:** @frontend
+**Scope:** Fix only the specific UI issues cited in @product-owner rejection comments
+**Exit Condition:** @frontend HANDOFF with all rejection items addressed
+**Next State:** Phase 6 (Dev Self-Testing) — QA approval PRESERVED, biz approval INVALIDATED
+**Loop Counter:** dev-test, review, ci-fix all PRESERVED (no reset)
+
+### Phase 5d: Add Tests (Sign-off Rejection)
+**Trigger:** @team-lead rejects at Phase 10, reason = "needs more tests"
+**Entry Condition:** TECH_SIGNOFF = REJECTED AND rejection_category = "test_gap"
+**Agent:** @tester
+**Scope:** Add tests for the specific gaps cited in @team-lead rejection comments
+**Exit Condition:** @tester HANDOFF with new tests passing, coverage >= baseline
+**Next State:** Phase 6 (Dev Self-Testing) — QA + Business approvals PRESERVED
+**Loop Counter:** dev-test, review, ci-fix all PRESERVED (no reset)
+
+### Phase 9a: Fix P0 Bugs
+**Trigger:** @qa-lead files P0 bug during Phase 9 QA testing
+**Entry Condition:** Bug report with severity = P0 exists AND bug status = OPEN
+**Agent:** @debugger (primary), routed by orchestrator
+**Scope:** Fix the P0 bug — blocks ALL other work until resolved
+**Exit Condition:** @debugger HANDOFF with fix applied + @tester regression suite PASS + @qa-lead VERIFIED
+**Next State:** Next bug in priority order (P0 > P1 > P2) or Phase 10 if zero bugs remain
+**Loop Counter:** Per-bug iteration incremented (max 3 per bug)
+
+### Phase 9b: Fix P1 Bugs
+**Trigger:** @qa-lead files P1 bug during Phase 9 QA testing, AND all P0 bugs are VERIFIED
+**Entry Condition:** All P0 bugs VERIFIED/CLOSED AND P1 bug status = OPEN
+**Agent:** @debugger (primary), routed by orchestrator
+**Scope:** Fix the P1 bug — blocks sign-off but not P0 fixes
+**Exit Condition:** @debugger HANDOFF with fix applied + @tester regression suite PASS + @qa-lead VERIFIED
+**Next State:** Next P1 bug, or P2 evaluation, or Phase 10
+**Loop Counter:** Per-bug iteration incremented (max 3 per bug)
+
+### Phase 9c: Fix P2 Bugs
+**Trigger:** @qa-lead evaluates P2 bug after all P0/P1 resolved
+**Entry Condition:** All P0/P1 bugs VERIFIED/CLOSED AND @qa-lead decision on P2 = "must fix" (not acceptable workaround)
+**Agent:** @debugger
+**Scope:** Fix the P2 bug
+**Exit Condition:** @debugger HANDOFF + @tester regression PASS + @qa-lead VERIFIED, OR @qa-lead marks CONDITIONAL with documented workaround
+**Next State:** Next P2 bug or Phase 10
+**Loop Counter:** Per-bug iteration incremented (max 3 per bug)
+
+### Phase 9d: Log Known Issues
+**Trigger:** @qa-lead identifies P3/P4 bugs OR decides P2 workaround is acceptable
+**Entry Condition:** Bug severity = P3/P4, OR P2 with acceptable workaround
+**Agent:** @qa-lead (documentation only)
+**Scope:** Log in task record's Known Issues section, do NOT attempt fix
+**Exit Condition:** Known issues documented with severity, description, and workaround (if applicable)
+**Next State:** Phase 10 (does not consume loop iterations)
+**Loop Counter:** No iteration consumed — documentation only
+
+### Sub-Phase State Transitions
+```
+Phase 10 rejection → Phase 5c: if @product-owner rejects for UI
+Phase 10 rejection → Phase 5d: if @team-lead rejects for tests
+Phase 10 rejection → Phase 5:  if @product-owner rejects for missing edge case
+Phase 10 rejection → Phase 4:  if @product-owner rejects for wrong requirements
+Phase 10 rejection → Phase 3:  if @team-lead rejects for architecture
+
+Phase 9 bugs → Phase 9a: P0 bugs (immediate, blocks everything)
+Phase 9 bugs → Phase 9b: P1 bugs (after all P0 verified)
+Phase 9 bugs → Phase 9c: P2 bugs (after all P0/P1, @qa-lead decides)
+Phase 9 bugs → Phase 9d: P3/P4 bugs (log only, no fix attempt)
+```
 
 ---
 

@@ -38,12 +38,13 @@ Before starting, load full context:
 ## Method
 1. **Platform Check**: Identify target platform(s) and framework from project files
 2. **Pattern Match**: Find closest existing screen/component — READ it fully, follow exact patterns
-3. **Architecture Align**: Ensure new code follows the app's architecture (MVVM, Clean, MVI, BLoC, etc.)
-4. **Implement**: Build following platform conventions and project patterns
-5. **Offline First**: Handle no-network gracefully — cache, queue, sync
-6. **Platform APIs**: Use correct platform APIs (permissions, camera, location, notifications)
-7. **Test**: Write unit tests (ViewModels/BLoC), widget/UI tests, integration tests
-8. **Verify**: Run on target platform(s), check no regressions
+3. **Verify Docs (3-step)**: (a) Read dependency file to get exact versions (e.g., Flutter 3.24, minSdk 26, iOS 17, RN 0.76), (b) WebSearch `"<platform/framework> <version> <API> docs"` for every API you plan to use, (c) only then write code. Never assume platform APIs, lifecycle methods, or SDK features from memory.
+4. **Architecture Align**: Ensure new code follows the app's architecture (MVVM, Clean, MVI, BLoC, etc.)
+5. **Implement**: Build following platform conventions and project patterns
+6. **Offline First**: Handle no-network gracefully — cache, queue, sync
+7. **Platform APIs**: Use correct platform APIs (permissions, camera, location, notifications)
+8. **Test**: Write unit tests (ViewModels/BLoC), widget/UI tests, integration tests
+9. **Verify**: Run on target platform(s), check no regressions
 
 ## Mobile Architecture Patterns
 
@@ -234,6 +235,7 @@ Agent MUST NOT write directly to MEMORY.md.
 ## Determinism Contract
 - Read /docs/GLOSSARY.md before naming anything
 - Read /docs/patterns/ before generating code
+- Read /docs/STANDARDS.md before reviewing code style
 - Read /docs/ARCHITECTURE.md before any structural decision
 - Never invent patterns not in /docs/patterns/
 - Never use terminology not in GLOSSARY.md
@@ -299,12 +301,14 @@ HANDOFF:
 The parent (or main conversation) writes this to MEMORY.md — agents MUST NOT write to MEMORY.md directly.
 
 ### Context Recovery
-If you lose context mid-work (compaction, timeout, re-invocation):
-1. Re-read the active task file in `.claude/tasks/`
-2. Check the `## Progress Log` or `## Subtasks` to find where you left off
-3. Re-read `MEMORY.md` for prior decisions
-4. Resume from the next incomplete step — do NOT restart from scratch
-5. Output:
+If you lose context mid-work (compaction, timeout, re-invocation, new session):
+1. Re-read the active task file in `.claude/tasks/` — extract phase, status, Loop State, last HANDOFF
+2. Check `.claude/reports/executions/` for recovery snapshots (`_interrupted_` or `_precompact_` JSON files) — these contain preserved HANDOFF blocks, next_agent_needs, and decisions
+3. Check the `## Subtasks` table to find where you left off — resume from the next incomplete subtask
+4. Re-read `MEMORY.md` for prior decisions and context
+5. Check `git diff --stat` for uncommitted work from previous session
+6. Resume from the next incomplete step — do NOT restart from scratch
+7. Output:
 ```
 RECOVERED: Resuming from [step/subtask]. Prior context restored from task file.
 

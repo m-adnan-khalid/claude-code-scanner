@@ -113,7 +113,16 @@ Only for monorepo packages or distinct modules.
 - `frontend.md` — component patterns (paths: src/components/**, app/**)
 - `security.md` — input validation, auth, PII rules (paths: src/auth/**, src/api/**)
 - `infrastructure.md` — Docker, CI, IaC rules (paths: Dockerfile*, .github/workflows/**)
-- `code-standards.md` — file/method length limits, naming patterns, no magic values (paths: **/*.ts, **/*.js, **/*.py, etc.)
+- `code-standards.md` — structure, naming, SOLID, constants, imports (paths: all source files)
+- `code-safety.md` — type safety, error handling, testability, concurrency, resources (paths: all source files)
+- `code-platform.md` — database, API design, i18n, platform-specific patterns (paths: all source files)
+- `logging.md` — structured logging, levels, PII masking, correlation IDs (paths: all source files)
+- `accuracy.md` — verify imports, API signatures, external framework docs before coding (paths: all source files)
+- `request-validation.md` — scope-check, clarify before implementing (paths: all source files)
+- `prompt-efficiency.md` — output rules, tool use rules, anti-patterns (paths: all)
+- `context-budget.md` — CLAUDE.md/rule line limits, startup/working context (paths: all)
+- `task-brief.md` — task file structure and lifecycle (paths: .claude/tasks/**)
+- `task-lifecycle.md` — phase progression and status transitions (paths: .claude/tasks/**)
 - Generate additional rules ONLY if codebase demands them.
 
 ### 4. .claude/agents/ (see agents/ directory and domain-agents.md for templates)

@@ -34,14 +34,33 @@ All criteria must pass before this task is marked complete.
 - **Issues found:** `/fix-bug "rejection reason"` — address sign-off feedback
 - **Skip to next task:** `/mvp-kickoff next` or `/workflow resume TASK-{id}`
 
-## 3-Way Gate Check
-Before marking the task as fully signed off:
-1. Read the task file and check for:
-   - `tech_signoff: APPROVED`
-   - `qa_signoff: APPROVED`
-   - `business_signoff: APPROVED`
-2. If ANY of the three is missing or REJECTED, the task CANNOT proceed to merge.
-3. All three must be APPROVED before PR merge is allowed.
+## 3-Way Gate Enforcement
+After approving the requested gate, you MUST enforce the 3-way check:
+
+1. Read the task file and extract current sign-off status:
+   - `tech_signoff: APPROVED | REJECTED | PENDING`
+   - `qa_signoff: APPROVED | REJECTED | PENDING`
+   - `business_signoff: APPROVED | REJECTED | PENDING`
+
+2. If ALL THREE are APPROVED:
+   - Output: "All sign-offs complete. Task is ready for Phase 11 merge."
+   - Update task status to TECH_SIGNOFF (ready for merge)
+
+3. If the requested gate is APPROVED but others are PENDING:
+   - Output: "Gate approved. Remaining gates pending: {list pending gates}"
+   - Output: "Run `/signoff {type} TASK-{id}` for each remaining gate before merge."
+   - Do NOT advance task status to merge-ready
+
+4. If ANY gate is REJECTED:
+   - Output: "Gate REJECTED. Reason: {reasons}. Task cannot proceed to merge."
+   - Route rejection per flow-engine.md:
+     - QA rejects (bugs) → Phase 5 re-flow (QA + Biz approval INVALIDATED)
+     - Biz rejects (requirements) → Phase 4 (QA approval PRESERVED)
+     - Biz rejects (UI) → Phase 5c frontend fix (QA approval PRESERVED)
+     - Tech rejects (architecture) → Phase 3 (ALL approvals INVALIDATED)
+     - Tech rejects (perf/tests) → Phase 5 (QA + Biz approvals PRESERVED)
+
+5. Circuit breaker: If this is the 2nd full rejection cycle at Phase 10, STOP and escalate to user.
 
 ## Rollback
 - **Undo changes:** Revoke approval by updating task file status back to pre-sign-off phase
@@ -49,5 +68,5 @@ Before marking the task as fully signed off:
 
 ### Final Output
 ```
-NEXT ACTION: Done. Review the output above and decide your next step.
+NEXT ACTION: {gate_type} sign-off: {APPROVED|REJECTED}. {remaining gates status or merge readiness}.
 ```
