@@ -1,0 +1,10 @@
+# Files to copy from main repo to new worktrees
+# Only gitignored files matching these patterns are copied
+.env
+.env.local
+.env.development
+.env.staging
+config/secrets.json
+config/local.json
+.claude/settings.local.json
+.claude/session.env

@@ -1,6 +1,6 @@
 # Claude Code Scanner — Complete Documentation
 
-> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 27 role-based agents, 88 workflow skills, 35 automation hooks, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 30 role-based agents, 88 workflow skills, 44 automation hooks (25 root + 19 template), and full lifecycle support from idea to deployment.
 
 ---
 
@@ -11,20 +11,35 @@
 3. [Installation Methods](#3-installation-methods)
 4. [How It Works (4-Phase Setup)](#4-how-it-works)
 4b. [New Project Mode (Idea to Launch)](#4b-new-project-mode)
-5. [The Agent Team (26 Roles)](#5-the-agent-team)
-6. [Skills Reference (87 Skills)](#6-skills-reference)
+5. [The Agent Team (30 Roles)](#5-the-agent-team)
+6. [Skills Reference (88 Skills)](#6-skills-reference)
 7. [The Workflow Engine (13 Phases)](#7-the-workflow-engine)
 8. [Loop Flows & Circuit Breakers](#8-loop-flows--circuit-breakers)
-9. [Hooks & Automation (35 Hooks)](#9-hooks--automation)
+9. [Hooks & Automation (44 Hooks)](#9-hooks--automation)
 10. [Task Tracking System](#10-task-tracking-system)
 11. [Execution Reports & Scoring](#11-execution-reports--scoring)
 12. [Context Budget Management](#12-context-budget-management)
 13. [Drift Detection & Sync](#13-drift-detection--sync)
 14. [Error Recovery](#14-error-recovery)
 15. [Configuration Reference](#15-configuration-reference)
-16. [File Structure](#16-file-structure)
-17. [Customization Guide](#17-customization-guide)
-18. [Troubleshooting](#18-troubleshooting)
+16. [Model Aliases & Effort Levels](#16-model-aliases--effort-levels)
+17. [MCP Server Integration](#17-mcp-server-integration)
+18. [Plugin System](#18-plugin-system)
+19. [Auto Memory System](#19-auto-memory-system)
+20. [Worktree Isolation](#20-worktree-isolation)
+21. [CLI Reference](#21-cli-reference)
+22. [Extended Thinking](#22-extended-thinking)
+23. [Agent Teams](#23-agent-teams)
+24. [Sandbox & Security](#24-sandbox--security)
+25. [IDE Integration](#25-ide-integration)
+26. [Keybindings](#26-keybindings)
+27. [Notifications](#27-notifications)
+28. [Enterprise Features](#28-enterprise-features)
+29. [Output Styles](#29-output-styles)
+30. [Remote Sessions & Web App](#30-remote-sessions--web-app)
+31. [File Structure](#31-file-structure)
+32. [Customization Guide](#32-customization-guide)
+33. [Troubleshooting](#33-troubleshooting)
 
 ---
 
@@ -33,9 +48,9 @@
 Claude Code Scanner is a tool that scans your existing codebase **or helps you start from scratch** and generates a complete Claude Code development environment tailored to your project. Instead of manually configuring agents, skills, and rules, the scanner reads your actual code (or helps you design it from an idea) and creates everything automatically.
 
 **What you get:**
-- 27 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
+- 30 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
 - 88 workflow skills for common workflows (including 9 pre-development, 6 real-environment testing, 8 audit/compliance, 2 observability, and 8 utility skills)
-- 35 automation hooks that run behind the scenes
+- 44 automation hooks (25 root + 19 template) that run behind the scenes
 - **NEW:** 8-phase pre-development pipeline (idea → product spec → features → tech stack → architecture → scaffolding → environment → launch plan)
 - A 13-phase SDLC workflow from task intake to production deployment
 - Execution analytics with success scoring and hallucination detection
@@ -178,7 +193,7 @@ Takes the scan results and generates project-specific files:
 
 Runs 170+ automated checks:
 - CLAUDE.md under 200 lines, no placeholders
-- All 27 agents compliant (frontmatter, HANDOFF, limitations)
+- All 30 agents compliant (frontmatter, HANDOFF, limitations)
 - All skills have proper frontmatter (context:fork, argument-hint)
 - Settings.json valid, all hooks registered
 - Context budget under limits
@@ -242,7 +257,7 @@ See `.claude/docs/pre-dev-flow-engine.md` for detailed phase documentation and `
 
 ### Understanding Agent Roles
 
-The scanner creates a 23-agent team organized like a real development organization. Each agent has:
+The scanner creates a 30-agent team organized like a real development organization. Each agent has:
 
 - **Specific tools** — what it can read/write/execute
 - **Permission mode** — read-only agents can't modify code
@@ -635,6 +650,112 @@ Deploys the application, runs end-to-end test flows, performs visual verificatio
 
 **Output includes:** E2E test results, visual diff report, environment health check, user journey verification status.
 
+#### @cto (Executive Oversight)
+```
+Model: opus | Access: Read-only (plan mode) | MaxTurns: 25
+```
+Strategic oversight, framework governance, team health audits, and organizational reporting. Provides executive-level audits and cross-team coordination.
+
+**When to use:** Framework upgrades, organizational health checks, executive status reports.
+
+**Example:**
+```
+@cto audit the framework for compliance
+@cto generate an executive progress report
+```
+
+**Output includes:** Org health report, framework compliance status, team velocity summary.
+
+#### @analyst (Requirements & Domain Specialist)
+```
+Model: sonnet | Access: Read/Write (docs) | MaxTurns: 25
+```
+Requirements analysis, BRD generation, domain modeling, process flows, and design briefs. Creates STORY entries in TASK_REGISTRY before producing output.
+
+**When to use:** Gathering requirements, writing BRDs, modeling domain entities, creating process flows.
+
+**Example:**
+```
+@analyst write a BRD for the payment module
+@analyst create a domain model for the invoicing system
+```
+
+**Output includes:** BRD, domain model, process flow diagrams, RACI matrix, design brief.
+
+#### @version-manager (Git Governance)
+```
+Model: sonnet | Access: Read/Write | MaxTurns: 15
+```
+Enforces branch naming, validates commit messages, checks task completion, blocks secrets, runs pre-push quality gates, and manages PR creation.
+
+**When to use:** Before any git push, PR creation, or merge operation. Runs automatically via hooks.
+
+**Example:**
+```
+@version-manager validate TASK-001 for merge readiness
+@version-manager create PR for the current branch
+```
+
+**Output includes:** Quality gate results, branch validation, commit message compliance, PR template.
+
+#### @output-validator (Consistency Checker)
+```
+Model: sonnet | Access: Read-only (plan mode) | MaxTurns: 10
+```
+Validates subagent output for naming violations, scope violations, pattern violations, and contract compliance. Runs after every subagent call.
+
+**When to use:** Automated — runs after subagent completions to ensure consistency against GLOSSARY and STANDARDS.
+
+**Output includes:** Validation report, naming compliance, scope check, pattern adherence score.
+
+#### @observability-engineer (Monitoring Specialist)
+```
+Model: sonnet | Access: Read/Write + Worktree | MaxTurns: 25
+```
+Sets up structured logging, distributed tracing (OpenTelemetry), metrics collection, alerting rules, dashboards, and health check endpoints. Owns Phase 12 post-deploy monitoring.
+
+**When to use:** Setting up observability, validating post-deploy health, diagnosing monitoring gaps.
+
+**Example:**
+```
+@observability-engineer set up structured logging for the API service
+@observability-engineer add health check endpoints and alerting
+```
+
+**Output includes:** Logging config, tracing setup, metrics endpoints, alerting rules, dashboard config.
+
+#### @incident-responder (Production Incidents)
+```
+Model: sonnet | Access: Read/Write + Worktree | MaxTurns: 30
+```
+Handles production incidents, coordinates triage, executes runbooks, tracks SLA compliance, writes post-mortems, and validates disaster recovery procedures.
+
+**When to use:** P0/P1 production issues, incident response, post-mortem writing, DR validation.
+
+**Example:**
+```
+@incident-responder triage this P0 database outage
+@incident-responder write a post-mortem for the auth service incident
+```
+
+**Output includes:** Incident timeline, triage report, runbook execution log, post-mortem, SLA compliance status.
+
+#### @performance-engineer (Optimization Specialist)
+```
+Model: sonnet | Access: Read/Write + Worktree | MaxTurns: 25
+```
+Profiles applications, identifies bottlenecks, optimizes critical paths, analyzes load test results, detects memory leaks, and enforces performance budgets.
+
+**When to use:** Performance audits, load test analysis, optimization, memory leak investigation.
+
+**Example:**
+```
+@performance-engineer profile the checkout API for bottlenecks
+@performance-engineer analyze the k6 load test results and recommend fixes
+```
+
+**Output includes:** Profiling report, bottleneck analysis, optimization recommendations, performance budget status.
+
 ### Agent Communication
 
 Agents communicate through structured **HANDOFF** blocks:
@@ -711,7 +832,7 @@ Installs community Smithery skills and MCP servers matching your tech stack. Opt
 /workflow review TASK-001                    # Jump to review phase
 /workflow deploy TASK-001                    # Jump to deployment phase
 ```
-The main orchestrator. Coordinates all 27 agents through 13 phases. Includes automatic drift detection at Phase 1, context budget checks between phases, and execution reports after each phase.
+The main orchestrator. Coordinates all 30 agents through 13 phases. Includes automatic drift detection at Phase 1, context budget checks between phases, and execution reports after each phase.
 
 #### /task-tracker
 ```
@@ -865,7 +986,7 @@ When skipped, logged in task record. When NOT skipped, @architect produces desig
 | 5c: Frontend code | Frontend scope | @frontend |
 | 5d: Tests | Always | @tester |
 
-**Fullstack execution:** 5a runs first (DB must be ready). Then 5b + 5c run in parallel using `isolation: worktree` (separate git copies). Backend merges first, frontend adapts. Both must complete before Phase 6.
+**Fullstack execution:** 5a runs first (DB must be ready). Then 5b + 5c run in parallel using `isolation: worktree` (separate git copies). Backend merges first (defines API contract), @team-lead resolves conflicts, then frontend merges second (adapts to backend). Tests (5d) run only after both worktrees are merged. Both must complete before Phase 6. See [Section 20](#20-worktree-isolation) for the full merge flow diagram.
 
 #### Phase 10: Sign-offs — Preservation Rules
 
@@ -1228,25 +1349,87 @@ On every session start, `drift-detector.js` checks:
 
 ## 15. Configuration Reference
 
-### settings.json
+### Configuration Files & Scopes
+
+| Scope | File | Committed | Purpose |
+|-------|------|-----------|---------|
+| **Project (shared)** | `.claude/settings.json` | Yes | Team-wide permissions, hooks |
+| **Project (local)** | `.claude/settings.local.json` | No | Personal env vars |
+| **User** | `~/.claude/settings.json` | No | Cross-project personal prefs |
+| **User CLAUDE.md** | `~/.claude/CLAUDE.md` | No | Personal instructions (all projects) |
+| **Managed (org)** | `/Library/Application Support/ClaudeCode/` (macOS) | Admin | Org-level policy |
+| **Managed (Linux)** | `/etc/claude-code/` | Admin | Org-level policy |
+
+**Precedence:** Managed > CLI flags > Local project > Shared project > User > Defaults
+
+### settings.json — Full Schema
 
 ```json
 {
   "permissions": {
     "defaultMode": "default",
-    "allow": ["Bash(git status)", "Bash(git diff *)"],
-    "deny": ["Bash(rm -rf /)", "Bash(sudo *)"]
+    "allow": ["Bash(git status)", "Read(/src/**)"],
+    "ask": ["Bash(npm run *)"],
+    "deny": ["Bash(rm -rf /)", "Bash(sudo *)"],
+    "disableBypassPermissionsMode": false,
+    "disableAutoMode": false
   },
-  "env": {},
-  "hooks": { ... }
+  "env": { "KEY": "value" },
+  "model": "opus",
+  "effortLevel": "high",
+  "availableModels": ["claude-opus-4-6", "claude-sonnet-4-6"],
+  "autoMemoryEnabled": true,
+  "claudeMdExcludes": ["legacy-docs/**"],
+  "additionalDirectories": ["../shared-lib"],
+  "disableAllHooks": false,
+  "disableFileSuggestions": false,
+  "sandbox": {
+    "enabled": true,
+    "filesystem": { "allowRead": ["/tmp"], "denyRead": ["/etc/secrets"] },
+    "network": { "allowedDomains": ["api.example.com"] }
+  },
+  "hooks": { "...": "see Section 9" }
 }
 ```
 
-- **permissions.defaultMode:** `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`
-- **permissions.allow:** Bash command patterns to auto-approve
-- **permissions.deny:** Bash command patterns to always block
-- **env:** Environment variables
-- **hooks:** Event-to-script mappings (see [Section 9](#9-hooks--automation))
+### Permission Modes
+
+| Mode | Behavior | Use Case |
+|------|----------|----------|
+| `default` | Prompt on first use of each tool | Standard development |
+| `acceptEdits` | Auto-accept file edits | Trusted workflows |
+| `plan` | Analysis-only (no execution) | Safe code review |
+| `auto` | Auto-approve with safety checks | Requires Team/Enterprise |
+| `dontAsk` | Deny unless pre-approved | Restricted environments |
+| `bypassPermissions` | Skip prompts | Containers/VMs only |
+
+### Permission Rule Syntax
+
+```
+Tool                           # Match all uses of a tool
+Tool(*)                        # Explicit wildcard
+Tool(exact-command)            # Exact string match
+Bash(npm run test *)           # Prefix wildcard
+Read(/src/**)                  # File path patterns (gitignore syntax)
+Edit(./.env)                   # Relative to current directory
+WebFetch(domain:example.com)   # Domain-specific matching
+mcp__server-name__tool-name    # MCP tool matching
+Agent(ExploreAgent)            # Subagent control
+```
+
+**Precedence:** Deny > Ask > Allow (first matching rule wins)
+
+### CLAUDE.md
+
+Project-level instructions that Claude reads on every session. Max 200 lines (150 recommended). Contains tech stack, commands, architecture, code style, git conventions, key paths.
+
+**Import syntax:** Use `@path/to/file.md` to split large files (max 5 hops deep). Example:
+```markdown
+## Architecture
+@docs/ARCHITECTURE.md
+```
+
+**Loading order:** Walk up directory tree → load all CLAUDE.md files → load `.claude/CLAUDE.md` → load path-matched rules on-demand.
 
 ### settings.local.json (gitignored)
 
@@ -1261,25 +1444,1043 @@ On every session start, `drift-detector.js` checks:
 
 Machine-specific settings. Never committed to git.
 
-### CLAUDE.md
-
-Project-level instructions that Claude reads on every session. Max 200 lines (150 recommended). Contains tech stack, commands, architecture, code style, git conventions, key paths.
-
 ### Rules (.claude/rules/*.md)
 
-Path-scoped instructions. Each rule has a `paths:` frontmatter that controls when it loads:
+Path-scoped instructions with `paths:` frontmatter for conditional loading:
 
 ```yaml
 ---
 paths:
   - "src/api/**/*.ts"
+  - "src/services/**/*.{ts,tsx}"
 ---
-# API rules load only when working in src/api/
+# These rules load only when Claude reads matching files
+```
+
+Rules **without** `paths:` load at session startup. Rules **with** `paths:` load on-demand.
+
+### Agent File Format
+
+```yaml
+---
+name: agent-name              # Required: lowercase, hyphens, max 64 chars
+description: "..."            # Required: when to delegate to this agent
+model: opus                   # Optional: model override
+effort: high                  # Optional: low/medium/high/max
+tools: Read, Edit, Write      # Optional: restrict available tools
+disallowedTools: Bash         # Optional: block specific tools
+maxTurns: 30                  # Optional: iteration limit
+memory: project               # Optional: enable persistent memory
+permissionMode: plan          # Optional: force permission mode
+isolation: worktree           # Optional: run in isolated worktree
+mcpServers: [server-name]     # Optional: scope MCP servers
+skills: [skill1, skill2]      # Optional: preload skills
+hooks: {}                     # Optional: agent-specific hooks
+disable: false                # Optional: disable without deleting
+---
+```
+
+### Skill File Format
+
+```yaml
+---
+name: skill-name                    # Required
+description: "..."                  # Required: 250 chars ideal
+user-invocable: true                # Default true
+argument-hint: "[args]"             # Autocomplete hint
+context: fork                       # Run in isolated context
+allowed-tools: "Read Grep Glob"     # Restrict tools
+model: sonnet                       # Model override
+effort: high                        # Effort level
+agent: "Explore"                    # Subagent type to use
+paths: ["src/**/*.ts"]              # Auto-load on file match
+shell: bash                         # bash or powershell
+disable-model-invocation: false     # User-only invocation
+hooks: {}                           # Skill-scoped hooks
+---
+```
+
+**String substitutions:** `$ARGUMENTS`, `$0`..`$N`, `${CLAUDE_SESSION_ID}`, `${CLAUDE_SKILL_DIR}`
+
+### Hook Handler Types
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| `command` | Run a shell command | `node hooks/my-hook.js` |
+| `http` | Call a webhook URL | `https://api.example.com/hook` |
+| `prompt` | Inject text into conversation | `"Remember to check tests"` |
+| `agent` | Spawn an agent | `{ "agent": "reviewer" }` |
+
+### All Hook Events (24+)
+
+| Event | Trigger |
+|-------|---------|
+| `SessionStart` | Session begins, resumes, or compacts |
+| `SessionEnd` | Session terminates |
+| `InstructionsLoaded` | CLAUDE.md or rules loaded |
+| `UserPromptSubmit` | Before processing user prompt |
+| `Notification` | When Claude sends notifications |
+| `PreToolUse` | Before tool executes (can block with exit 2) |
+| `PostToolUse` | After tool succeeds |
+| `PostToolUseFailure` | After tool fails |
+| `PermissionRequest` | Permission dialog appears |
+| `PermissionDenied` | Auto mode denies tool |
+| `SubagentStart` | Subagent spawned |
+| `SubagentStop` | Subagent finishes |
+| `Stop` | Claude finishes responding |
+| `StopFailure` | Turn ends due to API error |
+| `TeammateIdle` | Agent team member about to go idle |
+| `TaskCreated` | Task being created |
+| `TaskCompleted` | Task marked completed |
+| `FileChanged` | Watched file changes on disk |
+| `CwdChanged` | Working directory changes |
+| `ConfigChange` | Configuration file changes |
+| `PreCompact` | Before context compaction |
+| `PostCompact` | After context compaction |
+| `WorktreeCreate` | Worktree being created |
+| `WorktreeRemove` | Worktree being removed |
+| `Elicitation` | MCP server requests user input |
+
+---
+
+## 16. Model Aliases & Effort Levels
+
+### Model Aliases
+
+| Alias | Maps To | Use Case |
+|-------|---------|----------|
+| `default` | Account tier default | Clears overrides |
+| `best` | Latest Opus | Most capable |
+| `opus` | Claude Opus 4.6 | Complex reasoning, architecture |
+| `sonnet` | Claude Sonnet 4.6 | Daily coding tasks |
+| `haiku` | Claude Haiku 4.5 | Fast, simple tasks |
+| `opusplan` | Opus (plan) → Sonnet (exec) | Hybrid approach |
+| `sonnet[1m]` | Sonnet with 1M context | Long sessions |
+| `opus[1m]` | Opus with 1M context | Long sessions |
+
+### Effort Levels
+
+| Level | Behavior | Availability |
+|-------|----------|--------------|
+| `low` | Fast reasoning, minimal exploration | Opus 4.6, Sonnet 4.6 |
+| `medium` | Balanced (default) | Opus 4.6, Sonnet 4.6 |
+| `high` | Deep reasoning, thorough exploration | Opus 4.6, Sonnet 4.6 |
+| `max` | Deepest, no limits | Opus 4.6 only |
+
+### Setting Models
+
+```bash
+claude --model opus              # At startup
+/model sonnet                    # Mid-session
+ANTHROPIC_MODEL=opus             # Environment variable
+```
+
+In settings.json: `"model": "claude-opus-4-6"`. In agent/skill frontmatter: `model: haiku`.
+
+### Enterprise Model Pinning
+
+```bash
+export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-6'
+export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-4-6'
+export CLAUDE_CODE_SUBAGENT_MODEL='claude-haiku'
 ```
 
 ---
 
-## 16. File Structure
+## 17. MCP Server Integration
+
+### Configuration Scopes
+
+| Scope | File | Shared | Discovery |
+|-------|------|--------|-----------|
+| **Project** | `.claude/.mcp.json` | Yes (git) | Automatic |
+| **User** | `~/.claude/.mcp.json` | No | Automatic |
+| **Managed** | Admin-configured | Yes (org) | Automatic |
+| **CLI flag** | `--mcp-config path` | Session-only | One-time |
+
+### Server Types
+
+| Type | Protocol | Use Case |
+|------|----------|----------|
+| **Stdio** | Local process (stdin/stdout) | Local tools, databases |
+| **HTTP** | Remote endpoint | Cloud services, APIs |
+| **SSE** | Server-Sent Events | Real-time updates, OAuth |
+
+### Configuration Example
+
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-postgres"],
+      "env": { "DATABASE_URL": "postgresql://..." }
+    },
+    "github": {
+      "url": "sse://api.github.com/mcp",
+      "headers": { "Authorization": "Bearer $GITHUB_TOKEN" }
+    }
+  }
+}
+```
+
+### Tool Naming & Permissions
+
+MCP tools follow the pattern `mcp__server-name__tool-name`. Permission rules:
+```
+mcp__postgres__query           # Allow specific MCP tool
+mcp__github__*                 # Allow all tools from a server
+```
+
+### Scoping to Agents
+
+Add `mcpServers:` to agent frontmatter to limit which agents can access which servers:
+```yaml
+---
+name: database
+mcpServers:
+  - postgres
+---
+```
+
+**Recommended limit:** Max 5 MCP servers per session to stay within context budget.
+
+---
+
+## 18. Plugin System
+
+### Plugin Structure
+
+```
+my-plugin/
+├── .claude-plugin/
+│   └── plugin.json          # Manifest (required)
+├── skills/                  # Custom skills
+│   └── my-skill/SKILL.md
+├── agents/                  # Custom agents
+│   └── my-agent.md
+├── hooks/
+│   └── hooks.json           # Hook configuration
+├── .mcp.json                # MCP servers
+├── .lsp.json                # LSP servers (code intelligence)
+├── settings.json            # Default settings
+└── README.md
+```
+
+### Plugin Manifest (plugin.json)
+
+```json
+{
+  "name": "my-plugin",
+  "description": "What this plugin does",
+  "version": "1.0.0",
+  "author": { "name": "Author Name" },
+  "license": "MIT"
+}
+```
+
+### Installing Plugins
+
+```bash
+claude plugin install my-plugin          # From marketplace
+claude --plugin-dir ./my-plugin          # From local directory
+claude --plugin-dir ./p1 --plugin-dir ./p2  # Multiple plugins
+```
+
+### Namespacing
+
+Plugin skills are namespaced automatically: `/plugin-name:skill-name`. This prevents conflicts with project skills.
+
+---
+
+## 19. Auto Memory System
+
+### How It Works
+
+Claude Code maintains persistent, file-based memory across sessions:
+
+| Component | Location | Loaded |
+|-----------|----------|--------|
+| Memory index | `~/.claude/projects/<project>/memory/MEMORY.md` | First 200 lines at startup |
+| Topic files | `~/.claude/projects/<project>/memory/*.md` | On-demand when relevant |
+
+### Memory Types
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| `user` | User role, preferences, expertise | "Senior backend dev, prefers Go" |
+| `feedback` | Corrections and confirmed approaches | "Don't mock DB in integration tests" |
+| `project` | Ongoing work, goals, deadlines | "Merge freeze begins March 5th" |
+| `reference` | Pointers to external resources | "Bugs tracked in Linear INGEST project" |
+
+### Configuration
+
+```json
+// In settings.json
+{
+  "autoMemoryEnabled": true,     // Default: true
+  "autoMemoryDirectory": "path"  // Custom memory location
+}
+```
+
+### Commands
+
+```bash
+/memory                         # View memory index
+# Memory is saved automatically when Claude learns important context
+```
+
+Memory is **machine-local** — all worktrees share one memory store. Memory files are never committed to git.
+
+---
+
+## 20. Worktree Isolation
+
+### What Are Worktrees?
+
+Git worktrees let you run multiple Claude Code sessions on different branches simultaneously, each with an isolated copy of the repository. Each worktree has its own working directory and index but shares the same `.git` history.
+
+### Creating Worktrees
+
+| Method | Command | Use Case |
+|--------|---------|----------|
+| **CLI flag** | `claude -w feature-auth` | Start worktree session with name |
+| **CLI auto-name** | `claude --worktree` | Random name (e.g., `bright-running-fox`) |
+| **With tmux** | `claude -w feature-auth --tmux` | Background worktree in tmux pane |
+| **Agent frontmatter** | `isolation: worktree` | Automatic per subagent invocation |
+
+**Worktree location:** `<repo-root>/.claude/worktrees/<name>/`
+**Branch naming:** `worktree-<name>` (branched from `origin/HEAD`)
+
+### Worktrees vs Fork-Session
+
+| Feature | `claude -w` (Worktree) | `claude --fork-session` |
+|---------|----------------------|------------------------|
+| **Directory** | Separate checkout | Same directory |
+| **Git branch** | New `worktree-<name>` | Same branch |
+| **Files** | Fully isolated | Shared (conflict risk) |
+| **Context** | Fresh (empty) | Inherits conversation history |
+| **Use case** | Parallel work on different branches | Try alternative approach, same branch |
+
+### Which Agents Use Worktrees? (13 agents)
+
+| Agent | When | Why |
+|-------|------|-----|
+| `@team-lead` | Orchestration | Coordinates from isolated context |
+| `@api-builder` | Phase 5b (backend code) | Builds backend in isolation |
+| `@frontend` | Phase 5c (frontend code) | Builds UI in isolation |
+| `@mobile` | Phase 5 (mobile code) | Builds mobile in isolation |
+| `@database` | Phase 5a (migrations) | Schema changes in isolation |
+| `@tester` | Phase 6 (testing) | Runs tests in clean environment |
+| `@debugger` | Bug fixes | Fix without affecting main |
+| `@infra` | Infrastructure | DevOps changes in isolation |
+| `@scaffolder` | Project generation | Generate files safely |
+| `@qa-automation` | E2E testing | Deploy and test in isolation |
+| `@observability-engineer` | Phase 12 (monitoring) | Adds monitoring safely |
+| `@incident-responder` | Hotfix | Emergency fix in isolation |
+| `@performance-engineer` | Optimization | Profile without affecting main |
+
+### Context Window in Worktrees
+
+**Each worktree gets a completely fresh context window:**
+
+| What | Behavior |
+|------|----------|
+| Conversation history | NOT inherited — starts empty |
+| Context window size | Full size (same as any new session) |
+| CLAUDE.md | Re-loaded fresh from worktree's directory tree |
+| Rules (`.claude/rules/`) | Re-loaded, path-matched against worktree files |
+| Skills | Loaded on-demand (same as regular session) |
+| Agent definitions | Loaded fresh from `.claude/agents/` |
+| MCP servers | Loaded from project + user config (same access as parent) |
+| Session permissions | NOT inherited — must re-approve on first tool use |
+| Auto memory | First 200 lines of MEMORY.md loaded (shared store) |
+
+**What does NOT carry over from parent:**
+- Conversation history
+- Session-scoped permission approvals
+- Temporary environment variables set during parent session
+- Open file handles or tool state
+
+### Memory in Worktrees
+
+| Aspect | Behavior |
+|--------|----------|
+| **Memory location** | `~/.claude/projects/<project>/memory/` (shared) |
+| **Shared across worktrees?** | Yes — all worktrees share one memory store |
+| **Independent learning?** | No — worktree writes to same MEMORY.md as parent |
+| **Loaded at startup?** | Yes — first 200 lines of MEMORY.md |
+| **Committed to git?** | No — memory is machine-local, never committed |
+
+Memory is **machine-local and project-scoped**. All worktrees for the same project read and write to the same memory store. This means learnings from one worktree are available to others on the same machine.
+
+### Settings & Permissions in Worktrees
+
+**Permissions precedence (same as regular sessions):**
+```
+Managed settings > CLI flags > Local project > Shared project > User > Defaults
+```
+
+| Setting | Worktree Behavior |
+|---------|-------------------|
+| Permission mode | Inherits parent's default, can override with `--permission-mode` |
+| Session approvals | Reset — first tool use requires re-approval |
+| `settings.json` | Loaded from worktree's `.claude/settings.json` |
+| `settings.local.json` | Loaded from worktree's local settings |
+| Environment variables | Inherited from shell, worktree changes don't affect parent |
+
+### Hooks in Worktrees
+
+**All standard hooks fire in worktree context** with the worktree's `cwd`:
+
+| Hook Event | Fires in Worktree? | Notes |
+|------------|-------------------|-------|
+| `SessionStart` | Yes | Fresh session, loads worktree CLAUDE.md |
+| `PreToolUse` | Yes | Runs with worktree's `$CLAUDE_PROJECT_DIR` |
+| `PostToolUse` | Yes | Logs to worktree's audit trail |
+| `PreCompact` | Yes | Saves worktree's loop state |
+| `PostCompact` | Yes | Restores worktree's loop state |
+| `Stop` | Yes | Generates worktree execution report |
+| `StopFailure` | Yes | Preserves worktree state on crash |
+| `WorktreeCreate` | Yes | Fires before worktree is created (can customize) |
+| `WorktreeRemove` | Yes | Fires before worktree cleanup (non-blocking) |
+
+**`WorktreeCreate` hook** can replace default git behavior entirely:
+- Input: `worktree_name`, `target_branch`, `base_branch`, `cwd`
+- Must return `worktreePath` to stdout
+- Non-zero exit prevents worktree creation
+- Use case: custom VCS, alternative git workflows
+
+**Orphan detection:** `session-start.js` and `stop-persist-state.js` hooks detect and warn about orphaned worktrees on every session start/stop.
+
+### .worktreeinclude (Gitignored File Copying)
+
+Gitignored files (`.env`, secrets, local config) are NOT present in new worktrees by default. To auto-copy them:
+
+```text
+# .worktreeinclude (in repo root)
+.env
+.env.local
+config/secrets.json
+docker/.dockerignore
+```
+
+Files matching `.gitignore` patterns listed in `.worktreeinclude` are copied from main repo to each new worktree. Applies to CLI worktrees, subagent worktrees, and desktop app parallel sessions.
+
+### MCP Servers in Worktrees
+
+| Aspect | Behavior |
+|--------|----------|
+| **Access** | Worktree loads all MCP servers from project + user config |
+| **Scoping** | Same servers available as parent session |
+| **Per-worktree config** | Not supported — MCP config is not worktree-aware |
+| **Agent scoping** | Agents with `mcpServers:` frontmatter get only those servers |
+
+### Communication Between Parent and Worktree
+
+**There is NO built-in inter-session messaging.** Parent and worktree are completely independent sessions:
+
+| Communication Method | Works? | Details |
+|---------------------|--------|---------|
+| Direct messaging | No | No inter-session message passing |
+| Real-time progress | No | Parent doesn't see worktree activity |
+| Shared context | No | Each has independent context window |
+| Git commits | Yes | Worktree commits to branch; parent can fetch |
+| Shared filesystem | Yes | Both can read/write `.claude/worktrees/` |
+| Shared memory | Yes | Both read/write same MEMORY.md |
+| Task list (agent teams) | Yes | If using agent teams, shared task coordination |
+| Session resumption | Independent | `/resume` shows both sessions separately |
+
+**Results flow back via git merge** — the orchestrator fetches worktree branch commits and merges them into the task branch.
+
+### Fullstack Merge Flow (Phase 5)
+
+When a fullstack task runs, multiple agents work in parallel worktrees. The merge follows a strict order:
+
+```
+Phase 5 — Fullstack Parallel Execution:
+
+Step 1: 5a — DB migrations run FIRST (on main branch)
+         @api-builder creates schema changes
+         DB must be ready before any code runs
+              │
+Step 2: 5b + 5c run in PARALLEL (each in its own worktree)
+              │                          │
+     ┌────────┴────────┐       ┌────────┴────────┐
+     │  WORKTREE A      │       │  WORKTREE B      │
+     │  @api-builder    │       │  @frontend        │
+     │  Backend code    │       │  Frontend code    │
+     │  API endpoints   │       │  UI components    │
+     │  Services        │       │  Pages            │
+     └────────┬────────┘       └────────┬────────┘
+              │                          │
+Step 3: Backend worktree merges FIRST
+         (backend defines the API contract)
+              │
+Step 4: @team-lead resolves any type/interface conflicts
+              │
+Step 5: Frontend worktree merges SECOND
+         (adapts to final backend API)
+              │
+Step 6: 5d — @tester runs AFTER merge
+         (tests against fully merged code)
+```
+
+**Key rules:**
+- **Merge order is fixed:** Backend always merges first because it defines the API contract that frontend depends on
+- **No early advancement:** If one agent finishes early, it waits. The orchestrator does NOT advance that agent to Phase 6 independently — both must complete Phase 5 before either enters Phase 6
+- **Conflict resolution:** `@team-lead` resolves any type/interface conflicts between the two worktrees after backend merges
+- **Tests run on merged code:** `@tester` (Phase 5d) only runs after both worktrees are merged, ensuring tests validate the integrated result
+
+### Subagent Worktree Lifecycle
+
+Subagents with `isolation: worktree` have a different cleanup behavior than CLI worktrees:
+
+```
+1. Parent invokes subagent (with isolation: worktree)
+      │
+2. WorktreeCreate hook fires
+      │
+3. Fresh worktree created (new branch from origin/HEAD)
+      │
+4. Subagent runs in worktree (fresh context, loads CLAUDE.md/rules)
+      │
+5. Subagent completes
+      │
+6. If changes exist:
+      │   → Commits preserved on worktree branch
+      │   → Orchestrator merges into task branch
+      │   → Worktree removed
+      │
+7. If no changes:
+      │   → Worktree + branch auto-removed
+      │
+8. WorktreeRemove hook fires
+      │
+9. HANDOFF back to parent with execution metrics
+```
+
+**Key difference from CLI worktrees:** Subagent worktrees are auto-cleaned after the subagent finishes. There is no "keep or remove?" prompt — the orchestrator handles the merge decision.
+
+**Subagent limitations in worktrees:**
+- Subagents in worktrees **cannot spawn their own subagents** (no nesting)
+- Worktree agents are leaf nodes in the agent hierarchy
+
+### Agent Timeout in Worktrees
+
+If an agent hits `maxTurns` during worktree work:
+1. `subagent-tracker` hook saves a checkpoint with partial work
+2. Orchestrator checks the checkpoint — if >70% done, re-invoke with remaining scope only
+3. If <70% done, split the work into new subtasks and re-invoke
+4. Each re-invocation counts as +1 loop iteration toward the circuit breaker
+5. **Never re-invoke with the full original scope** — always narrow to what's left
+
+### Error Handling in Worktrees
+
+| Error | What Happens | Recovery |
+|-------|-------------|----------|
+| **Agent crashes** | Worktree left orphaned, commits preserved | `cd .claude/worktrees/<name> && claude` to resume |
+| **Merge conflicts** | Standard git conflicts on merge | `@team-lead` resolves manually, or escalate to user |
+| **Session crash (rate limit)** | `stop-failure-handler.js` preserves state | Wait 60s, resume with `claude -c` |
+| **Disk full** | Worktree creation fails | Free space, retry |
+| **Orphaned worktrees** | Detected by `session-start.js` on next session | `git worktree remove <path>` |
+| **Locked worktree** | Another session using it | `git worktree remove --force <path>` |
+
+### Worktree Limitations
+
+| Category | Limitation |
+|----------|-----------|
+| **Communication** | No inter-session messaging between parent and worktree |
+| **Progress** | Parent doesn't see worktree progress in real-time |
+| **Context** | No shared context — each session is independent |
+| **Nesting** | Cannot nest worktrees (worktree in a worktree) |
+| **Mid-session** | Cannot convert a running session to a worktree |
+| **File conflicts** | If parent and worktree edit same file, manual resolution needed |
+| **Gitignored files** | Not auto-copied unless `.worktreeinclude` is configured |
+| **Subagent nesting** | Worktree agents cannot spawn their own subagents |
+| **Session resume** | Cannot resume parent and worktree together |
+
+### Manual Worktree Commands
+
+```bash
+git worktree list                # List active worktrees
+git worktree prune               # Remove stale worktree metadata
+git worktree remove <path>       # Remove specific worktree
+git worktree remove --force <path>  # Force remove locked worktree
+git branch -D worktree-<name>   # Delete worktree branch after removal
+```
+
+**Recommended `.gitignore` entry:**
+```gitignore
+.claude/worktrees/
+```
+
+---
+
+## 21. CLI Reference
+
+### Session Management
+
+```bash
+claude                           # Start interactive session
+claude "query"                   # Start with prompt
+claude -p "query"                # Print mode (non-interactive)
+claude -c                        # Continue last session
+claude -r "session-name"         # Resume by name or ID
+claude --from-pr 123             # Resume PR review session
+claude --fork-session            # New session ID on resume
+```
+
+### Configuration Flags
+
+```bash
+claude --model opus              # Set model
+claude --effort high             # Set effort level
+claude --permission-mode plan    # Set permission mode
+claude -n "session-name"         # Name the session
+claude --add-dir ../shared       # Add working directory
+```
+
+### Advanced
+
+```bash
+claude -w feature-auth           # Create worktree session
+claude -w feature-auth --tmux    # Worktree with tmux
+claude --bare -p "query"         # Minimal mode (fast, no hooks)
+claude --chrome                  # Enable browser control
+claude --remote "task"           # Create web session
+claude --teleport                # Resume web session locally
+```
+
+### Management Commands
+
+```bash
+claude agents                    # List available subagents
+claude mcp                       # Configure MCP servers
+claude plugin install <name>     # Install plugin
+claude plugin list               # List installed plugins
+claude auth login                # Authenticate
+claude auth status               # Check auth status
+claude update                    # Update Claude Code
+claude auto-mode defaults        # Print auto mode rules
+claude auto-mode config          # Show effective config
+```
+
+---
+
+## 22. Extended Thinking
+
+Claude Code supports extended thinking — a mode where Claude reasons through complex problems step-by-step before responding.
+
+### How It Works
+
+| Aspect | Detail |
+|--------|--------|
+| **Activation** | Automatic when effort level is `high` or `max` |
+| **Budget tokens** | Controls how many tokens Claude uses for reasoning |
+| **Visibility** | Thinking is visible in the UI (expandable) |
+| **Cost** | Thinking tokens count toward usage but NOT toward context window |
+
+### Effort Levels & Thinking
+
+| Effort | Thinking Behavior | When to Use |
+|--------|-------------------|-------------|
+| `low` | Minimal/no thinking | Simple edits, quick questions |
+| `medium` | Brief thinking (default) | Standard tasks |
+| `high` | Extended thinking | Architecture, debugging, complex logic |
+| `max` | Maximum thinking depth | Critical decisions, Opus only |
+
+### Configuration
+
+```bash
+claude --effort high                     # CLI flag
+/model opus --effort max                 # Mid-session
+```
+
+In settings.json:
+```json
+{ "effortLevel": "high" }
+```
+
+In agent/skill frontmatter:
+```yaml
+effort: high
+```
+
+### When Extended Thinking Activates
+
+- Complex code generation (multi-file changes)
+- Debugging with unclear root cause
+- Architecture design decisions
+- Security review with multiple vectors
+- Any task where Claude needs to reason about trade-offs
+
+---
+
+## 23. Agent Teams
+
+Agent teams allow multiple Claude Code instances to work together as teammates on the same project.
+
+### How Agent Teams Work
+
+```bash
+claude --agent-team "my-team"            # Join/create a team
+claude --agent-team "my-team" --tmux     # Join with tmux split panes
+```
+
+### Team Coordination
+
+| Feature | Behavior |
+|---------|----------|
+| **Shared task list** | All teammates see and can claim tasks |
+| **Task claiming** | File-locking prevents race conditions |
+| **Dependencies** | Tasks can block other tasks |
+| **Communication** | Via shared task list (no direct messaging) |
+| **Idle handling** | `TeammateIdle` hook fires when a teammate is about to go idle |
+
+### Tmux Mode
+
+```bash
+claude --agent-team "my-team" --tmux     # Creates split panes per teammate
+```
+
+Each teammate gets its own tmux pane. Useful for monitoring parallel work.
+
+### Team vs Worktree vs Subagent
+
+| Feature | Agent Team | Worktree | Subagent |
+|---------|-----------|----------|----------|
+| **Separate context** | Yes | Yes | Yes |
+| **Separate branch** | Optional | Yes | Optional |
+| **Communication** | Shared tasks | Git only | HANDOFF block |
+| **Coordination** | Autonomous | Manual | Orchestrated |
+| **Persistence** | Long-lived | Session-scoped | Single task |
+
+---
+
+## 24. Sandbox & Security
+
+### Sandbox Configuration
+
+Claude Code can run in a sandboxed mode that restricts filesystem and network access:
+
+```json
+{
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "allowRead": ["/tmp", "$HOME/.config"],
+      "denyRead": ["/etc/secrets", "$HOME/.ssh"],
+      "allowWrite": ["$CLAUDE_PROJECT_DIR"],
+      "denyWrite": ["/usr", "/etc"]
+    },
+    "network": {
+      "allowedDomains": ["api.example.com", "registry.npmjs.org"],
+      "deniedDomains": ["*.internal.corp"]
+    }
+  }
+}
+```
+
+### Managed Policies (Organization-Level)
+
+Organizations can enforce security policies that users cannot override:
+
+| Platform | Policy Location |
+|----------|----------------|
+| **macOS** | `/Library/Application Support/ClaudeCode/settings.json` |
+| **Linux/WSL** | `/etc/claude-code/settings.json` |
+| **Windows** | `C:\Program Files\ClaudeCode\settings.json` |
+
+Managed settings take highest precedence — they override all user and project settings.
+
+**Managed CLAUDE.md:** Same paths with `CLAUDE.md` filename — loaded for every project.
+
+### Security Features
+
+| Feature | How It's Enforced |
+|---------|-------------------|
+| **File protection** | `protect-files.js` hook blocks .env, lock files, CI configs |
+| **Command blocking** | `validate-bash.js` blocks rm -rf, fork bombs, dd, curl\|bash |
+| **Secret detection** | `gatekeeper-check.js` scans for API keys, tokens, passwords |
+| **Scope guard** | `scope-guard` hook restricts file access by RBAC role |
+| **Permission modes** | 6 modes from `plan` (read-only) to `bypassPermissions` (containers only) |
+| **Deny rules** | Highest-priority rules that cannot be overridden |
+
+---
+
+## 25. IDE Integration
+
+### VS Code Extension
+
+Claude Code integrates with VS Code via the official extension:
+
+| Feature | Description |
+|---------|-------------|
+| **Inline chat** | Chat with Claude from the editor |
+| **Code actions** | Quick fixes, refactoring suggestions |
+| **Diagnostics** | Real-time error and warning integration |
+| **Terminal** | Integrated Claude Code terminal |
+| **Status bar** | Shows active session, model, context usage |
+
+**Installation:** Search "Claude Code" in VS Code Extensions marketplace.
+
+### JetBrains Extension
+
+Available for IntelliJ IDEA, WebStorm, PyCharm, and other JetBrains IDEs:
+
+| Feature | Description |
+|---------|-------------|
+| **Tool window** | Dedicated Claude Code panel |
+| **Code context** | Sends selected code as context |
+| **Terminal integration** | Run Claude Code in IDE terminal |
+
+### Desktop App
+
+Available for macOS and Windows:
+
+```bash
+# Install desktop app
+claude desktop install
+
+# Or download from claude.ai/code
+```
+
+Features: native window, menu bar integration, system notifications, multi-session tabs.
+
+### VS Code Settings Integration
+
+The scanner generates `.vscode/settings.json` with Claude Code-aware configuration:
+
+```json
+{
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    ".claude/tasks": true,
+    ".claude/reports": true,
+    ".claude/worktrees": true
+  }
+}
+```
+
+---
+
+## 26. Keybindings
+
+Claude Code supports customizable keyboard shortcuts via `~/.claude/keybindings.json`:
+
+### Default Keybindings
+
+| Shortcut | Action |
+|----------|--------|
+| `Enter` | Submit prompt |
+| `Escape` | Cancel current generation |
+| `Shift+Tab` | Cycle permission modes |
+| `Up/Down` | Navigate history |
+| `Ctrl+C` | Interrupt / exit |
+| `Ctrl+L` | Clear screen |
+| `Tab` | Accept autocomplete suggestion |
+
+### Custom Keybindings
+
+```json
+// ~/.claude/keybindings.json
+[
+  {
+    "key": "ctrl+shift+s",
+    "command": "submit",
+    "description": "Submit prompt"
+  },
+  {
+    "key": "ctrl+shift+r",
+    "command": "skill",
+    "args": "/review-pr",
+    "description": "Run PR review"
+  }
+]
+```
+
+### Chord Bindings
+
+Multi-key sequences (press keys in sequence, not simultaneously):
+
+```json
+{
+  "key": "ctrl+k ctrl+c",
+  "command": "skill",
+  "args": "/compact"
+}
+```
+
+---
+
+## 27. Notifications
+
+### OS Notifications
+
+The `notify-approval.js` hook sends desktop notifications when Claude needs permission approval:
+
+| Platform | Mechanism |
+|----------|-----------|
+| **macOS** | `osascript` (native notification center) |
+| **Linux** | `notify-send` (libnotify) |
+| **Windows** | `powershell` toast notification |
+
+### Terminal Bell
+
+Claude Code can ring the terminal bell on completion:
+
+```json
+// In settings.json
+{ "notifications": { "terminalBell": true } }
+```
+
+### Custom Notification Hooks
+
+Use the `Notification` hook event to send notifications to any system:
+
+```json
+{
+  "hooks": {
+    "Notification": [{
+      "matcher": "permission_prompt",
+      "hooks": [{
+        "type": "command",
+        "command": "node hooks/notify-slack.js"
+      }]
+    }]
+  }
+}
+```
+
+---
+
+## 28. Enterprise Features
+
+### Authentication
+
+| Method | Configuration |
+|--------|---------------|
+| **API Key** | `ANTHROPIC_API_KEY` environment variable |
+| **OAuth/SSO** | `claude auth login` (redirects to browser) |
+| **AWS Bedrock** | `CLAUDE_CODE_USE_BEDROCK=1` + AWS credentials |
+| **Google Vertex** | `CLAUDE_CODE_USE_VERTEX=1` + GCP credentials |
+
+### Bedrock/Vertex Model Pinning
+
+```bash
+export CLAUDE_CODE_USE_BEDROCK=1
+export ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-6-20250514-v1:0'
+export ANTHROPIC_DEFAULT_SONNET_MODEL='us.anthropic.claude-sonnet-4-6-20250514-v1:0'
+```
+
+### Managed Policies
+
+Organization admins can enforce:
+- Allowed/denied tools and commands
+- Required permission modes
+- Model restrictions
+- Sandbox configuration
+- MCP server allowlists
+- CLAUDE.md instructions that apply to all projects
+
+### Team/Enterprise Plan Features
+
+| Feature | Team | Enterprise |
+|---------|------|-----------|
+| Auto mode | Yes | Yes |
+| Usage dashboard | Yes | Yes |
+| SSO/SAML | No | Yes |
+| Managed policies | No | Yes |
+| Audit logs | No | Yes |
+| Custom model routing | No | Yes |
+
+### Telemetry
+
+Claude Code collects anonymized usage metrics by default. Opt-out:
+
+```bash
+claude config set telemetry disabled
+```
+
+What's collected: session duration, tool usage counts, error rates (never code content).
+
+---
+
+## 29. Output Styles
+
+Claude Code supports customizable output formatting via output style files:
+
+### Configuration
+
+```json
+// In settings.json
+{ "outputStyle": "concise" }
+```
+
+### Custom Output Styles
+
+Create `.claude/output-styles/<name>.md` with formatting instructions:
+
+```markdown
+# Concise Style
+
+- Maximum 3 sentences per response
+- No code blocks unless specifically asked
+- Use bullet points instead of paragraphs
+- Skip explanations — just show the result
+```
+
+### Built-in Styles
+
+| Style | Behavior |
+|-------|----------|
+| `default` | Standard Claude Code output |
+| `concise` | Shorter responses, fewer explanations |
+| `verbose` | Detailed explanations, step-by-step reasoning |
+
+---
+
+## 30. Remote Sessions & Web App
+
+### Web App (claude.ai/code)
+
+Claude Code is available as a web app at `claude.ai/code`:
+
+| Feature | Description |
+|---------|-------------|
+| **Browser-based** | No installation required |
+| **Full CLI features** | Same capabilities as terminal CLI |
+| **Session persistence** | Sessions persist across browser tabs |
+| **File access** | Sandboxed filesystem in cloud |
+
+### Remote Sessions
+
+```bash
+claude --remote "implement user authentication"    # Create remote session
+```
+
+Creates a cloud-hosted session that runs autonomously. Check status at claude.ai/code.
+
+### Teleport (Resume Remote Locally)
+
+```bash
+claude --teleport                                   # Resume a remote session locally
+```
+
+Transfers a remote session to your local machine, preserving all context and state.
+
+### Scheduled Remote Agents
+
+```bash
+claude --remote --schedule "0 9 * * MON"           # Run every Monday at 9 AM
+```
+
+Or use the `/schedule` skill to manage recurring remote agents.
+
+---
+
+## 31. File Structure
 
 ```
 your-project/
@@ -1288,7 +2489,7 @@ your-project/
 │   ├── manifest.json                      # Drift tracking state
 │   ├── settings.json                      # Permissions + hooks
 │   ├── settings.local.json                # Personal env vars (gitignored)
-│   ├── agents/                            # 26 agent definitions
+│   ├── agents/                            # 30 agent definitions
 │   │   ├── team-lead.md                   # SDLC: orchestrator
 │   │   ├── architect.md                   # SDLC: design
 │   │   ├── product-owner.md               # SDLC: business
@@ -1311,7 +2512,14 @@ your-project/
 │   │   ├── docs-writer.md                 # Utility: documentation
 │   │   ├── gatekeeper.md                  # Core: quality gate enforcement
 │   │   ├── process-coach.md               # Utility: SDLC methodology
-│   │   └── qa-automation.md               # Core: E2E & visual verification
+│   │   ├── qa-automation.md               # Core: E2E & visual verification
+│   │   ├── cto.md                         # SDLC: executive oversight
+│   │   ├── analyst.md                     # Pre-dev: requirements & domain
+│   │   ├── version-manager.md             # Utility: git governance
+│   │   ├── output-validator.md            # Core: consistency checking
+│   │   ├── observability-engineer.md      # Specialist: monitoring & logging
+│   │   ├── incident-responder.md          # Specialist: production incidents
+│   │   └── performance-engineer.md        # Specialist: optimization & profiling
 │   ├── project/                           # Pre-development artifacts
 │   │   ├── PROJECT.md                     # Master project status
 │   │   ├── IDEA_CANVAS.md                 # Idea brainstorming
@@ -1321,7 +2529,7 @@ your-project/
 │   │   ├── TECH_STACK.md                  # Technology decisions
 │   │   ├── ARCHITECTURE.md                # System architecture
 │   │   └── DEPLOY_STRATEGY.md             # Deployment strategy
-│   ├── skills/                            # 87 workflow skills
+│   ├── skills/                            # 88 workflow skills
 │   │   ├── workflow/SKILL.md
 │   │   ├── scan-codebase/SKILL.md
 │   │   ├── generate-environment/SKILL.md
@@ -1353,7 +2561,7 @@ your-project/
 │   │   ├── cost-estimate/SKILL.md
 │   │   ├── release-notes/SKILL.md
 │   │   └── mobile-audit/SKILL.md
-│   ├── hooks/                             # 35 automation scripts
+│   ├── hooks/                             # 19 automation scripts (template) + 25 root = 44 total
 │   ├── rules/                             # Path-scoped coding rules
 │   ├── docs/                              # 11 reference documents
 │   ├── profiles/                          # Role-based developer guides
@@ -1368,7 +2576,7 @@ your-project/
 
 ---
 
-## 17. Customization Guide
+## 32. Customization Guide
 
 ### Adding a New Agent
 
@@ -1437,7 +2645,7 @@ paths:
 
 ---
 
-## 18. Troubleshooting
+## 33. Troubleshooting
 
 ### "CLAUDE.md already exists"
 ```bash
@@ -1492,16 +2700,53 @@ If the operation is legitimate, temporarily remove the hook from `settings.json`
 
 ## Summary
 
-| Component | Count |
-|-----------|-------|
-| Agents | 23 (4 SDLC + 7 core + 5 dev + 7 pre-dev/utility) |
-| Skills | 68 (all with proper frontmatter) |
-| Hooks | 18 (covering 10 events) |
-| Docs | 9 (full protocol coverage) |
-| Profiles | 3 (backend, frontend, devops) |
+| Component | Count / Detail |
+|-----------|---------------|
+| Agents | 30 (5 SDLC + 7 core + 4 dev + 14 pre-dev/utility/specialist) |
+| Skills | 88 (all with proper frontmatter, `context: fork`) |
+| Hooks | 44 (25 root + 19 template, covering 24+ events) |
+| Rules | 11 (path-scoped with `paths:` frontmatter) |
+| Profiles | 10 (architect, backend, cto, data-engineer, devops, frontend, fullstack, mobile, qa-engineer, tech-lead) |
 | Workflow Phases | 13 |
 | Loop Flows | 6 (all with circuit breakers) |
 | Task States | 16 (forward) + 3 (special) |
+| Hook Events | 24+ (session, tool, agent, file, compact, worktree, MCP) |
+| Permission Modes | 6 (default, acceptEdits, plan, auto, dontAsk, bypassPermissions) |
+| Model Aliases | 8 (default, best, opus, sonnet, haiku, opusplan, sonnet[1m], opus[1m]) |
+| Effort Levels | 4 (low, medium, high, max) |
+| MCP Server Types | 3 (stdio, HTTP, SSE) |
+| Plugin Support | Full (manifest, skills, agents, hooks, MCP, LSP) |
+| IDE Integration | VS Code, JetBrains, Desktop App |
+| Enterprise | Bedrock, Vertex, SSO/SAML, managed policies |
 | Validation Checks | 170+ |
+| Documentation Sections | 33 |
 
-Built for Claude Code. Cross-platform. Zero configuration after scan.
+### Claude Code Feature Coverage
+
+| Feature | Status |
+|---------|--------|
+| Multi-agent orchestration (30 agents) | Fully documented |
+| 88 workflow skills (T1-T5 lifecycle) | Fully documented |
+| 44 automation hooks (24+ event types) | Fully documented |
+| RBAC with 10 role profiles | Fully documented |
+| 13-phase SDLC workflow | Fully documented |
+| 8-phase new project pipeline | Fully documented |
+| Context budget enforcement | Fully documented |
+| Worktree isolation (13 agents) | Fully documented |
+| MCP server integration | Fully documented |
+| Plugin system | Fully documented |
+| Auto memory system | Fully documented |
+| Extended thinking & effort levels | Fully documented |
+| Agent teams & tmux mode | Fully documented |
+| Sandbox & managed policies | Fully documented |
+| IDE integration (VS Code, JetBrains, Desktop) | Fully documented |
+| Custom keybindings | Fully documented |
+| Notifications (OS, terminal, custom) | Fully documented |
+| Enterprise (Bedrock, Vertex, SSO) | Fully documented |
+| Output styles | Fully documented |
+| Remote sessions & web app | Fully documented |
+| Drift detection & sync | Fully documented |
+| Execution reports & scoring | Fully documented |
+| Git governance (branch, commit, push gates) | Fully documented |
+
+Built for Claude Code. Cross-platform. Zero configuration after scan. 100% Claude Code feature coverage.

@@ -1,0 +1,102 @@
+---
+name: migrate
+description: Database migration management — create, run, rollback, check status. Invokes @database agent for safe schema changes.
+user-invocable: true
+context: fork
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent
+argument-hint: "[create|run|rollback|status] [migration-name]"
+roles: [BackendDev, FullStackDev, TechLead]
+agents: [@database, @api-builder]
+---
+
+**Lifecycle: T1 (multi-step) — See `_protocol.md`**
+
+**CRITICAL RULES:**
+1. Every output to the user MUST end with a `NEXT ACTION:` line.
+2. Any file created MUST contain a `## Session Context` section.
+3. **Verify Docs (3-step)**: Read dependency files for exact versions → WebSearch `"<framework> <version> <API> docs"` → only then write code (per accuracy.md 3-step rule)
+16. Re-read task/output files before each step — never rely on in-memory state alone.
+16. Update MEMORY.md after completion.
+
+## Step 0 — Load Context
+
+Before starting, load full context:
+
+1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
+2. **Memory:** Read `MEMORY.md` (if exists) → get last completed task, user preferences
+16. **Git state:** Run `git status`, `git branch` → get branch, uncommitted changes
+16. **Active work:** Read `TODO.md` (if exists) → get current work items
+16. **History:** List `.claude/tasks/` → check for related or duplicate work
+
+Output:
+```
+CONTEXT: [CURRENT_ROLE] on [branch] | last: [last task] | git: [clean/dirty]
+
+NEXT ACTION: Context loaded. Starting skill...
+```
+
+
+# Database Migration: $ARGUMENTS
+
+## Commands
+- `/migrate create "add users table"` — create new migration file
+- `/migrate run` — run pending migrations
+- `/migrate rollback` — rollback last migration
+- `/migrate status` — show migration status (applied, pending, failed)
+
+## Process
+1. Invoke @database agent to analyze schema change needed
+2. Create migration file following project conventions (Alembic/Prisma/Knex/etc.)
+16. Verify migration has rollback step
+16. Run migration in dev/test environment
+16. Verify data integrity after migration
+16. Update models/schema files to match
+
+## Safety
+- NEVER run against production without explicit approval
+- Every migration MUST have a rollback step
+- Check backward compatibility before applying
+
+## Definition of Done
+- Migration runs successfully, rollback tested, data integrity verified, models updated.
+
+## Next Steps
+- `/workflow resume` or `/deploy`.
+
+## Rollback
+- `/migrate rollback`.
+
+## Post-Completion
+
+### Update Memory
+Update MEMORY.md (create if needed):
+- **Skill:** /[this skill name]
+- **Task:** [summary of what was done]
+- **When:** [timestamp]
+- **Result:** [COMPLETE | PARTIAL | BLOCKED]
+- **Output:** [file path if any]
+- **Next Step:** [recommended next action]
+
+### Update TODO
+If this work was linked to a TODO item, mark it done. If follow-up needed, add new TODO.
+
+### Audit Log
+Append to `.claude/reports/audit/audit-{branch}.log`:
+```
+[timestamp] | [ROLE] | [branch] | [SKILL_NAME] | [summary] | [result]
+```
+
+### Context Recovery
+If context is lost (compaction, pause, resume):
+1. Find most recent `.claude/tasks/` file with `Phase: IN_PROGRESS`
+2. Read `## Session Context` → restore state
+16. Read `## Progress Log` → find last completed step
+16. Resume from next pending step
+
+### Final Output
+```
+NEXT ACTION: Skill complete. Here's what you can do:
+             - Say "commit" to commit changes
+             - Say the next logical skill command for next step
+             - Review output at the generated file path
+```

@@ -1,5 +1,5 @@
 ## FRAMEWORK VERSION: 1.0.0
-## Last Updated: 2026-03-29
+## Last Updated: 2026-04-02
 ## Owner: CTO + Tech Lead
 ## Changelog: docs/claude-md-changelog.md
 
@@ -18,7 +18,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `.claude/templates/` — code scaffolding templates
 - `.claude/profiles/` — developer role profiles
 - `.claude/scripts/` — setup + verification scripts
-- `.claude/docs/commands-template.md` — master command reference
+- `.claude/docs/commands.md` — master command reference
 
 ## Execution Order
 
@@ -168,13 +168,8 @@ Before creating any new file, function, class, or component:
 - `/new-project "idea"` — full pre-dev pipeline (brainstorm -> spec -> features -> domain -> tech -> architecture -> scaffold -> env -> launch)
 - `/new-project "idea" --from-docs "path"` — import existing documents, skip populated phases
 - `/idea-to-launch "idea"` — full automation from concept to deployed product
-- `/import-docs "path"` — scan PRDs, requirements, business plans into project files
-- `/domain-model` — extract domain entities, glossary, bounded contexts, business rules
-- `/mvp-kickoff next` — start next MVP feature (auto-selects, enforces dependencies, injects context)
-- `/mvp-status` — MVP progress dashboard (features, quality, launch readiness)
-- `/launch-mvp` — final launch (integration tests, checklist, deploy, monitor)
-- `/clarify` — Q&A session to clear requirement doubts, ambiguities, gaps (works for new + existing projects)
-- `/brainstorm`, `/product-spec`, `/feature-map`, `/tech-stack`, `/architecture`, `/scaffold`, `/deploy-strategy` — individual phases
+- `/import-docs "path"` — scan PRDs/requirements into project files | `/clarify` — Q&A for gaps
+- `/mvp-kickoff next` — start next feature | `/mvp-status` — dashboard | `/launch-mvp` — deploy
 
 ## WORK SCOPE Rules
 - Never work outside your CURRENT_ROLE's permitted paths (enforced by scope-guard hook)
@@ -184,36 +179,20 @@ Before creating any new file, function, class, or component:
 
 ## PROMPT
 All tool calls pass through the prompt pipeline (pre-tool-use hook + `/prompt` skill):
-- **Automated (pre-tool-use hook):** 5-pass scoring on every mutating tool call — specificity, role alignment, domain/GLOSSARY, memory context, risk assessment. Strong prompts pass through. Weak prompts flagged with warnings. Destructive actions auto-flagged with checkpoint.
-- **Manual (`/prompt` skill):** Full 5-pass improvement with GLOSSARY terms, STANDARDS rules, MEMORY context. Requires user approval (A/B/C/D) before execution. Cancelled prompts logged to audit.
-- **Gating:** Destructive actions auto-flagged; role violations detected; scope violations blocked; `/prompt` for deep improvement
+- **Automated:** 5-pass scoring on mutating tool calls — specificity, role alignment, domain/GLOSSARY, memory, risk. Strong prompts pass; weak flagged; destructive auto-checkpointed.
+- **Manual (`/prompt`):** Full 5-pass improvement with GLOSSARY/STANDARDS/MEMORY. Requires user approval (A/B/C/D). Cancelled prompts logged.
+- **Gating:** Destructive actions flagged; role/scope violations blocked; `/prompt` for deep improvement
 
-## Real Environment Testing
-`/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
+## Skills (88 total — auto-discovered from `.claude/skills/`)
+- **Testing:** `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
+- **Audit:** `/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`, `/security-audit`, `/mobile-audit`, `/seo-audit`, `/firmware-audit`, `/logging-audit`
+- **Observability:** `/setup-observability`, `/logging-audit`, `/metrics`, `/execution-report`
+- **Dev:** `/add-endpoint`, `/add-component`, `/add-page`, `/add-command`, `/add-scene`, `/add-template`, `/fix-bug`, `/hotfix`, `/refactor`, `/migrate`, `/parallel-dev`
+- **Versioning:** `/api-version`, `/api-docs`, `/feature-flags`, `/service-contract`, `/cms-manage`, `/manage-i18n`
+- **Deploy:** `/deploy`, `/rollback`, `/release-notes`, `/changelog`, `/cost-estimate`, `/deploy-strategy`
+- **Planning:** `/brainstorm`, `/product-spec`, `/feature-map`, `/domain-model`, `/tech-stack`, `/architecture`, `/scaffold`, `/methodology`, `/pi-planning`, `/create-story`, `/clarify`
+- **Team:** `/setup-workspace`, `/daily-sync`, `/feature-start`, `/workflow new "task"`, `/feature-done`, `/task-tracker status`, `/org-report`, `/standup`, `/onboard`, `/progress-report`, `/signoff`
+- **Maintenance:** `/sync --check`, `/sync --fix`, `/context-check`, `/compact`, `/dependency-check`, `/scan-and-build`, `/audit-system`, `/review-pr`, `/design-review`, `/impact-analysis`
 
-## Audit & Compliance
-`/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`, `/security-audit`, `/mobile-audit`, `/seo-audit`, `/firmware-audit`, `/logging-audit`
-
-## Observability & Monitoring
-`/setup-observability`, `/logging-audit`, `/metrics`, `/execution-report`
-
-## Development Utilities
-`/add-endpoint`, `/add-component`, `/add-page`, `/add-command`, `/add-scene`, `/add-template`, `/fix-bug`, `/hotfix`, `/refactor`, `/migrate`, `/parallel-dev`
-
-## Versioning & Feature Management
-`/api-version`, `/api-docs`, `/feature-flags`, `/service-contract`, `/cms-manage`, `/manage-i18n`
-
-## Deployment & Operations
-`/deploy`, `/rollback`, `/release-notes`, `/changelog`, `/cost-estimate`, `/deploy-strategy`
-
-## Planning & Strategy
-`/brainstorm`, `/product-spec`, `/feature-map`, `/domain-model`, `/tech-stack`, `/architecture`, `/scaffold`, `/methodology`, `/pi-planning`, `/create-story`, `/clarify`, `/cost-estimate`
-
-## Team Workflow
-`/setup-workspace`, `/daily-sync`, `/feature-start`, `/workflow new "task"`, `/feature-done`, `/task-tracker status`, `/org-report`, `/standup`, `/onboard`, `/progress-report`, `/signoff`
-
-## Maintenance & Context
-`/sync --check`, `/sync --fix`, `/context-check`, `/compact`, `/dependency-check`, `/scan-and-build`, `/audit-system`, `/review-pr`, `/design-review`, `/impact-analysis`
-
-See `.claude/docs/commands-template.md` for full 88-skill reference with syntax and flags.
+See `.claude/docs/commands.md` for full 88-skill reference with syntax and flags.
 

@@ -1,0 +1,77 @@
+ULLY IMPLEMENTED (real files + config exist)
+
+  ┌───────────────────────────────────┬─────────────────────────────────────────────────────────┐
+  │              Feature              │                          Files                          │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ 30 Agents                         │ .claude/agents/*.md (all 30)                            │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ 93 Skills                         │ .claude/skills/*/SKILL.md (88 template + 5 root)        │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ 25 Root Hooks + 19 Template Hooks │ .claude/hooks/*.js                                      │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ 11 Rules                          │ .claude/rules/*.md                                      │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ 10 Profiles                       │ .claude/profiles/*.md                                   │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Extended Thinking                 │ effort: high in agent/skill frontmatter                 │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Notifications                     │ notify-approval.js (macOS/Linux/Windows)                │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Worktree Isolation                │ isolation: worktree on 13 agents                        │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Auto Memory                       │ MEMORY.md + memory files                                │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Context Budget                    │ context-monitor.js hook + context-budget rule           │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Drift Detection                   │ drift-detector.js + session-start.js                    │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ RBAC                              │ session.env + scope-guard hook                          │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ Git Governance                    │ branch-naming, commit-gate, push-gate, merge-gate hooks │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ NEW: Output Styles                │ .claude/output-styles/concise.md, verbose.md            │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤                                     
+  │ NEW: Keybindings                  │ .claude/keybindings.json                                │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤                                     
+  │ NEW: .worktreeinclude             │ .worktreeinclude (gitignored file copying)              │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤                                     
+  │ NEW: MCP Config                   │ .claude/.mcp.json (empty template)                      │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤                                     
+  │ NEW: TeammateIdle Hook            │ Registered in template settings.json                    │
+  ├───────────────────────────────────┼─────────────────────────────────────────────────────────┤                                     
+  │ NEW: IDE Integration              │ template/.vscode/settings.json                          │
+  └───────────────────────────────────┴─────────────────────────────────────────────────────────┘                                     
+                                                            
+  DOCUMENTED ONLY (platform features — not workspace files)                                                                           
+   
+  These are Claude Code built-in features that don't need workspace files. They work via CLI flags, env vars, or user-level config:   
+                                                            
+  ┌──────────────────┬──────────────────────────────────────────────────────────────────────┐                                         
+  │     Feature      │                     Why No Workspace File Needed                     │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ Bedrock/Vertex   │ Env vars (CLAUDE_CODE_USE_BEDROCK=1) — per-machine, not per-project  │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤
+  │ SSO/SAML         │ claude auth login — user auth, not project config                    │                                         
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Managed Policies │ OS-level files (/etc/claude-code/) — admin deploys, not project      │                                         
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Remote Sessions  │ claude --remote — CLI flag, no project file                          │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Teleport         │ claude --teleport — CLI flag, no project file                        │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Telemetry        │ claude config set telemetry disabled — user preference               │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Git Signing      │ User-level git config, not project                                   │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Sandbox          │ Can be added to settings.json, but depends on deployment environment │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Plugin System    │ Created per-plugin, not per-project (.claude-plugin/plugin.json)     │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ LSP Servers      │ Created per-plugin (.lsp.json)                                       │
+  ├──────────────────┼──────────────────────────────────────────────────────────────────────┤                                         
+  │ Agent Teams      │ claude --agent-team CLI flag; TeammateIdle hook now registered       │
+  └──────────────────┴──────────────────────────────────────────────────────────────────────┘                                         
+                                                            
+  These are correctly documented in DOCUMENTATION.md so users know they exist, but they don't require workspace files because they're 
+  configured at the user/machine/org level.                 
+                                            س

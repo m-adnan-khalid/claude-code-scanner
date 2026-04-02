@@ -1,0 +1,193 @@
+---
+name: deploy-strategy
+description: >
+  Deployment and launch strategy planning. Designs CI/CD pipelines, hosting setup,
+  environment strategy, monitoring, and pre-launch checklist.
+  Trigger: after scaffolding and environment setup, or when user needs deployment planning.
+user-invocable: true
+context: fork
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Grep
+  - Glob
+  - Agent
+argument-hint: '[--from-architecture | "deployment requirements"]'
+effort: high
+roles: [DevOps, TechLead, Architect, CTO]
+agents: [@infra, @architect, @security]
+---
+
+**Lifecycle: T3 (planning/docs) — See `_protocol.md`**
+
+**RULES:** Every output MUST end with `NEXT ACTION:`. Update MEMORY.md after completion.
+
+## Step 0 — Load Context
+
+1. **Session:** Read `.claude/session.env` → get CURRENT_ROLE
+2. **Memory:** Read `MEMORY.md` (if exists) → get last completed task, prior planning outputs
+3. **Git state:** Run `git status`, `git branch` → get branch
+4. **Active work:** Read `TODO.md` (if exists) → get current work items
+5. **Project docs:** Scan `.claude/project/` for existing planning docs to avoid duplication
+
+Output:
+```
+CONTEXT: [CURRENT_ROLE] on [branch] | last: [last task] | git: [clean/dirty]
+```
+
+
+# /deploy-strategy — Deployment & Launch Planning
+
+## Overview
+Create a complete deployment and launch strategy including hosting, CI/CD pipelines,
+environment management, monitoring, and pre-launch checklists.
+
+## Usage
+```
+/deploy-strategy                       # Auto-reads from project docs
+/deploy-strategy --from-architecture   # Explicitly read from architecture
+/deploy-strategy "deploy to AWS ECS"   # Specific deployment target
+/deploy-strategy --update              # Revise existing strategy
+```
+
+## Process
+
+### Step 1: Gather Context
+- Read `.claude/project/ARCHITECTURE.md` for system components
+- Read `.claude/project/TECH_STACK.md` for hosting and CI/CD choices
+- Read `.claude/project/PRODUCT_SPEC.md` for constraints (budget, timeline)
+- If `--update`: read existing `.claude/project/DEPLOY_STRATEGY.md`
+
+### Step 2: Invoke @infra
+
+```
+Read all project documents:
+- .claude/project/ARCHITECTURE.md
+- .claude/project/TECH_STACK.md
+- .claude/project/PRODUCT_SPEC.md
+
+Create a complete Deployment Strategy:
+
+1. ENVIRONMENTS
+   - Define: development (local), staging, production
+   - For each: URL pattern, branch mapping, auto-deploy rules
+   - Environment variable management (how secrets are stored/rotated)
+
+2. HOSTING PLAN
+   - For each component (API, DB, frontend, workers, storage):
+     - Platform choice with rationale
+     - Region selection
+     - Tier/size (start small, scale plan)
+     - Estimated monthly cost
+   - Total cost estimate with growth projections
+
+3. CI/CD PIPELINE
+   - Mermaid diagram of the pipeline
+   - Step-by-step: lint → test → build → deploy → smoke test → monitor
+   - Branch strategy: feature → develop → staging auto-deploy, main → production
+   - Required checks before merge (test pass, review approved, CI green)
+
+4. MONITORING & ALERTING
+   - What to monitor: error rate, latency (p50/p95/p99), CPU/memory, disk
+   - Tools recommendation (matches tech stack)
+   - Alert thresholds and notification channels
+   - On-call / escalation path (if applicable)
+
+5. DOMAIN & DNS
+   - Domain setup: apex, www, api subdomain
+   - SSL/TLS: auto-provisioned vs manual
+   - CDN configuration (if frontend)
+
+6. ROLLBACK PLAN
+   - Automated: health check failure → auto-rollback
+   - Manual: specific commands to rollback
+   - Database: migration rollback strategy (forward-only vs bidirectional)
+
+7. SECURITY CHECKLIST (Pre-Launch)
+   - HTTPS, CORS, rate limiting, headers, secrets management, dependency scanning, logging
+
+8. LAUNCH CHECKLIST
+   - Complete pre-launch verification list
+   - Staged rollout plan (if applicable): canary → 10% → 50% → 100%
+
+Write output to .claude/project/DEPLOY_STRATEGY.md
+```
+
+### Step 3: Validate Strategy
+- Verify hosting choices support the tech stack
+- Verify CI/CD pipeline covers all stages (lint, test, build, deploy)
+- Verify monitoring covers critical metrics
+- Verify rollback plan exists
+- Verify cost estimate is reasonable for project constraints
+
+### Step 4: Update Project Tracker
+- Update `.claude/project/PROJECT.md`:
+  - Set Status to `PLANNING`
+  - Set Deploy Strategy document status to `COMPLETE`
+  - Set Phase 8 status to `COMPLETE` with timestamp
+
+### Step 5: Present to User
+Show:
+- Hosting summary with cost estimate
+- CI/CD pipeline overview
+- Environment table
+- Launch checklist item count
+- Prompt: "Deployment strategy complete. Your project is ready for development! Run `/workflow new 'Feature 1'` to start building the first MVP feature."
+
+## Outputs
+- `.claude/project/DEPLOY_STRATEGY.md` — complete deployment strategy
+- `.claude/project/PROJECT.md` — updated with Phase 8 status
+
+## Prerequisites
+- `.claude/project/ARCHITECTURE.md` must exist
+- `.claude/project/TECH_STACK.md` must exist
+
+## Definition of Done
+- [ ] DEPLOY_STRATEGY.md created at `.claude/project/DEPLOY_STRATEGY.md`
+- [ ] CI/CD pipeline designed with all stages (lint, test, build, deploy, smoke test)
+- [ ] Hosting plan specified for every component (API, DB, frontend, workers, storage)
+- [ ] Environments defined (development, staging, production) with URL patterns
+- [ ] Monitoring and alerting configured with thresholds
+- [ ] Rollback plan documented (automated + manual)
+- [ ] Launch checklist is actionable (each item has a command or verification)
+- [ ] Cost estimate provided with growth projections
+- [ ] PROJECT.md updated with Phase 8 status COMPLETE
+All criteria must pass before this phase is complete.
+
+## Next Steps
+- **Continue pipeline:** `/methodology` — choose SDLC model, or `/workflow new` — start building MVP features
+- **Iterate:** `/deploy-strategy --update` — revise current deployment strategy
+- **Skip ahead:** `/new-project --resume` — jump to next incomplete phase
+
+## Rollback
+- **Redo this phase:** `/deploy-strategy --update` or `/deploy-strategy "new target"`
+- **Revert output:** Delete or overwrite `.claude/project/DEPLOY_STRATEGY.md`
+
+## Post-Completion
+
+### Update Memory
+Update MEMORY.md (create if needed):
+- **Skill:** /[this skill name]
+- **Task:** [what was planned/documented]
+- **When:** [timestamp]
+- **Result:** [document created/updated]
+- **Output:** [file path of output document]
+- **Next Step:** [recommended next planning phase or implementation step]
+
+### Update TODO
+If this planning output creates actionable work, add items to TODO.md.
+
+### Audit Log
+Append to `.claude/reports/audit/audit-{branch}.log`:
+```
+[timestamp] | [ROLE] | [branch] | [SKILL_NAME] | [summary] | [result]
+```
+
+### Final Output
+```
+NEXT ACTION: Planning complete. Here's what you can do:
+             - Review output at the generated file path
+             - Run the next planning phase command
+             - Say "/scaffold" or "/feature-start" to begin implementation
+```

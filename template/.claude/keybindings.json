@@ -1,0 +1,20 @@
+[
+  {
+    "key": "ctrl+shift+c",
+    "command": "skill",
+    "args": "/compact",
+    "description": "Quick compact"
+  },
+  {
+    "key": "ctrl+shift+s",
+    "command": "skill",
+    "args": "/sync --check",
+    "description": "Check for drift"
+  },
+  {
+    "key": "ctrl+shift+t",
+    "command": "skill",
+    "args": "/task-tracker status",
+    "description": "Task dashboard"
+  }
+]

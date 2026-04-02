@@ -33,12 +33,7 @@
       "Bash(npx hadolint *)",
       "Bash(npx source-map-explorer *)"
     ],
-    "deny": [
-      "Bash(rm -rf /)",
-      "Bash(sudo *)",
-      "Bash(git push --force *)",
-      "Bash(git reset --hard)"
-    ]
+    "deny": ["Bash(rm -rf /)", "Bash(sudo *)", "Bash(git push --force *)", "Bash(git reset --hard)"]
   },
   "env": {},
   "hooks": {
@@ -203,6 +198,11 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/prompt-stats.js",
             "statusMessage": "Generating session stats..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-persist-state.js",
+            "statusMessage": "Persisting session state..."
           }
         ]
       }
@@ -215,6 +215,17 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-failure-handler.js",
             "statusMessage": "Preserving state after failure..."
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A teammate is idle. Check shared task list for unassigned work."
           }
         ]
       }

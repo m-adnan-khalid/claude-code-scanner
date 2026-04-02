@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 27 role-based agents, 88 skills, 18 automation hooks, 10 RBAC profiles, 9 rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 30 role-based agents, 88 skills, 44 automation hooks (25 root + 19 template), 10 RBAC profiles, 11 rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -134,7 +134,7 @@ your-project/
 │   ├── settings.local.json       <- Your env vars (gitignored)
 │   ├── session.env               <- Your role (gitignored, set via /setup-workspace)
 │   ├── rules/                    <- Path-specific coding rules
-│   ├── agents/                   <- 27 role-based AI agents
+│   ├── agents/                   <- 30 role-based AI agents
 │   │   ├── team-lead.md          <- Orchestrator, assigns work, tech sign-off
 │   │   ├── architect.md          <- Architecture design & review
 │   │   ├── product-owner.md      <- Acceptance criteria, business sign-off
@@ -186,7 +186,7 @@ your-project/
 │   │   ├── release-notes/        <- /release-notes — Release documentation
 │   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
 │   │   └── ...                   <- + more utility skills
-│   ├── hooks/                    <- 18 automation hooks (10 events)
+│   ├── hooks/                    <- 19 automation hooks (10 events)
 │   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
@@ -375,7 +375,7 @@ Phase 13: Execution Report — success score, hallucination check, regression au
 
 Mandatory `/context-check` between every phase transition to enforce 60% context budget.
 
-## Hook Events (18 hooks across 10 events)
+## Hook Events (19 hooks across 10 events)
 
 | Event | Hook | Trigger | Purpose |
 |-------|------|---------|---------|
@@ -464,7 +464,7 @@ npx claude-code-scanner update --force       # Overwrite ALL template files
 2. **`/generate-environment`** uses scan results to create project-specific:
    - CLAUDE.md with your exact commands, paths, and conventions
    - Rules that enforce YOUR codebase patterns
-   - 27 agents configured for YOUR tech stack
+   - 30 agents configured for YOUR tech stack
    - Skills with YOUR project's commands and file paths
    - Templates extracted from YOUR existing code
    - Profiles for backend, frontend, and devops roles

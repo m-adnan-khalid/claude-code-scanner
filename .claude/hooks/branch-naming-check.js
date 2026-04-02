@@ -12,17 +12,20 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 // Only check once per session
-const CHECKED_FILE = '/tmp/.claude-branch-naming-checked';
+const CHECKED_FILE = path.join(process.env.TMPDIR || '/tmp', '.claude-branch-naming-checked');
 
 let input = '';
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', (chunk) => { input += chunk; });
+process.stdin.on('data', (chunk) => {
+  input += chunk;
+});
 process.stdin.on('end', () => {
   try {
     // Skip if already checked this session
     if (fs.existsSync(CHECKED_FILE)) {
       const age = Date.now() - fs.statSync(CHECKED_FILE).mtimeMs;
-      if (age < 3600000) { // 1 hour
+      if (age < 3600000) {
+        // 1 hour
         process.exit(0);
       }
     }
@@ -43,7 +46,25 @@ process.stdin.on('end', () => {
     }
 
     // Valid patterns: role/ticket/description or role/description
-    const validRoles = ['cto', 'architect', 'techlead', 'backend', 'frontend', 'fullstack', 'qa', 'devops', 'pm', 'designer', 'feature', 'fix', 'hotfix', 'chore', 'docs', 'test', 'refactor'];
+    const validRoles = [
+      'cto',
+      'architect',
+      'techlead',
+      'backend',
+      'frontend',
+      'fullstack',
+      'qa',
+      'devops',
+      'pm',
+      'designer',
+      'feature',
+      'fix',
+      'hotfix',
+      'chore',
+      'docs',
+      'test',
+      'refactor',
+    ];
     const parts = branch.split('/');
 
     // Read CURRENT_ROLE to validate prefix matches session role
@@ -59,9 +80,16 @@ process.stdin.on('end', () => {
 
     // Role name → branch prefix mapping
     const roleToBranchPrefix = {
-      'CTO': 'cto', 'Architect': 'architect', 'TechLead': 'techlead',
-      'BackendDev': 'backend', 'FrontendDev': 'frontend', 'FullStackDev': 'fullstack',
-      'QA': 'qa', 'DevOps': 'devops', 'PM': 'pm', 'Designer': 'designer'
+      CTO: 'cto',
+      Architect: 'architect',
+      TechLead: 'techlead',
+      BackendDev: 'backend',
+      FrontendDev: 'frontend',
+      FullStackDev: 'fullstack',
+      QA: 'qa',
+      DevOps: 'devops',
+      PM: 'pm',
+      Designer: 'designer',
     };
 
     if (parts.length < 2) {
@@ -72,14 +100,18 @@ process.stdin.on('end', () => {
     } else {
       const branchRole = parts[0].toLowerCase();
       if (!validRoles.includes(branchRole)) {
-        process.stderr.write(`\n⚠️  BRANCH NAMING: "${parts[0]}" is not a recognized role prefix\n`);
+        process.stderr.write(
+          `\n⚠️  BRANCH NAMING: "${parts[0]}" is not a recognized role prefix\n`
+        );
         process.stderr.write(`   Valid: ${validRoles.join(', ')}\n\n`);
       } else if (currentRole && roleToBranchPrefix[currentRole]) {
         const expectedPrefix = roleToBranchPrefix[currentRole];
         // Only warn for role-specific prefixes, not generic ones (feature, fix, etc.)
         const genericPrefixes = ['feature', 'fix', 'hotfix', 'chore', 'docs', 'test', 'refactor'];
         if (!genericPrefixes.includes(branchRole) && branchRole !== expectedPrefix) {
-          process.stderr.write(`\n⚠️  BRANCH PREFIX MISMATCH: You are "${currentRole}" but branch uses "${branchRole}/"\n`);
+          process.stderr.write(
+            `\n⚠️  BRANCH PREFIX MISMATCH: You are "${currentRole}" but branch uses "${branchRole}/"\n`
+          );
           process.stderr.write(`   Expected prefix for your role: ${expectedPrefix}/\n`);
           process.stderr.write(`   Change role with /setup-workspace or rename branch.\n\n`);
         }
