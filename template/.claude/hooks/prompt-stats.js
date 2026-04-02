@@ -28,10 +28,14 @@ function logHookFailure(hookName, error) {
   } catch (_) {}
 }
 
-// Drain stdin
-process.stdin.resume();
-process.stdin.on('data', () => {});
+// Parse stdin for session_id
+let _stdinBuf = '';
+let _sessionId = 'unknown';
+process.stdin.setEncoding('utf-8');
+process.stdin.on('data', chunk => { _stdinBuf += chunk; });
 process.stdin.on('error', () => {});
+process.stdin.on('end', () => { try { _sessionId = JSON.parse(_stdinBuf).session_id || 'unknown'; } catch (_) {} });
+setTimeout(() => { try { if (_stdinBuf && _sessionId === 'unknown') _sessionId = JSON.parse(_stdinBuf).session_id || 'unknown'; } catch (_) {} }, 300);
 setTimeout(() => process.exit(0), 5000).unref();
 
 try {
@@ -176,6 +180,7 @@ try {
   // 6. Save session report
   const sessionReport = {
     timestamp: new Date().toISOString(),
+    session_id: _sessionId,
     context: contextState || {},
     files: { changed: filesChanged, added: filesAdded },
     tests: testResults || null,

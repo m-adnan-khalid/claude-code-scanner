@@ -12,3 +12,7 @@
   /scan-and-build skill added for document intelligence installer
   settings.json and settings.local.json fixed to correct hook schema
 ## Last Updated: 2026-04-01
+
+## Registry Status (2026-04-02T12:30:44Z)
+- In Progress: None
+- Open stories: 3 (TODO: 3, IN_PROGRESS: 0, BLOCKED: 0)

@@ -108,6 +108,7 @@ try {
   // Build comprehensive snapshot (serves as disaster recovery manifest)
   const snapshot = {
     timestamp: new Date().toISOString(),
+    session_id: _sessionId,
     event: 'session_stop',
     task_id: taskId,
     title: taskTitle,
