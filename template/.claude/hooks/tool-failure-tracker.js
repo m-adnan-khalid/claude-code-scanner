@@ -46,7 +46,8 @@ function saveConsecutiveFailures(data) {
 // ── Processing logic ────────────────────────────────────────────────
 function processInput(raw) {
   try {
-    const data = JSON.parse(raw);
+    const data = JSON.parse(raw)
+    const sessionId = data.session_id || 'unknown';;
     const toolName = data.tool_name || 'unknown';
     const error = data.tool_error || data.error || 'unknown error';
     const toolInput = data.tool_input || {};

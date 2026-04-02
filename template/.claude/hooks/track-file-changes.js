@@ -25,7 +25,8 @@ function logHookFailure(hookName, error) {
 // ── Processing logic ────────────────────────────────────────────────
 function processInput(raw) {
   try {
-    const data = JSON.parse(raw);
+    const data = JSON.parse(raw)
+    const sessionId = data.session_id || 'unknown';;
     const file = (data.tool_input && data.tool_input.file_path) || '';
     if (!file) return;
 

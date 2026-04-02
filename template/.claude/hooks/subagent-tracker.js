@@ -24,7 +24,8 @@ function logHookFailure(hookName, error) {
 // ── Processing logic ────────────────────────────────────────────────
 function processInput(raw) {
   try {
-    const data = JSON.parse(raw);
+    const data = JSON.parse(raw)
+    const sessionId = data.session_id || 'unknown';;
     const agentName = data.agent_name || data.name || 'unknown';
     const status = data.status || data.result || 'completed';
     const turns = data.turns_used || data.turns || 0;

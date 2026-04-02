@@ -18,7 +18,8 @@ process.stdin.setEncoding('utf8');
 process.stdin.on('data', (chunk) => { input += chunk; });
 process.stdin.on('end', () => {
   try {
-    const data = JSON.parse(input);
+    const data = JSON.parse(input)
+    const sessionId = data.session_id || 'unknown';;
     const { tool_name, tool_input, tool_output } = data;
 
     // Resolve project root
