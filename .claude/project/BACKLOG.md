@@ -16,7 +16,7 @@
 | BL-002 | Add interactive CLI mode | Should Have | L | MED | @frontend | TODO | BL-001 | Guided setup wizard for first-time users. Source: TODO.md |
 | BL-003 | Create plugin system | Should Have | XL | MED | @architect | TODO | BL-001 | Plugin API for custom agents/skills/hooks. Needs architecture design first. Source: TODO.md |
 | BL-004 | Create video walkthrough | Could Have | M | MED | @docs-writer | TODO | BL-001 | Demo video for README + onboarding. Source: TODO.md |
-| BL-005 | Reconcile skill count discrepancy | Could Have | S | LOW | @docs-writer | DONE | 2026-04-02 | RESOLVED: Verified 88 skills across all docs. README, CLAUDE.md, commands.md, skills-index.md all aligned. |
+| BL-005 | Reconcile skill count discrepancy | Could Have | S | LOW | @docs-writer | DONE | 2026-04-02 | RESOLVED: Verified 93 skills across all docs. README, CLAUDE.md, commands.md, skills-index.md all aligned. Updated 2026-04-03. |
 | BL-006 | Add GitHub issue/PR templates | Could Have | S | LOW | @infra | TODO | — | Contribution templates for open source community. [INFERRED — confirm with PO] |
 | BL-007 | Fill competitive landscape (IDEA_CANVAS gap) | Should Have | M | HIGH | @ideator | TODO | — | Registered as STORY-009 during IDEA_CANVAS population |
 | BL-008 | Define adoption metrics and targets | Should Have | S | MED | @strategist | TODO | — | Registered as STORY-010 during IDEA_CANVAS population |

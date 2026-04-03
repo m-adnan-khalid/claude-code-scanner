@@ -23,7 +23,10 @@
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('Published dirs:', p.files\\)\")",
       "Bash(rm \"C:/adnan/cluade projects/claude-code-scanner/fix-session-id.js\")",
       "Bash(grep -r \"require.*path\\\\|__dirname\\\\|hardcoded\" .claude/hooks/*.js)",
-      "Bash(find /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/skills -name \"SKILL.md\" -exec wc -l {})"
+      "Bash(find /Users/muhammad.adnan/ai_projects/claude-code-scanner/template/.claude/skills -name \"SKILL.md\" -exec wc -l {})",
+      "Bash(bash /tmp/check_skills.sh)",
+      "Bash([ -f \"C:\\\\adnan\\\\cluade projects\\\\claude-code-scanner\\\\template\\\\.claude\\\\hooks\\\\$hook\" ])",
+      "Bash(node -c \"template/.claude/hooks/session-start.js\")"
     ]
   }
 }

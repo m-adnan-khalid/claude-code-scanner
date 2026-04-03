@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 88 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 93 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 
@@ -374,7 +374,39 @@ Run these to set up Claude Code on an existing codebase.
 
 ---
 
-## 23. Git Workflow (Built Into `/workflow`)
+## 23. Team Workspace & Daily Operations
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/setup-workspace` | Initialize workspace for a team role — sets CURRENT_ROLE in session.env, verifies CLAUDE.md version, runs setup checks | @team-lead + @process-coach |
+| `/daily-sync` | Start-of-day sync — git pull, CLAUDE.md version check, recent team activity, your next step, PRs in your scope | @team-lead + @process-coach |
+| `/feature-start` | Start a new feature — creates role-prefixed branch, task file, scope assignment, enforces branch naming | @team-lead + @process-coach |
+| `/feature-done` | Complete a feature — doc sync check, lint, tests, QA gate, prepare for PR submission | @team-lead + @qa-lead + @gatekeeper + @reviewer |
+| `/org-report` | Executive org health report — branch activity, blocked items, doc drift, subagent violations, framework version compliance (CTO/TechLead/Architect only) | @cto + @team-lead + @gatekeeper |
+
+---
+
+## 24. Prompt Intelligence
+
+| Command | Purpose | Agent |
+|---------|---------|-------|
+| `/prompt "your rough prompt"` | Guided prompt improvement — classify, score (clarity/scope/alignment/context/safety), 5-pass improvement, write to file, collect answers, create task doc, execute with live tracking | @team-lead + @output-validator |
+
+### `/prompt` Workflow
+| Stage | What Happens |
+|-------|-------------|
+| Stage 0 | Load memory, session, git state, check for resumable work |
+| Stage 1 | Classify prompt (vague/misaligned/weak/risky/strong), score on 5 dimensions |
+| Stage 2 | 5-pass improvement (role alignment, domain alignment, context injection, CLAUDE.md rules, structure) |
+| Stage 3 | Write improved prompt to `.claude/prompts/prompt-{timestamp}.md`, ask for answers if needed |
+| Stage 4 | User confirms — verify answers, create task document |
+| Stage 5 | Create `.claude/tasks/task-{timestamp}.md` with subtask breakdown |
+| Stage 6 | Execute subtasks with live progress tracking, pause/resume/retry support |
+| Stage 7 | Mark complete, update MEMORY.md, audit log |
+
+---
+
+## 25. Git Workflow (Built Into `/workflow`)
 
 ```
 Phase 1:  git checkout -b feature/TASK-{id}/{slug}     ← Branch from main/dev
@@ -390,7 +422,7 @@ Phase 11: @infra deploys                                 ← Production deployme
 
 ---
 
-## 24. Agent Team (30 Agents)
+## 26. Agent Team (30 Agents)
 
 | Agent | Role | Access | Use For |
 |-------|------|--------|---------|

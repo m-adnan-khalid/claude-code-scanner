@@ -4,7 +4,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 
 ## What You Generate
 - `CLAUDE.md` (root + nested per module) | `.claude/rules/` (path-specific rules)
-- `.claude/agents/` (30 agents) | `.claude/skills/` (88 skills) | `.claude/hooks/` (19 hooks)
+- `.claude/agents/` (30 agents) | `.claude/skills/` (93 skills) | `.claude/hooks/` (19 hooks)
 - `.claude/project/` (pre-dev docs) | `.claude/templates/` | `.claude/profiles/`
 - `.claude/settings.json` | `.claude/scripts/` | `.claude/docs/commands-template.md`
 
@@ -27,7 +27,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 ## Agent Team
 30 agents auto-discovered from `.claude/agents/`. Key roles: `@team-lead` (orchestrator), `@architect` (design), `@cto` (executive), `@tester` (tests), `@qa-lead` (QA), `@security` (security review), `@output-validator` (consistency), `@observability-engineer` (monitoring), `@incident-responder` (incidents), `@performance-engineer` (optimization). See `.claude/docs/agent-roster.md` for full roster.
 
-## Skills (88 total, auto-discovered)
+## Skills (93 total, auto-discovered)
 **Team:** `/setup-workspace`, `/daily-sync`, `/feature-start`, `/feature-done`, `/org-report`
 **Testing:** `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
 **Audit:** `/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`

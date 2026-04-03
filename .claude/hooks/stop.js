@@ -99,12 +99,12 @@ try {
             if (loopLines.length > 0) {
               // Add loop state to MEMORY.md
               const loopSummary = `## Active Loop State\n${loopLines.join('\n')}\n`;
-              if (memContent.includes('## Active Loop State')) {
-                memContent = memContent.replace(/## Active Loop State\n(?:- [^\n]*\n)*/, loopSummary);
+              if (content.includes('## Active Loop State')) {
+                content = content.replace(/## Active Loop State\n(?:- [^\n]*\n)*/, loopSummary);
               } else {
-                memContent += '\n' + loopSummary;
+                content += '\n' + loopSummary;
               }
-              fs.writeFileSync(memPath, memContent);
+              fs.writeFileSync(memoryPath, content);
             }
           }
           break;

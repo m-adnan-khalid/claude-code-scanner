@@ -6,7 +6,7 @@
 
 ## 1. WHAT THIS FRAMEWORK IS
 
-A production-ready system that scans codebases (or starts from scratch) and generates complete Claude Code environments. It automates setup for **27 agents, 88 skills, 8 rules, 35 hooks**, and enterprise **RBAC across 10 roles**.
+A production-ready system that scans codebases (or starts from scratch) and generates complete Claude Code environments. It automates setup for **30 agents, 93 skills, 11 rules, 44 hooks**, and enterprise **RBAC across 10 roles**.
 
 ### Core Pipeline (4 Phases)
 
@@ -27,7 +27,7 @@ Phase 1: SCAN ──> Phase 2: GENERATE ──> Phase 3: VALIDATE ──> Phase 
 
 ---
 
-## 2. AGENT SYSTEM (26 Agents)
+## 2. AGENT SYSTEM (30 Agents)
 
 ### Agent Architecture
 
@@ -70,6 +70,11 @@ Every agent has these enforced sections:
 | | @process-coach | sonnet | .claude/project/ | TechLead, CTO |
 | **Explore** | @explorer | sonnet | Read-only | All roles |
 | | @scaffolder | sonnet | src/, tests/, docs/ | TechLead, CTO, Architect, FullStackDev |
+| **Analysis** | @analyst | sonnet | docs/ | All roles |
+| | @version-manager | sonnet | git, .github/ | TechLead, CTO, DevOps |
+| **Ops** | @observability-engineer | sonnet | infra/, src/monitoring/ | DevOps, TechLead, CTO |
+| | @incident-responder | sonnet | docs/runbooks/, infra/ | DevOps, TechLead, CTO |
+| | @performance-engineer | sonnet | src/, tests/perf/ | BackendDev, FullStackDev, TechLead, CTO |
 
 ### Key Constraints
 - **No agent invokes other agents directly** — coordination flows through @team-lead or main conversation
@@ -112,7 +117,7 @@ Every agent has these enforced sections:
 
 ---
 
-## 4. HOOK SYSTEM (35 Hooks)
+## 4. HOOK SYSTEM (44 Hooks)
 
 ### Root Hooks (9) — `.claude/hooks/`
 
@@ -162,7 +167,7 @@ Every agent has these enforced sections:
 
 ---
 
-## 5. SKILLS BY CATEGORY (85 Total)
+## 5. SKILLS BY CATEGORY (93 Total)
 
 ### Team Workflow (5)
 `/setup-workspace` `/daily-sync` `/feature-start` `/feature-done` `/task-tracker`
@@ -208,7 +213,7 @@ Every agent has these enforced sections:
 
 ---
 
-## 6. RULES (8 Path-Scoped Constraints)
+## 6. RULES (11 Path-Scoped Constraints)
 
 | Rule | Applies To | Key Constraint |
 |------|-----------|----------------|
@@ -220,6 +225,9 @@ Every agent has these enforced sections:
 | task-lifecycle.md | .claude/tasks/ | Subtasks must be DONE to advance, phase completion checklist |
 | domain-terms.md | .claude/project/ | Use exact terms from GLOSSARY.md, never synonyms |
 | logging.md | All code files | Structured JSON in prod, requestId, never log PII/secrets |
+| code-standards.md | All code files | Max 300 lines/file, 40 lines/function, SOLID, naming conventions |
+| code-safety.md | All code files | No `any` types, domain errors, injectable deps, async safety |
+| code-platform.md | All code files | Parameterized queries, API pagination, i18n, platform rules |
 
 ---
 
@@ -356,8 +364,8 @@ End:      stop.js updates MEMORY.md automatically
 - [ ] All 87 skill directories have SKILL.md with valid frontmatter
 
 ### F. Doc Consistency Tests
-- [ ] CLAUDE.md says "27 agents" (matches actual count)
-- [ ] CLAUDE.md says "88 skills" (matches actual count)
+- [ ] CLAUDE.md says "30 agents" (matches actual count)
+- [ ] CLAUDE.md says "93 skills" (matches actual count)
 - [ ] ARCHITECTURE.md counts match CLAUDE.md
 - [ ] ONBOARDING.md has all 10 role tracks
 - [ ] GLOSSARY.md terms are referenced by all agents
@@ -416,9 +424,9 @@ claude-code-scanner/
 ├── template/                          # Generated environment template
 │   ├── CLAUDE.md                      # Lightweight scaffold (42 lines)
 │   └── .claude/
-│       ├── settings.json              # Full settings (223 lines, 35 hooks)
-│       ├── agents/ (25 files)         # Role-based subagents
-│       ├── skills/ (85 directories)   # Workflow automations
+│       ├── settings.json              # Full settings (270 lines, 44 hooks)
+│       ├── agents/ (30 files)         # Role-based subagents
+│       ├── skills/ (93 directories)   # Workflow automations
 │       ├── rules/ (8 files)           # Path-scoped constraints
 │       ├── hooks/ (18 files)          # Full hook suite
 │       ├── project/ (20+ docs)        # Pre-dev documents

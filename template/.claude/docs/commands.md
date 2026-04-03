@@ -1,6 +1,6 @@
 # Complete Command Reference — Claude Code Scanner
 
-> 88 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
+> 93 skills organized by workflow phase. Every command has a purpose, syntax, and shows what comes next.
 
 ---
 

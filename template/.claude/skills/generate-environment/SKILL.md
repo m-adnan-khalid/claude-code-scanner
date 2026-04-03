@@ -132,8 +132,10 @@ Only for monorepo packages or distinct modules.
 **Always generate (pre-dev — 4):** ideator, strategist, scaffolder, ux-designer
 **Always generate (governance — 5):** cto, gatekeeper, output-validator, process-coach, docs-writer
 **Always generate (data — 2):** database, qa-automation
+**Always generate (operations — 3):** observability-engineer, incident-responder, performance-engineer
+**Always generate (specialist — 2):** analyst, version-manager
 **Generate if layer exists (dev — 4):** frontend, api-builder, infra, mobile
-**Total: 25 agents (21 always + 4 conditional)**
+**Total: 30 agents (26 always + 4 conditional)**
 
 All agents MUST include:
 - `memory: project` for cross-session persistence

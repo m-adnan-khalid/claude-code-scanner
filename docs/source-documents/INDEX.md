@@ -4,7 +4,7 @@ Built: 2026-04-01 | Scanner: Document Intelligence Installer
 ## Scanned Files
 | # | Source File | Classification | Maps To | Key Intelligence |
 |---|------------|----------------|---------|-----------------|
-| 1 | README.md | PRODUCT_SPEC | STORY-001, STORY-002 | Full feature spec, 25 agents, 85 skills |
+| 1 | README.md | PRODUCT_SPEC | STORY-001, STORY-002 | Full feature spec, 30 agents, 93 skills |
 | 2 | TODO.md | BACKLOG | STORY-003 | 3 backlog items, 7 completed features |
 | 3 | DOCUMENTATION.md | PRODUCT_SPEC | STORY-002 | Complete reference guide |
 | 4 | CONTRIBUTING.md | REQUIREMENTS | STORY-006 | Contribution standards, no-deps rule |

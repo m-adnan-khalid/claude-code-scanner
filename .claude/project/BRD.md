@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-Claude Code Scanner is an open-source CLI tool that automates the creation of enterprise-grade Claude Code development environments. It scans existing codebases or starts from new ideas, generating complete configurations including 25 agents, 85+ skills, 27 hooks, 8 rules, and 10-role RBAC — validated to 100% certification.
+Claude Code Scanner is an open-source CLI tool that automates the creation of enterprise-grade Claude Code development environments. It scans existing codebases or starts from new ideas, generating complete configurations including 30 agents, 93 skills, 44 hooks (25 root + 19 template), 11 rules, and 10-role RBAC — validated to 100% certification.
 
 **Business Objective:** Reduce Claude Code environment setup from days of manual configuration to minutes of automated generation.
 
@@ -55,10 +55,10 @@ Claude Code Scanner is an open-source CLI tool that automates the creation of en
 |----|------------|----------|--------|--------|
 | FR-001 | The system SHALL scan a target directory and produce a TECH_MANIFEST JSON describing the tech stack | Must | README.md | Done |
 | FR-002 | The system SHALL generate CLAUDE.md with project-specific configuration from TECH_MANIFEST | Must | README.md | Done |
-| FR-003 | The system SHALL generate role-based agent definitions (25 agents) with frontmatter and contracts | Must | CLAUDE.md | Done |
-| FR-004 | The system SHALL generate workflow skill files (85+) with invocation metadata | Must | CLAUDE.md | Done |
-| FR-005 | The system SHALL generate automation hooks (27) with event bindings | Must | docs/ARCHITECTURE.md | Done |
-| FR-006 | The system SHALL generate path-scoped rules (8) with frontmatter paths | Must | CLAUDE.md | Done |
+| FR-003 | The system SHALL generate role-based agent definitions (30 agents) with frontmatter and contracts | Must | CLAUDE.md | Done |
+| FR-004 | The system SHALL generate workflow skill files (93) with invocation metadata | Must | CLAUDE.md | Done |
+| FR-005 | The system SHALL generate automation hooks (44: 25 root + 19 template) with event bindings | Must | docs/ARCHITECTURE.md | Done |
+| FR-006 | The system SHALL generate path-scoped rules (11) with frontmatter paths | Must | CLAUDE.md | Done |
 | FR-007 | The system SHALL validate all generated artifacts (line counts, JSON validity, hook permissions) | Must | README.md | Done |
 | FR-008 | The system SHALL query Smithery MCP registry and install matching servers | Must | CLAUDE.md | Done |
 | FR-009 | The system SHALL enforce RBAC by storing role in session.env and checking via PreToolUse hook | Must | docs/adr/0001-enterprise-rbac.md | Done |

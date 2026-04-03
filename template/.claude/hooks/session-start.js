@@ -339,9 +339,9 @@ try {
             console.log(`  3. Cancel: /workflow cancel ${id}`);
 
             // Check for interrupted snapshots
-            const execDir = path.join(reportsDir, 'executions');
-            if (fs.existsSync(execDir)) {
-              const interrupts = fs.readdirSync(execDir)
+            const crashExecDir = path.join(reportsDir, 'executions');
+            if (fs.existsSync(crashExecDir)) {
+              const interrupts = fs.readdirSync(crashExecDir)
                 .filter(f => f.startsWith(id) && f.includes('_interrupted_'));
               if (interrupts.length > 0) {
                 console.log(`  Recovery snapshot found: .claude/reports/executions/${interrupts[interrupts.length - 1]}`);
@@ -357,11 +357,11 @@ try {
         }
 
         // Loop state display for quick context
-        const loopSection = content.match(/## Loop State\n([\s\S]*?)(?=\n##|\n$|$)/);
-        if (loopSection) {
-          const loops = loopSection[1].trim().split('\n').filter(l => l.trim().startsWith('-'));
-          if (loops.length > 0) {
-            console.log(`  LOOPS: ${loops.map(l => l.trim().replace(/^-\s*/, '')).join(' | ')}`);
+        const crashLoopSection = content.match(/## Loop State\n([\s\S]*?)(?=\n##|\n$|$)/);
+        if (crashLoopSection) {
+          const loops2 = crashLoopSection[1].trim().split('\n').filter(l => l.trim().startsWith('-'));
+          if (loops2.length > 0) {
+            console.log(`  LOOPS: ${loops2.map(l => l.trim().replace(/^-\s*/, '')).join(' | ')}`);
           }
         }
 

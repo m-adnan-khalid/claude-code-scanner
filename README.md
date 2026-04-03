@@ -1,6 +1,6 @@
 # Claude Code Scanner
 
-> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 30 role-based agents, 88 skills, 44 automation hooks (25 root + 19 template), 10 RBAC profiles, 11 rules, templates, and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a complete Claude Code environment with 30 role-based agents, 93 skills, 44 automation hooks (25 root + 19 template), 10 RBAC profiles, 11 rules, templates, and full lifecycle support from idea to deployment.
 
 ## Prerequisites
 
@@ -153,7 +153,7 @@ your-project/
 │   │   ├── ux-designer.md        <- User flows & wireframes
 │   │   ├── code-quality.md      <- Design patterns, SOLID, static analysis
 │   │   └── mobile.md            <- iOS, Android, React Native, Flutter, KMP
-│   ├── skills/                   <- 88 workflow skills
+│   ├── skills/                   <- 93 workflow skills
 │   │   ├── workflow/             <- /workflow — Full 13-phase SDLC
 │   │   ├── scan-codebase/        <- /scan-codebase
 │   │   ├── generate-environment/ <- /generate-environment
@@ -186,11 +186,11 @@ your-project/
 │   │   ├── release-notes/        <- /release-notes — Release documentation
 │   │   ├── mobile-audit/         <- /mobile-audit — Mobile quality & store readiness
 │   │   └── ...                   <- + more utility skills
-│   ├── hooks/                    <- 19 automation hooks (10 events)
+│   ├── hooks/                    <- 44 automation hooks (25 root + 19 template)
 │   ├── project/                  <- Pre-development artifacts (idea, spec, backlog, etc.)
 │   ├── profiles/                 <- Developer role profiles
 │   ├── templates/                <- Code scaffolding (extracted from real code)
-│   ├── docs/                     <- 14 reference documents
+│   ├── docs/                     <- 21 reference documents
 │   ├── scripts/                  <- Verification scripts
 │   ├── tasks/                    <- Task tracking (gitignored)
 │   └── reports/                  <- Progress & execution reports (gitignored)
@@ -375,7 +375,7 @@ Phase 13: Execution Report — success score, hallucination check, regression au
 
 Mandatory `/context-check` between every phase transition to enforce 60% context budget.
 
-## Hook Events (19 hooks across 10 events)
+## Hook Events (44 hooks: 25 root + 19 template, across 10 events)
 
 | Event | Hook | Trigger | Purpose |
 |-------|------|---------|---------|
@@ -417,7 +417,7 @@ Everything is designed to keep working context under 60%:
 | Agent descriptions | ~371 tokens | Always (metadata only) |
 | Skill descriptions | ~250 tokens | Always (metadata only) |
 | Agent full bodies | 0 on parent | Subagent context (isolated) |
-| Forked skills (88/88) | 0 on parent | Fork context (isolated) |
+| Forked skills (93/93) | 0 on parent | Fork context (isolated) |
 | Templates/profiles/docs | 0 | Never auto-loaded |
 | **Total startup** | **~1,500 tokens** | **~1.2% of 128K** |
 

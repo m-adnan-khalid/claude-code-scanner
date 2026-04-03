@@ -42,7 +42,7 @@ Development teams lack structured, enterprise-grade AI-assisted SDLC environment
 **One command generates a complete, enterprise-grade Claude Code environment with full lifecycle support from idea to launch.**
 
 Specific value delivered:
-- **25 role-based agents** with scoped tool restrictions and RBAC enforcement. Source: CLAUDE.md (Agent Team table), docs/ARCHITECTURE.md
+- **30 role-based agents** with scoped tool restrictions and RBAC enforcement. Source: CLAUDE.md (Agent Team table), docs/ARCHITECTURE.md
 - **85+ workflow skills** (slash commands) covering the entire SDLC. Source: CLAUDE.md (skills listing), README.md
 - **27 automation hooks** (9 root + 18 template) for pre/post tool-use governance. Source: CLAUDE.md (Hook Registration), docs/ARCHITECTURE.md
 - **8 path-scoped rules** for coding constraints. Source: CLAUDE.md, docs/ARCHITECTURE.md
@@ -66,7 +66,7 @@ Specific value delivered:
 |-----------|---------|--------|
 | **Strengths** | Only tool generating full enterprise-grade Claude Code environments with RBAC, hooks, and multi-agent orchestration. 100% verification pass (69/69 checks). Certified CERT-20260329-FINAL. | [INFERRED from docs/verification/CERT-20260329-FINAL.md, CLAUDE.md] |
 | **Strengths** | Zero external dependencies (Node.js only). Cross-platform (Win/Mac/Linux). MIT licensed. | README.md, package.json |
-| **Strengths** | Comprehensive role coverage: 10 RBAC roles, 25 agents, 85+ skills. Full SDLC from ideation to deployment. | CLAUDE.md, docs/ARCHITECTURE.md |
+| **Strengths** | Comprehensive role coverage: 10 RBAC roles, 30 agents, 93 skills. Full SDLC from ideation to deployment. | CLAUDE.md, docs/ARCHITECTURE.md |
 | **Weaknesses** | Not yet published to npm. No interactive CLI mode. No plugin system for custom skills/agents. | TODO.md (Backlog items) |
 | **Weaknesses** | [INFERRED] No video demo or visual onboarding — text-heavy documentation only. Confirm with `/clarify`. | TODO.md ("Create video walkthrough / demo") |
 | **Opportunities** | npm publish would unlock global distribution via `npx`. Plugin system would enable community contributions. | TODO.md, package.json |
@@ -86,7 +86,7 @@ Specific value delivered:
 | A2 | Teams use Claude Code as their primary AI development tool | [INFERRED] | MEDIUM |
 | A3 | Enterprise teams need RBAC and role-scoped permissions for AI-assisted development | CLAUDE.md (Enterprise Role Registry) | HIGH |
 | A4 | Teams benefit from structured SDLC phases (scan, generate, validate) over ad-hoc setup | CLAUDE.md (Execution Order), README.md | HIGH |
-| A5 | 25 agents and 85+ skills cover most development workflows | docs/ARCHITECTURE.md | MEDIUM — [INFERRED, plugin system in backlog suggests gaps exist] |
+| A5 | 30 agents and 93 skills cover most development workflows | docs/ARCHITECTURE.md | MEDIUM — [INFERRED, plugin system in backlog suggests gaps exist] |
 
 ### Risks
 
@@ -105,9 +105,9 @@ Specific value delivered:
 | # | Metric | Current Value | Target | Source |
 |---|--------|---------------|--------|--------|
 | M1 | Framework verification score | 100/100 (69/69 checks PASS) | Maintain 100% on every release | docs/verification/CERT-20260329-FINAL.md |
-| M2 | Agent count | 25 agents operational | Maintain or grow with plugin system | CLAUDE.md (Agent Team), docs/ARCHITECTURE.md |
-| M3 | Skill count | 85+ skills | Grow via community plugins | CLAUDE.md, docs/ARCHITECTURE.md |
-| M4 | Hook count | 27 hooks (9 root + 18 template) | Stable | CLAUDE.md (Hook Registration) |
+| M2 | Agent count | 30 agents operational | Maintain or grow with plugin system | CLAUDE.md (Agent Team), docs/ARCHITECTURE.md |
+| M3 | Skill count | 93 skills | Grow via community plugins | CLAUDE.md, docs/ARCHITECTURE.md |
+| M4 | Hook count | 44 hooks (25 root + 19 template) | Stable | CLAUDE.md (Hook Registration) |
 | M5 | RBAC role coverage | 10 roles defined | Cover all common dev team roles | CLAUDE.md (Enterprise Role Registry) |
 | M6 | Cross-platform support | Windows, macOS, Linux | All 3 platforms verified | README.md |
 | M7 | npm downloads | [?] Not yet published | [?] Suggested: `/clarify "target npm download goals"` | TODO.md |

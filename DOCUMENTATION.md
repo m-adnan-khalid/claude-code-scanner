@@ -1,6 +1,6 @@
 # Claude Code Scanner — Complete Documentation
 
-> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 30 role-based agents, 88 workflow skills, 44 automation hooks (25 root + 19 template), and full lifecycle support from idea to deployment.
+> Scan any codebase **or start from scratch** — generate a production-ready AI-powered development environment with 30 role-based agents, 93 workflow skills, 44 automation hooks (25 root + 19 template), and full lifecycle support from idea to deployment.
 
 ---
 
@@ -12,7 +12,7 @@
 4. [How It Works (4-Phase Setup)](#4-how-it-works)
 4b. [New Project Mode (Idea to Launch)](#4b-new-project-mode)
 5. [The Agent Team (30 Roles)](#5-the-agent-team)
-6. [Skills Reference (88 Skills)](#6-skills-reference)
+6. [Skills Reference (93 Skills)](#6-skills-reference)
 7. [The Workflow Engine (13 Phases)](#7-the-workflow-engine)
 8. [Loop Flows & Circuit Breakers](#8-loop-flows--circuit-breakers)
 9. [Hooks & Automation (44 Hooks)](#9-hooks--automation)
@@ -49,7 +49,7 @@ Claude Code Scanner is a tool that scans your existing codebase **or helps you s
 
 **What you get:**
 - 30 AI agents organized as a development team (tech lead, architect, QA lead, developers, code quality guardian, ideator, strategist, etc.)
-- 88 workflow skills for common workflows (including 9 pre-development, 6 real-environment testing, 8 audit/compliance, 2 observability, and 8 utility skills)
+- 93 workflow skills for common workflows (including 9 pre-development, 6 real-environment testing, 8 audit/compliance, 2 observability, and 8 utility skills)
 - 44 automation hooks (25 root + 19 template) that run behind the scenes
 - **NEW:** 8-phase pre-development pipeline (idea → product spec → features → tech stack → architecture → scaffolding → environment → launch plan)
 - A 13-phase SDLC workflow from task intake to production deployment
@@ -249,7 +249,7 @@ All pre-dev state persists in `.claude/project/`:
 - `ARCHITECTURE.md` — system design
 - `DEPLOY_STRATEGY.md` — deployment plan
 
-See `.claude/docs/pre-dev-flow-engine.md` for detailed phase documentation and `.claude/docs/new-project-guide.md` for usage guide.
+See `.claude/docs/flow-engine.md` for detailed phase documentation and `.claude/docs/commands.md` for usage guide.
 
 ---
 
@@ -2529,7 +2529,7 @@ your-project/
 │   │   ├── TECH_STACK.md                  # Technology decisions
 │   │   ├── ARCHITECTURE.md                # System architecture
 │   │   └── DEPLOY_STRATEGY.md             # Deployment strategy
-│   ├── skills/                            # 88 workflow skills
+│   ├── skills/                            # 93 workflow skills
 │   │   ├── workflow/SKILL.md
 │   │   ├── scan-codebase/SKILL.md
 │   │   ├── generate-environment/SKILL.md
@@ -2703,7 +2703,7 @@ If the operation is legitimate, temporarily remove the hook from `settings.json`
 | Component | Count / Detail |
 |-----------|---------------|
 | Agents | 30 (5 SDLC + 7 core + 4 dev + 14 pre-dev/utility/specialist) |
-| Skills | 88 (all with proper frontmatter, `context: fork`) |
+| Skills | 93 (all with proper frontmatter, `context: fork`) |
 | Hooks | 44 (25 root + 19 template, covering 24+ events) |
 | Rules | 11 (path-scoped with `paths:` frontmatter) |
 | Profiles | 10 (architect, backend, cto, data-engineer, devops, frontend, fullstack, mobile, qa-engineer, tech-lead) |
@@ -2726,7 +2726,7 @@ If the operation is legitimate, temporarily remove the hook from `settings.json`
 | Feature | Status |
 |---------|--------|
 | Multi-agent orchestration (30 agents) | Fully documented |
-| 88 workflow skills (T1-T5 lifecycle) | Fully documented |
+| 93 workflow skills (T1-T5 lifecycle) | Fully documented |
 | 44 automation hooks (24+ event types) | Fully documented |
 | RBAC with 10 role profiles | Fully documented |
 | 13-phase SDLC workflow | Fully documented |

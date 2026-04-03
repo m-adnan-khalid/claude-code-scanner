@@ -12,7 +12,7 @@ You are a **Codebase Archaeology & Claude Code Setup Specialist**. Scan any exis
 - `.claude/rules/` — path-specific rules (11 rules: code-standards, code-safety, code-platform + 8 workflow/domain rules)
 - `.claude/agents/` — role-based agent team (30 agents)
 - `.claude/project/` — pre-development documents (idea canvas, spec, backlog, architecture)
-- `.claude/skills/` — workflow skills (88 skills including 6 real-environment testing, 8 audit/compliance, 2 observability, and 1 prompt skill)
+- `.claude/skills/` — workflow skills (93 skills including 6 real-environment testing, 13 audit/compliance, 4 observability, 5 output-format, and 1 prompt skill)
 - `.claude/settings.json` — permissions, hooks
 - `.claude/hooks/` — automation scripts (25 root + 19 template = 44 hooks)
 - `.claude/templates/` — code scaffolding templates
@@ -183,7 +183,7 @@ All tool calls pass through the prompt pipeline (pre-tool-use hook + `/prompt` s
 - **Manual (`/prompt`):** Full 5-pass improvement with GLOSSARY/STANDARDS/MEMORY. Requires user approval (A/B/C/D). Cancelled prompts logged.
 - **Gating:** Destructive actions flagged; role/scope violations blocked; `/prompt` for deep improvement
 
-## Skills (88 total — auto-discovered from `.claude/skills/`)
+## Skills (93 total — auto-discovered from `.claude/skills/`)
 - **Testing:** `/e2e-browser`, `/e2e-mobile`, `/api-test`, `/load-test`, `/visual-regression`, `/coverage-track`
 - **Audit:** `/accessibility-audit`, `/privacy-audit`, `/performance-audit`, `/infrastructure-audit`, `/license-audit`, `/docs-audit`, `/cicd-audit`, `/incident-readiness`, `/security-audit`, `/mobile-audit`, `/seo-audit`, `/firmware-audit`, `/logging-audit`
 - **Observability:** `/setup-observability`, `/logging-audit`, `/metrics`, `/execution-report`
@@ -192,7 +192,8 @@ All tool calls pass through the prompt pipeline (pre-tool-use hook + `/prompt` s
 - **Deploy:** `/deploy`, `/rollback`, `/release-notes`, `/changelog`, `/cost-estimate`, `/deploy-strategy`
 - **Planning:** `/brainstorm`, `/product-spec`, `/feature-map`, `/domain-model`, `/tech-stack`, `/architecture`, `/scaffold`, `/methodology`, `/pi-planning`, `/create-story`, `/clarify`
 - **Team:** `/setup-workspace`, `/daily-sync`, `/feature-start`, `/workflow new "task"`, `/feature-done`, `/task-tracker status`, `/org-report`, `/standup`, `/onboard`, `/progress-report`, `/signoff`
+- **Output Format:** `/doc-exporter`, `/figma-brief`, `/notion-formatter`, `/slack-summary`, `/prompt-intelligence`
 - **Maintenance:** `/sync --check`, `/sync --fix`, `/context-check`, `/compact`, `/dependency-check`, `/scan-and-build`, `/audit-system`, `/review-pr`, `/design-review`, `/impact-analysis`
 
-See `.claude/docs/commands.md` for full 88-skill reference with syntax and flags.
+See `.claude/docs/commands.md` for full 93-skill reference with syntax and flags.
 

@@ -1,4 +1,4 @@
-# Skills Index — Complete Reference (88 Skills)
+# Skills Index — Complete Reference (93 Skills)
 
 > All skills organized by lifecycle tier and workflow category.
 
@@ -128,12 +128,14 @@
 | visual-regression | `/visual-regression` | @qa-automation | Screenshot diff report |
 | coverage-track | `/coverage-track` | @tester | Coverage delta report |
 
-## 10. Observability (T1/T2)
+## 10. Observability (T1/T2/T5)
 
 | Skill | Command | Tier | Agent | Output |
 |-------|---------|------|-------|--------|
 | setup-observability | `/setup-observability` | T1 | @observability-engineer | Logging, tracing, metrics stack |
+| logging-audit | `/logging-audit` | T2 | @security | Logging practices report |
 | metrics | `/metrics` | T5 | — | Metrics dashboard |
+| execution-report | `/execution-report` | T5 | — | Post-task analytics |
 
 ## 11. Versioning & Feature Management (T5)
 

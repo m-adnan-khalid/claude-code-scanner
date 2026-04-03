@@ -12,7 +12,8 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 // Only check once per session
-const CHECKED_FILE = path.join(process.env.TMPDIR || '/tmp', '.claude-branch-naming-checked');
+const os = require('os');
+const CHECKED_FILE = path.join(process.env.TMPDIR || os.tmpdir(), '.claude-branch-naming-checked');
 
 let input = '';
 process.stdin.setEncoding('utf8');
