@@ -103,6 +103,15 @@ Compare `.claude/rules/*.md` against codebase:
 - **Rules referencing non-existent paths:** `paths:` globs that match zero files
 - **Missing rules for new directories:** new source directories with no matching rule
 - **Stale content:** rules mentioning frameworks/patterns no longer in the project
+- **Missing required rules:** verify all 3 code rules exist (code-standards.md, code-safety.md, code-platform.md)
+- **Rule line count:** flag any rule exceeding 50 lines
+- **Missing paths: frontmatter:** flag rules without `paths:` field
+
+### 2d2: Cross-Reference Validation
+- **Skills referencing non-existent agents:** check each skill's `agents:` field against actual `.claude/agents/` files
+- **TECH_MANIFEST.json stale or missing:** compare `.claude/project/TECH_MANIFEST.json` against current dependency files
+- **Recovery snapshot cleanup:** prune `.claude/reports/executions/` — keep last 10 snapshots per task, delete older ones
+- **Sessions.log rotation:** if `.claude/reports/sessions.log` exceeds 500 lines, archive older entries
 
 ### 2e: CLAUDE.md Drift
 Compare root CLAUDE.md against actual project state:
@@ -284,6 +293,17 @@ Next: {recommendation}
   - "N items need manual review — see .claude/reports/drift-report.md"
   - "Major drift detected. Consider /sync --full-rescan."
 ```
+
+## Step 7: Full Rescan (only for `--full-rescan`)
+
+If `--full-rescan` flag is passed, execute a complete re-scan and regeneration:
+1. Run `/scan-codebase` — re-fingerprint the entire tech stack, output new `.claude/scan-results.md` and `.claude/project/TECH_MANIFEST.json`
+2. Run `/generate-environment` with `--force` — regenerate all artifacts from fresh scan data (preserves custom hooks and agent customizations)
+3. Run `/validate-setup` — verify the regenerated environment is valid
+4. Run Steps 1-6 above (Read Manifest → Detect Drift → Auto-Fix → Update Manifest → Output Summary)
+5. Report what changed between old and new environment
+
+**This is a destructive operation** — confirm with user before proceeding.
 
 ## Definition of Done
 - All drift categories checked, report generated, fixes applied (if --fix), manifest updated.

@@ -38,12 +38,13 @@ NEXT ACTION: Context loaded. Starting skill...
 # Generate Environment: $ARGUMENTS
 
 ## Prerequisite Check
-Before generating, verify `.claude/scan-results.md` exists. If NOT found:
-1. Warn: "scan-results.md not found. Run /scan-codebase first."
-2. STOP — do NOT generate generic templates without scan data.
-3. Exit with instructions to run `/scan-codebase` first.
+Before generating, verify these files exist:
+1. `.claude/scan-results.md` — if NOT found: STOP, run `/scan-codebase` first.
+2. `.claude/project/TECH_MANIFEST.json` — if NOT found: WARN, generation will use scan-results.md only (less precise).
 
-Read `.claude/scan-results.md` (from /scan-codebase). Replace ALL `{placeholders}` with actual values. If a value wasn't found, OMIT that section — never leave placeholders.
+Read `.claude/scan-results.md` AND `.claude/project/TECH_MANIFEST.json` (from /scan-codebase). Use TECH_MANIFEST.json as the primary source for exact versions, framework names, and dependency lists. Use scan-results.md for patterns, conventions, and architecture details. Replace ALL `{placeholders}` with actual values. If a value wasn't found, OMIT that section — never leave placeholders.
+
+**Post-Generation Placeholder Gate:** After generating all files, run `grep -r '{[a-z_]*}' .claude/` to verify zero remaining placeholders. If ANY found, fix them before proceeding.
 
 ## Customization Preservation (Smart Mode)
 

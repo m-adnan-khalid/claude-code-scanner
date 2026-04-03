@@ -75,10 +75,15 @@ Create `.claude/tasks/task-{ticket_id}.md`:
 id: {ticket_id}
 title: {description}
 status: DEVELOPING
+phase: 5
+assigned-to: @{dev-agent}
 scope: {scope}
 role: {CURRENT_ROLE}
 branch: {BRANCH}
+session_id: {SESSION_ID from session.env}
 created: {ISO timestamp}
+updated: {ISO timestamp}
+depends-on: none
 ---
 
 # {ticket_id}: {description}
@@ -88,6 +93,21 @@ created: {ISO timestamp}
 
 ## Acceptance Criteria
 - [ ] (Define criteria)
+
+## Subtasks
+| # | Subtask | Owner | Status | Phase | Completed |
+|---|---------|-------|--------|-------|-----------|
+
+## Loop State
+- dev-test-loop: iteration 0/5
+- review-loop: iteration 0/3
+- ci-fix-loop: iteration 0/3
+- signoff-rejection-cycle: 0/2
+- deploy-loop: iteration 0/2
+
+## Timeline
+| Timestamp | Event | Agent | Details | Result | Next |
+|-----------|-------|-------|---------|--------|------|
 
 ## Files Changed
 (Updated automatically by hooks)

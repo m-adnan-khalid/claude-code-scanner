@@ -86,7 +86,11 @@ for (const file of files) {
       try {
         const memPath = path.join(_projectRoot, 'MEMORY.md');
         const memEntry = `\n## ${snapshot.task_id} — ${new Date().toISOString().split('T')[0]} (session: ${_sessionId})\n${snapshot.preserved.memory_update}\n`;
-        fs.appendFileSync(memPath, memEntry);
+        if (!fs.existsSync(memPath)) {
+          fs.writeFileSync(memPath, `# Memory\n${memEntry}`);
+        } else {
+          fs.appendFileSync(memPath, memEntry);
+        }
       } catch (_) { /* best-effort */ }
     }
 

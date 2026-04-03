@@ -55,7 +55,7 @@ setTimeout(() => {
     const entry = `| ${ts} | ${_sessionId} | ${branch} | start |\n`;
     fs.appendFileSync(sessionLogPath, entry);
 
-    // Write current session ID to session.env for other hooks to read
+    // Write current session ID to session.env for other hooks to read (create if missing)
     const sessionEnvPath = path.join(_projectRoot, '.claude', 'session.env');
     if (fs.existsSync(sessionEnvPath)) {
       let envContent = fs.readFileSync(sessionEnvPath, 'utf-8');
@@ -65,13 +65,34 @@ setTimeout(() => {
         envContent += `\nSESSION_ID=${_sessionId}\n`;
       }
       fs.writeFileSync(sessionEnvPath, envContent);
+    } else {
+      // Create session.env with session ID even without /setup-workspace
+      try {
+        fs.writeFileSync(sessionEnvPath, `CURRENT_ROLE=unset\nSESSION_ID=${_sessionId}\n`);
+      } catch (_) {}
     }
 
     console.log(`SESSION: ${_sessionId} | Branch: ${branch}`);
   } catch (_) {}
 }, 600); // Wait for stdin parse to complete
 
-// --- 0b. Role Check — warn if /setup-workspace hasn't been run ---
+// --- 0b. Concurrency guard — warn if another session is active ---
+try {
+  const lockPath = path.join(_projectRoot, '.claude', '.session-lock');
+  if (fs.existsSync(lockPath)) {
+    const lockData = fs.readFileSync(lockPath, 'utf-8').trim();
+    const lockAge = Date.now() - fs.statSync(lockPath).mtimeMs;
+    if (lockAge < 3600000) { // Lock less than 1 hour old
+      console.log(`WARNING: Another session may be active (lock: ${lockData}, age: ${Math.round(lockAge / 60000)}min).`);
+      console.log('  If the previous session crashed, delete .claude/.session-lock to proceed.');
+      console.log('  Running concurrent sessions on the same repo can cause state corruption.');
+    }
+  }
+  // Write our lock
+  fs.writeFileSync(lockPath, `${_sessionId}|${new Date().toISOString()}`);
+} catch (_) {}
+
+// --- 0c. Role Check — warn if /setup-workspace hasn't been run ---
 try {
   const sessionEnvPath = path.join(_projectRoot, '.claude', 'session.env');
   if (!fs.existsSync(sessionEnvPath)) {
@@ -211,7 +232,10 @@ try {
 
 // --- 3. Task scan with crash detection + orphaned state recovery ---
 const tasksDir = path.join(_projectRoot, '.claude', 'tasks');
-if (!fs.existsSync(tasksDir)) process.exit(0);
+if (!fs.existsSync(tasksDir)) {
+  // Create tasks dir so future hooks don't fail silently
+  try { fs.mkdirSync(tasksDir, { recursive: true }); } catch (_) {}
+}
 
 try {
   const files = fs.readdirSync(tasksDir).filter(f => f.endsWith('.md'));

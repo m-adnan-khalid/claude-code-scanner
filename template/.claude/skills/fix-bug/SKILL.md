@@ -38,6 +38,22 @@ NEXT ACTION: Context loaded. Starting skill...
 
 # Fix Bug: $ARGUMENTS
 
+## Step 0.5 — Create Task File
+Create `.claude/tasks/BUG-{timestamp}.md` with:
+```
+---
+id: BUG-{timestamp}
+title: fix: {bug description}
+status: DEVELOPING
+scope: {affected files}
+role: {CURRENT_ROLE}
+branch: {current branch}
+session_id: {from session.env}
+created: {ISO timestamp}
+---
+```
+This ensures recovery if session is interrupted mid-fix.
+
 ## Quick Fix Flow (5 steps, not 13)
 1. **Reproduce**: Find the bug, write a failing test
 2. **Diagnose**: Invoke @debugger to find root cause

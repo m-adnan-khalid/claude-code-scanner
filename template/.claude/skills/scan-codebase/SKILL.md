@@ -63,10 +63,13 @@ Trace a request end-to-end. Map: module boundaries, dependency graph, communicat
 Read 20+ files to establish patterns. Extract: naming conventions (variables, files, directories, endpoints, DB tables), code style beyond linter config, error handling patterns, git conventions (from git log), TODO/FIXME/HACK comments, existing AI config (.cursorrules, CLAUDE.md).
 
 ## Output
-Combine all 6 reports into a single structured document saved to `.claude/scan-results.md`.
+1. Combine all 6 reports into a single structured document saved to `.claude/scan-results.md`.
+2. **Write `.claude/project/TECH_MANIFEST.json`** with structured version data (see deep-scan-instructions.md "Version Manifest" section). This file is the source of truth for all agent 3-step doc verification.
+3. Write `.claude/manifest.json` with agent/skill/hook/rule counts for drift detection.
 
 ## Definition of Done
-- [ ] TECH_MANIFEST created with all detected technologies and versions
+- [ ] TECH_MANIFEST.json created at `.claude/project/TECH_MANIFEST.json` with all detected technologies and versions
+- [ ] scan-results.md created with all 6 agent reports merged
 - [ ] All 6 scan agents completed (or partial results captured for failed agents)
 - [ ] Results merged into `.claude/scan-results.md`
 - [ ] Project type identified (monorepo, fullstack, API-only, frontend-only, etc.)

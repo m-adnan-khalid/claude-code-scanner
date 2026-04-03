@@ -58,9 +58,13 @@ if (fs.existsSync(tasksDir)) {
         continue; // Already persisted
       }
 
-      // Append to MEMORY.md with session_id
+      // Append to MEMORY.md with session_id (create file if missing)
       const entry = `\n## ${id.trim()} — ${new Date().toISOString().split('T')[0]} (session: ${_sessionId})\n${memUpdate}\n`;
-      fs.appendFileSync(memPath, entry);
+      if (!fs.existsSync(memPath)) {
+        fs.writeFileSync(memPath, `# Memory\n${entry}`);
+      } else {
+        fs.appendFileSync(memPath, entry);
+      }
       console.log(`MEMORY: Persisted memory_update from ${id.trim()} to MEMORY.md`);
       break;
     }
@@ -107,5 +111,13 @@ try {
     console.log(`\nWARNING: ${wtLines.length - 1} active git worktree(s) detected. Clean up with 'git worktree remove <path>' if no longer needed.`);
   }
 } catch (_) { /* git not available */ }
+
+// 4. Release session lock
+try {
+  const lockPath = path.join(_projectRoot, '.claude', '.session-lock');
+  if (fs.existsSync(lockPath)) {
+    fs.unlinkSync(lockPath);
+  }
+} catch (_) {}
 
 process.exit(0);
